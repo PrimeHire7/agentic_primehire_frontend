@@ -1,14 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-interface FeatureButtonProps {
-  icon?: React.ReactNode;
-  label: string;
-  onClick?: () => void;
-  variant?: "default" | "outline";
-}
-
-const FeatureButton = ({ icon, label, onClick, variant = "outline" }: FeatureButtonProps) => {
+const FeatureButton = ({ icon, label, onClick, variant = "outline" }) => {
   return (
     <Button
       variant={variant}

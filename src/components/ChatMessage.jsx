@@ -1,11 +1,6 @@
 import { cn } from "@/lib/utils";
 
-interface ChatMessageProps {
-  role: "user" | "assistant";
-  content: string;
-}
-
-const ChatMessage = ({ role, content }: ChatMessageProps) => {
+const ChatMessage = ({ role, content }) => {
   return (
     <div
       className={cn(

@@ -13,16 +13,11 @@ import {
   Menu
 } from "lucide-react";
 
-interface Message {
-  role: "user" | "assistant";
-  content: string;
-}
-
 const Index = () => {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSend = (message: string) => {
+  const handleSend = (message) => {
     setMessages((prev) => [...prev, { role: "user", content: message }]);
     setIsLoading(true);
 
@@ -39,7 +34,7 @@ const Index = () => {
     }, 1000);
   };
 
-  const handleFeatureClick = (feature: string) => {
+  const handleFeatureClick = (feature) => {
     handleSend(`I want to use ${feature}`);
   };
 
