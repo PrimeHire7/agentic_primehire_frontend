@@ -34,7 +34,7 @@ const ChatInput = ({ onSend, disabled }) => {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="How can I help you today?"
+          placeholder="Message Z.ai..."
           disabled={disabled}
           className="flex-1 min-h-[44px] max-h-[200px] resize-none border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 p-2 text-base placeholder:text-muted-foreground"
           rows={1}
