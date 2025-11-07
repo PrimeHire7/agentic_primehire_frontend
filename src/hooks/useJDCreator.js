@@ -12,7 +12,7 @@ const stepPrompts = {
   location: "📍 Where is the job located? (City or Remote)",
   experience: "💼 What is the experience required?",
   jobType: "📌 Job type (Full-time / Contract / Remote)?",
-  skillsMandatory: "✍️ List the mandatory skills (comma separated).",
+  skillsMandatory: "✍ List the mandatory skills (comma separated).",
   skillsPreferred: "✨ List the preferred skills (comma separated).",
   responsibilities: "📝 Provide key responsibilities (optional, can skip).",
   company_name: "🏢 What is the company name?",

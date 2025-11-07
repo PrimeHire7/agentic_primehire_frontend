@@ -153,10 +153,7 @@ const TaskSelector = ({
         ))}
       </div>
 
-      {/* Message before selecting task */}
-     
-
-      {/* Upload Resumes Section */}
+      
   
 
       {/* JD Creator Input */}
