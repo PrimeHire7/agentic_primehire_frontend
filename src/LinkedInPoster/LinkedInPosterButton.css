@@ -1,16 +1,19 @@
+/* ===================================================
+   ✅ LINKEDIN POSTER PANEL (CENTERED)
+=================================================== */
 .linkedin-poster-box {
   position: fixed;
   top: 67%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 360px;
+  width: 300px;                       /* Reduced from 360px */
   background: linear-gradient(145deg, #ffffff, #f0f9ff);
   border-radius: 20px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
-  padding: 32px 28px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);  /* Slightly smaller shadow */
+  padding: 24px 20px;                  /* Reduced padding for smaller height */
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 16px;                           /* Slightly smaller gap */
   text-align: center;
   transition: all 0.3s ease;
   border: 2px solid #dbeafe;
@@ -21,15 +24,15 @@
 /* Hover lift effect */
 .linkedin-poster-box:hover {
   transform: translate(-50%, -52%);
-  box-shadow: 0 18px 40px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 15px 35px rgba(37, 99, 235, 0.2);
 }
 
 /* Title */
 .linkedin-title {
-  font-size: 1.4rem;
+  font-size: 1.3rem;   /* Slightly smaller font */
   font-weight: 700;
   color: #0a66c2;
-  margin-bottom: 8px;
+  margin-bottom: 6px;  /* Reduced margin */
   letter-spacing: 0.5px;
   animation: fadeIn 1s ease;
 }
@@ -38,16 +41,16 @@
 .linkedin-btn,
 .linkedin-post-btn {
   width: 100%;
-  padding: 14px 20px;
+  padding: 12px 18px;  /* Reduced padding for smaller height */
   font-weight: 600;
-  border-radius: 30px;
+  border-radius: 28px;  /* Slightly smaller radius */
   cursor: pointer;
   transition: all 0.3s ease;
   border: none;
   outline: none;
   position: relative;
   overflow: hidden;
-  font-size: 15px;
+  font-size: 14px;      /* Slightly smaller font */
 }
 
 /* Sky Blue Outline Button */
@@ -122,7 +125,17 @@
 /* Responsive */
 @media (max-width: 768px) {
   .linkedin-poster-box {
-    width: 90%;
-    padding: 24px;
+    width: 85%;           /* Slightly smaller than 90% for mobile */
+    padding: 20px;
+  }
+
+  .linkedin-title {
+    font-size: 1.2rem;
+  }
+
+  .linkedin-btn,
+  .linkedin-post-btn {
+    padding: 10px 16px;
+    font-size: 13px;
   }
 }
