@@ -13,7 +13,7 @@ const Header = ({ onRefresh }) => {
         {/* Left side: Sidebar + Logo */}
         <div className="header-left">
           <SidebarTrigger />
-          <Link to="/" className="logo-link">
+          <Link to={"/"} className="logo-link">
             <img src={logo} alt="PrimeHire" className="logo" />
           </Link>
         </div>

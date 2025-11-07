@@ -113,7 +113,7 @@ export const useMainContent = () => {
 
       case "Profile Matcher":
         setMessages([
-          { role: "assistant", content: "Upload resumes or paste a JD to start matching profiles." },
+          { role: "assistant", content: "Paste a JD to start matching profiles." },
         ]);
         break;
 
