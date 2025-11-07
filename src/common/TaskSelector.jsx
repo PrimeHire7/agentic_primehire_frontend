@@ -124,20 +124,24 @@ const TaskSelector = ({
   return (
     <>
         {selectedTask === "Upload Resumes" && (
-        <div className="upload-resumes-section">
-          <label className="upload-resumes-label">📎 Upload Candidate Resumes (PDF/DOCX)</label>
-          <input
-            type="file"
-            multiple
-            accept=".pdf,.docx"
-            onChange={(e) => onUploadResumes(e.target.files)}
-            className="upload-resumes-input"
-          />
-          <p className="upload-resumes-help">
-            Upload multiple resumes. Extracted info will appear as a table.
-          </p>
-        </div>
-      )}
+  <div className="upload-resumes-section">
+    <label htmlFor="resume-upload" className="upload-resumes-label">
+      📎 Upload Candidate Resumes (PDF/DOCX)
+    </label>
+    <input
+      id="resume-upload"
+      type="file"
+      multiple
+      accept=".pdf,.docx"
+      onChange={(e) => onUploadResumes(e.target.files)}
+      className="upload-resumes-input"
+    />
+    <p className="upload-resumes-help">
+      Upload multiple resumes. Extracted info will appear as a table.
+    </p>
+  </div>
+)}
+
       {/* Task selector buttons */}
       <div className="task-selector-container">
         {["JD Creator", "Profile Matcher", "Upload Resumes"].map((task) => (

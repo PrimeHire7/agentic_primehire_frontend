@@ -291,76 +291,91 @@
   transform: translateY(-1px) scale(0.97);
 }
 /* Upload Resumes Container */
+/* Upload Section Container */
 .upload-resumes-section {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   border: 2px dashed #38bdf8;
-  border-radius: 12px;
-  padding: 40px 20px;
-  background-color: #f0f9ff;
+  border-radius: 16px;
+  padding: 50px 30px;
+  background: linear-gradient(to bottom right, #f0f9ff, #e0f2fe);
   cursor: pointer;
   transition: all 0.3s ease;
   text-align: center;
-  max-width: 500px;
-  margin: 20px auto;
+  max-width: 550px;
+  margin: 30px auto;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
 }
 
 .upload-resumes-section:hover {
-  background-color: #e0f2fe;
+  background: linear-gradient(to bottom right, #e0f2fe, #bfdbfe);
   border-color: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
 }
 
-/* Label (with icon) */
+/* Label (Clickable Upload Zone) */
 .upload-resumes-label {
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-size: 16px;
+  justify-content: center;
+  gap: 10px;
+  font-size: 18px;
   font-weight: 600;
   color: #1e3a8a;
   cursor: pointer;
+  transition: color 0.3s ease;
 }
 
+.upload-resumes-label:hover {
+  color: #2563eb;
+}
+
+/* Optional icon (before text) */
 .upload-resumes-label::before {
-  content: '';
-  display: block;
-  width: 80px;
-  height: 80px;
-  margin-bottom: 16px;
-  background: url('/path/to/your/cloud-plus-icon.png') no-repeat center center;
-  background-size: contain;
+  content: "☁️";
+  font-size: 48px;
+  margin-bottom: 8px;
 }
 
-/* File Input (hidden) */
+/* Hidden Input */
 .upload-resumes-input {
   display: none;
 }
 
 /* Help Text */
 .upload-resumes-help {
-  margin-top: 12px;
+  margin-top: 14px;
   font-size: 14px;
-  color: #4b5563;
+  color: #475569;
+  line-height: 1.5;
+  max-width: 400px;
 }
 
-/* Responsive Design */
+/* Focus/Active State */
+.upload-resumes-section:active {
+  transform: scale(0.98);
+}
+
+/* Mobile Responsive Design */
 @media (max-width: 768px) {
-  .task-selector-container {
-    gap: 8px;
+  .upload-resumes-section {
+    max-width: 90%;
+    padding: 40px 20px;
   }
-  
-  .task-button {
-    padding: 10px 16px !important;
-    font-size: 13px !important;
+
+  .upload-resumes-label {
+    font-size: 16px;
   }
-  
-  .jd-creator-input {
-    flex-direction: column;
+
+  .upload-resumes-label::before {
+    font-size: 40px;
   }
-  
-  .jd-creator-input button {
-    width: 100%;
+
+  .upload-resumes-help {
+    font-size: 13px;
   }
 }
