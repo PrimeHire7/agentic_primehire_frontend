@@ -38,3 +38,181 @@
     transform: translateY(0);
   }
 }
+
+/* 🌟 Modern Quick Prompts Grid */
+/* ⚡ Modern One-Row-Per-Feature Layout */
+.quick-prompts-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.8rem 1rem;
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
+  position: sticky;
+  bottom: 4rem;
+  z-index: 10;
+  border-radius: 10px;
+  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(8px);
+}
+
+/* 🔖 Feature row (heading + buttons) */
+.prompt-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+/* 🏷️ Feature heading */
+.prompt-heading {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #334155;
+  margin-right: 0.5rem;
+  white-space: nowrap;
+  min-width: 110px;
+}
+
+/* 💎 Rounded action buttons */
+.prompt-chip {
+  font-size: 0.8rem;
+  color: #2563eb;
+  background: #eef2ff;
+  border: none;
+  border-radius: 999px;
+  padding: 6px 13px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.1);
+}
+
+.prompt-chip:hover {
+  background: #dbeafe;
+  color: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(37, 99, 235, 0.15);
+}
+
+.prompt-chip:active {
+  transform: scale(0.97);
+}
+
+/* 📱 Responsive tweaks */
+@media (max-width: 768px) {
+  .prompt-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .prompt-heading {
+    margin-bottom: 0.3rem;
+  }
+}
+
+
+
+/* 💎 Prompt card container */
+.prompt-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.9rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  transition: all 0.25s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.prompt-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.08);
+  border-color: #cbd5e1;
+}
+
+/* 🏷️ Card header */
+.prompt-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1e293b;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 0.3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  letter-spacing: 0.1px;
+}
+
+.prompt-title::before {
+  content: "⚙️";
+  font-size: 0.85rem;
+  color: #2563eb;
+}
+
+/* 💬 Buttons inside cards */
+.prompt-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-top: 0.3rem;
+}
+
+.prompt-btn {
+  background: #f8fafc;
+  color: #1d4ed8;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 7px 10px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.prompt-btn:hover {
+  background: #e0e7ff;
+  border-color: #93c5fd;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(37, 99, 235, 0.12);
+}
+
+.prompt-btn:active {
+  transform: scale(0.97);
+}
+
+/* 📥 Chat Input pinned at bottom */
+.chat-input-fixed {
+  position: sticky;
+  bottom: 0;
+  z-index: 15;
+  background: var(--background, #fff);
+  border-top: 1px solid var(--border, #e5e7eb);
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.03);
+}
+
+/* 📱 Responsive tuning */
+@media (max-width: 1024px) {
+  .quick-prompts-bar {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .quick-prompts-bar {
+    grid-template-columns: 1fr;
+    padding: 0.8rem;
+  }
+
+  .prompt-card {
+    padding: 0.8rem;
+  }
+
+  .prompt-btn {
+    font-size: 0.78rem;
+  }
+}
