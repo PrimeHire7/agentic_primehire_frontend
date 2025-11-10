@@ -1,190 +1,215 @@
-import { useState, useCallback } from "react";
+// 📁 src/hooks/useMainContent.js
+import { useState, useCallback, useEffect } from "react";
 import { useWebSocket } from "./useWebSocket";
 import { useJDCreator } from "./useJDCreator";
 import { useProfileMatcher } from "./useProfileMatcher";
-import { uploadResumes, generateJd } from "@/utils/api"; // ✅ Import from correct path
+import { uploadResumes } from "@/utils/api";
 
 export const useMainContent = () => {
   const [selectedFeature, setSelectedFeature] = useState("");
   const [selectedTask, setSelectedTask] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [messages, setMessages] = useState([]);
 
+  // ✅ Hooks
+  const { fetchProfileMatches } = useProfileMatcher(setMessages, setIsLoading, setSelectedTask);
   const {
-    messages,
-    setMessages,
-    handleSend: handleWebSocketSend
-  } = useWebSocket();
-
-  const {
-    jdAnswers,
+    jdInProgress,
+    setJdInProgress,     // ✅ NEW
     currentJdInput,
     setCurrentJdInput,
     currentJdStep,
+    setCurrentJdStep,    // ✅ NEW
     handleJdProcess,
-    handleJdSend
-  } = useJDCreator(setMessages, setIsLoading);
+    handleJdSend,
+  } = useJDCreator(setMessages, setIsLoading, setSelectedTask);
 
-  const {
-    fetchProfileMatches
-  } = useProfileMatcher(setMessages, setIsLoading);
-  // 👇 Add this helper before handleFeatureClick()
+
+  // ✅ make JD handler globally available (for JDTaskUI)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.__HANDLE_JD_PROCESS__ = handleJdProcess;
+    }
+  }, [handleJdProcess]);
+
+  const { sendMessage } = useWebSocket(
+    setSelectedFeature,
+    setSelectedTask,
+    fetchProfileMatches,
+    setMessages,
+    setIsLoading,
+    handleJdProcess
+  );
+
+  // 🔁 Reset helper
   const resetAllFeatureStates = () => {
-    // ✅ Only reset global/shared states that belong to MainContent
     setMessages([]);
     setSelectedTask("");
+    setSelectedFeature("");
     setIsLoading(false);
-
-    // Shared filters and summaries
-    // setDisplayedMatches([]);
-    // setFilterQuery("");
-    // setMinScoreFilter(0);
-    // setSortConfig({ key: "scores.final_score", direction: "desc" });
-    // setSummary({ best: 0, good: 0, partial: 0 });
-    // setSelectedCategory(null);
-
-    // Shared data that’s actually defined here
-    // setResponses({});
-    // setAnomaliesList([]);
-
-    // 🧹 Do NOT reset child component state like setCandidateName, setJdAnswers, etc.
-    // They reset automatically when the feature component unmounts.
+    window.__JD_MODE_ACTIVE__ = false; // 🧹 Always unlock on reset
   };
 
-
-  // const handleFeatureClick = useCallback((feature) => {
-  //   setSelectedFeature(feature);
-  //   setMessages([]);
-  // }, [setMessages]);
+  // 💡 Manual feature click
   const handleFeatureClick = (feature) => {
-    console.log("🧭 Feature clicked:", feature);
-
+    console.log("🧭 Manual feature click:", feature);
     resetAllFeatureStates();
-
-    setSelectedTask(""); // ✅ clear active task
     setSelectedFeature(feature);
-
-    switch (feature) {
-      case "ZohoBridge":
-        console.log("🔗 ZohoBridge selected");
-        break;
-      case "MailMind":
-        console.log("🧠 MailMind selected");
-        break;
-      case "LinkedInPoster":
-        console.log("💼 LinkedIn Poster selected");
-        break;
-      case "PrimeHireBrain":
-        console.log("🤖 PrimeHire Brain selected");
-        break;
-      default:
-        console.log("🌀 Unknown feature");
-    }
   };
 
+  // 💡 Task selector
+  const handleTaskSelect = useCallback(
+    (task) => {
+      console.log("🧩 Task selected manually:", task);
+      resetAllFeatureStates();
+      setSelectedTask(task);
 
-  // const handleTaskSelect = useCallback((task) => {
-  //   setSelectedTask(task);
-  //   if (task === "JD Creator") {
-  //     setMessages(prev => [...prev, {
-  //       role: "assistant",
-  //       content: "Let's create a job description! What is the job title/role?"
-  //     }]);
-  //   }
-  // }, [setMessages]);
-  const handleTaskSelect = useCallback((task) => {
-    console.log("🧭 Task selected:", task);
+      switch (task) {
+        case "JD Creator":
+          setMessages([
+            { role: "assistant", content: "✨ Detected task: **JD Creator** — Opening JD Creator module..." },
+            // immediate first step prompt, use global (ensures step text is consistent)
+            // { role: "assistant", content: `Step 1/10 — ${window.__CURRENT_JD_STEP__ || "👉 What is the job title / role?"}` }
+          ]);
+          break;
 
-    // 🧹 Step 1: Clear existing feature when switching task
-    setSelectedFeature(""); // ✅ hides Zoho / MailMind / PrimeHireBrain UI
 
-    // 🧹 Step 2: Clear previous messages before switching task
-    setMessages([]);
+        case "Profile Matcher":
+          setMessages([
+            {
+              role: "assistant",
+              content:
+                "✨ Detected task: **Profile Matcher** — Opening Profile Matcher module...",
+            },
+          ]);
+          break;
 
-    // 🧠 Step 3: Activate new task
-    setSelectedTask(task);
+        case "Upload Resumes":
+          setMessages([
+            {
+              role: "assistant",
+              content:
+                "✨ Detected task: **Upload Resumes** — Opening Upload Resumes module...",
+            },
+          ]);
+          break;
 
-    // 🧩 Step 4: Task-specific initialization
-    switch (task) {
-      case "JD Creator":
-        setMessages([
-          { role: "assistant", content: "Let's create a job description! What is the job title/role?" },
-        ]);
-        break;
-
-      case "Profile Matcher":
-        setMessages([
-          { role: "assistant", content: "Paste a JD to start matching profiles." },
-        ]);
-        break;
-
-      case "Upload Resumes":
-        setMessages([
-          { role: "assistant", content: "📄 Upload resumes to begin extraction." },
-        ]);
-        break;
-
-      default:
-        console.log("⚙ No specific initialization for:", task);
-        break;
-    }
-  }, [setMessages, setSelectedFeature, setSelectedTask]);
-
+        default:
+          console.log("⚙️ No setup for this task");
+      }
+    },
+    []
+  );
 
   const handleRefresh = useCallback(() => {
-    setIsLoading(false);
-    setMessages([]);
-    setSelectedFeature("");
-    setSelectedTask("");
-  }, [setMessages]);
-
-  const handleSend = useCallback((message) => {
-    if (!message.trim()) return;
-
-    // 🧹 Clear irrelevant message types (profile_table, resume_table)
-    setMessages(prev =>
-      prev.filter(
-        msg =>
-          (selectedTask === "Profile Matcher" && msg.type === "profile_table") ||
-          (selectedTask === "Upload Resumes" && msg.type === "resume_table") ||
-          (!msg.type && selectedTask === "JD Creator") // keep normal chat for JD
-      )
-    );
-
-    // Append new user message
-    setMessages(prev => [...prev, { role: "user", content: message }]);
-    setIsLoading(true);
-
-    // Route message to respective task
-    if (selectedTask === "JD Creator") {
-      handleJdProcess(message);
-    } else if (selectedTask === "Profile Matcher") {
-      fetchProfileMatches(message);
-    } else {
-      handleWebSocketSend(message, selectedTask);
+    if (window.__JD_REFRESHING__) {
+      console.log("⏸️ Skipping redundant refresh — already in progress.");
+      return;
     }
-  }, [selectedTask, handleJdProcess, fetchProfileMatches, handleWebSocketSend, setMessages]);
+    window.__JD_REFRESHING__ = true;
 
+    console.log("🔄 Refresh triggered — full reset including JD Creator state.");
 
-  const uploadResumesHandler = useCallback(async (files) => {
-    if (!files || files.length === 0) return;
-    setIsLoading(true);
+    // 🧹 Reset UI and global flags
+    resetAllFeatureStates();
+
+    if (typeof window !== "undefined") {
+      // ✅ Safer: keep JD keys defined but inactive
+      window.__JD_MODE_ACTIVE__ = false;
+      window.__CURRENT_JD_STEP__ = null;
+      window.__JD_HISTORY__ = [];
+      delete window.__HANDLE_JD_PROCESS__;
+    }
 
     try {
-      const result = await uploadResumes(files);
-      setMessages(prev => [
-        ...prev,
-        { role: "assistant", type: "resume_table", data: result.uploaded_files }
-      ]);
-    } catch (error) {
-      console.error("Upload error:", error);
-      setMessages(prev => [
-        ...prev,
-        { role: "assistant", content: "❌ Failed to upload resumes. Try again." }
-      ]);
-    } finally {
-      setIsLoading(false);
+      // ✅ Reset local JD React states
+      setCurrentJdInput("");
+      if (typeof setCurrentJdStep === "function") setCurrentJdStep("role"); // safe default, not null
+      if (typeof setJdInProgress === "function") setJdInProgress(false);
+    } catch (err) {
+      console.warn("⚠️ JD reset skipped (hook refs not ready):", err);
     }
-  }, [setMessages]);
+
+    console.log("✅ All JD Creator and session states cleared.");
+
+    // 🔓 Allow next refresh after small delay
+    setTimeout(() => {
+      delete window.__JD_REFRESHING__;
+    }, 500);
+  }, [
+    resetAllFeatureStates,
+    setCurrentJdInput,
+    setCurrentJdStep,
+    setJdInProgress,
+  ]);
+
+
+
+
+  // ✅ Fixed message handler
+  const handleSend = useCallback(
+    (message) => {
+      if (!message.trim()) return;
+      setIsLoading(true);
+
+      // 🚫 JD Creator Mode Lock
+      if (window.__JD_MODE_ACTIVE__ || (selectedTask === "JD Creator" && jdInProgress)) {
+        console.log("🧱 [Main] JD Creator active — handling locally only");
+        handleJdProcess(message);
+        setIsLoading(false);
+        return;
+      }
+
+      // 🧠 JD Creator startup (first step)
+      if (selectedTask === "JD Creator" && !jdInProgress) {
+        console.log("🧭 [Main] Starting JD Creator flow...");
+        handleJdProcess(message);
+        setIsLoading(false);
+        return;
+      }
+
+      // 🎯 Profile Matcher
+      if (selectedTask === "Profile Matcher") {
+        console.log("🎯 [Main] Routing to Profile Matcher...");
+        fetchProfileMatches(message);
+      } else {
+        // 🌐 Default → WebSocket route
+        console.log("🌐 [Main] Routing to WebSocket...");
+        sendMessage(message);
+      }
+
+      setIsLoading(false);
+    },
+    [selectedTask, jdInProgress, handleJdProcess, fetchProfileMatches, sendMessage]
+  );
+
+  // 📎 Resume Upload Handler
+  const uploadResumesHandler = useCallback(
+    async (files) => {
+      if (!files?.length) return;
+      setIsLoading(true);
+
+      try {
+        const result = await uploadResumes(files);
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", type: "resume_table", data: result.uploaded_files },
+        ]);
+      } catch (err) {
+        console.error("❌ Upload error:", err);
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: "❌ Failed to upload resumes. Please try again.",
+          },
+        ]);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    []
+  );
 
   return {
     messages,
@@ -199,6 +224,7 @@ export const useMainContent = () => {
     handleRefresh,
     handleSend,
     handleJdSend,
-    uploadResumes: uploadResumesHandler
+    uploadResumes: uploadResumesHandler,
+    setMessages,
   };
 };

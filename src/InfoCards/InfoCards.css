@@ -1,0 +1,114 @@
+.info-section {
+    text-align: center;
+    padding: 60px 20px;
+    background: #f8f9fb;
+    font-family: "Poppins", sans-serif;
+    position: relative;
+}
+
+.section-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 40px;
+}
+
+/* ✅ Make it scrollable horizontally */
+.cards-container.scrollable {
+    display: flex;
+    gap: 30px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding: 0 40px;
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+.cards-container.scrollable::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari */
+}
+
+.info-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    padding: 30px;
+    width: 300px;
+    flex-shrink: 0;
+    /* Prevent cards from shrinking */
+    text-align: left;
+    transition: all 0.3s ease;
+}
+
+.info-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+}
+
+.card-icon {
+    color: #007bff;
+    margin-bottom: 16px;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #333;
+}
+
+.card-description {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+.card-points {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.card-points li {
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    color: #555;
+    position: relative;
+    padding-left: 18px;
+}
+
+.card-points li::before {
+    content: "•";
+    color: #007bff;
+    position: absolute;
+    left: 0;
+}
+
+/* ✅ Left & Right scroll buttons */
+.scroll-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: white;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    padding: 8px;
+    transition: background 0.2s ease;
+    z-index: 2;
+}
+
+.scroll-btn:hover {
+    background: #e9ecef;
+}
+
+.scroll-btn.left {
+    left: 15px;
+}
+
+.scroll-btn.right {
+    right: 15px;
+}

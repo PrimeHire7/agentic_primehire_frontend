@@ -1,70 +1,105 @@
-// import React from "react";
-// import ChatMessage from "./ChatMessage";
-// import ProfileTable from "./ProfileTable";
-// import ResumeTable from "./ResumeTable";
 
-// const MessageRenderer = ({ message, index }) => {
-//   console.log("🖥 Rendering message:", message, "at index:", index);
 
-//   if (message.type === "profile_table") {
-//     console.log("📊 Rendering ProfileTable");
-//     return <ProfileTable data={message.data} index={index} />;
-//   }
-
-//   if (message.type === "resume_table") {
-//     console.log("📄 Rendering ResumeTable");
-//     return <ResumeTable data={message.data} index={index} />;
-//   }
-
-//   console.log("💬 Rendering ChatMessage");
-//   return <ChatMessage key={index} role={message.role} content={message.content} />;
-// };
-
-// export default MessageRenderer;
+// src/chat/MessageRenderer.jsx
 import React, { useState } from "react";
 import ChatMessage from "./ChatMessage";
 import ProfileTable from "./ProfileTable";
-import ResumeTable from "./ResumeTable";
+import ResumeTable from "@/chat/ResumeTable";// adjust path if needed
+import ResumeUpload from "@/pages/ResumeUpload";
+import JDTaskUI from "@/pages/JDTaskUI";
+import ProfileMatchHistory from "@/components/ProfileMatcher/ProfileMatchHistory";
+import PrimeHireBrain from "../PrimeHireBrain/PrimeHireBrain";
+import InterviewBot from "../InterviewBot/InterviewBot";
+import LinkedInPosterButton from "../LinkedInPoster/LinkedInPosterButton";
+import ZohoLoginButton from "../ZohoBridge/ZohoLoginButton";
+import MailMindButton from "../MailMind/MailMindButton";
 
 const MessageRenderer = ({ message, index }) => {
-  // Profile and Resume tables remain unchanged
-  if (message.type === "profile_table") return <ProfileTable data={message.data} index={index} />;
-  if (message.type === "resume_table") return <ResumeTable data={message.data} index={index} />;
+  if (!message) return null;
 
-  // Detect JD message by simple condition
-  const isJDMessage =
-    message.role === "assistant" &&
-    typeof message.content === "string" &&
-    message.content.includes("Job Title:");
+  // structured tables
+  if (message.type === "profile_table") {
+    return <ProfileTable key={index} data={message.data} index={index} />;
+  }
+  if (message.type === "resume_table") {
+    return <ResumeTable key={index} data={message.data} index={index} />;
+  }
+  if (message.type === "jd_ui" && message.data) {
+    const { currentJdStep, currentJdPrompt, currentJdInput, setCurrentJdInput, handleJdSend, jdInProgress, messages } =
+      message.data;
+    return (
+      <div key={index} className="message-block">
+        <JDTaskUI
+          currentJdStep={currentJdStep}
+          currentJdPrompt={currentJdPrompt}
+          currentJdInput={currentJdInput}
+          setCurrentJdInput={setCurrentJdInput}
+          handleJdSend={handleJdSend}
+          jdInProgress={jdInProgress}
+          messages={messages}
+        />
+      </div>
+    );
+  }
 
-  // Local state to show "Copied" temporarily
-  const [copied, setCopied] = useState(false);
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(message.content || "");
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500); // reset after 1.5s
-  };
+  // Detect features & tasks from assistant messages
+  const isAssistantText = message.role === "assistant" && typeof message.content === "string";
+  const featureMatch =
+    isAssistantText &&
+    message.content.match(
+      /ZohoBridge|MailMind|PrimeHireBrain|InterviewBot|LinkedInPoster|ProfileMatchHistory|JD\s?Creator|Profile\s?Matcher|Upload\s?Resumes?/i
+    );
+  const detectedFeature = featureMatch ? featureMatch[0] : null;
 
+  // If JD Creator was detected, render JDTaskUI instead of showing the assistant bubble
+  // If JD Creator was detected, skip rendering JD UI here.
+  // MainContent handles JDTaskUI globally.
+  if (detectedFeature && /JD\s?Creator/i.test(detectedFeature)) {
+    console.log("🧠 JD Creator detected — skipping duplicate UI in MessageRenderer");
+    return null;
+  }
+
+
+  // If Upload Resumes task was detected, render ResumeUpload inline (and skip bubble)
+  if (detectedFeature && /Upload\s?Resumes?/i.test(detectedFeature)) {
+    return (
+      <div key={index} className="message-block">
+        <ResumeUpload />
+      </div>
+    );
+  }
+
+  // ProfileMatchHistory inline
+  if (detectedFeature && /ProfileMatchHistory/i.test(detectedFeature)) {
+    return (
+      <div key={index} className="message-block">
+        <ProfileMatchHistory />
+      </div>
+    );
+  }
+
+  // Other features: still render a small inline control but also keep the chat bubble
+  if (detectedFeature) {
+    return (
+      <div key={index} className="message-block">
+        <ChatMessage role={message.role} content={message.content} />
+        <div className="message-feature-ui mt-2">
+          {detectedFeature === "ZohoBridge" && <ZohoLoginButton />}
+          {detectedFeature === "MailMind" && <MailMindButton />}
+          {detectedFeature === "PrimeHireBrain" && <PrimeHireBrain />}
+          {detectedFeature === "InterviewBot" && <InterviewBot />}
+          {detectedFeature === "LinkedInPoster" && <LinkedInPosterButton />}
+          {detectedFeature === "ProfileMatchHistory" && <ProfileMatchHistory />}
+        </div>
+      </div>
+    );
+  }
+
+  // default: render normal chat bubble
   return (
-    <div>
-      <ChatMessage key={index} role={message.role} content={message.content} />
-
-      {/* Minimal copy button for JD messages */}
-      {isJDMessage && (
-        <span
-          onClick={handleCopy}
-          style={{
-            cursor: "pointer",
-            fontSize: "0.75rem",
-            color: copied ? "green" : "gray",
-            marginLeft: "0.5rem",
-            userSelect: "none",
-          }}
-        >
-          {copied ? "Copied ✅" : "Copy JD"}
-        </span>
-      )}
+    <div key={index} className="message-block">
+      <ChatMessage role={message.role} content={message.content} />
     </div>
   );
 };

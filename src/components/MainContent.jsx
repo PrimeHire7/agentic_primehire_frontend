@@ -1,69 +1,46 @@
-// import React from "react";
-// import { useMainContent } from "@/hooks/useMainContent";
 // import Header from "../common/Header";
-// import FeatureButtons from "../common/FeatureButtons";
 // import ChatContainer from "../chat/ChatContainer";
-// import TaskSelector from "../common/TaskSelector";
+// import InfoCards from "../InfoCards/InfoCards";
 // import "./MainContent.css";
 
-// const MainContent = () => {
-//   const {
-//     messages,
-//     selectedFeature,
-//     selectedTask,
-//     isLoading,
-//     handleFeatureClick,
-//     handleTaskSelect,
-//     handleRefresh,
-//     handleSend,
-//     handleJdSend,
-//     currentJdInput,
-//     setCurrentJdInput,
-//     currentJdStep,
-//     uploadResumes,
-//   } = useMainContent();
+// const MainContent = ({
+//   messages = [],
+//   selectedFeature,
+//   selectedTask,
+//   isLoading,
+//   handleFeatureClick,
+//   handleRefresh,
+//   handleSend,
+// }) => {
+//   const showWelcome = messages?.length === 0 && !selectedTask;
 
 //   return (
 //     <div className="main-content">
+//       {/* ✅ Header */}
 //       <Header onRefresh={handleRefresh} />
 
 //       <main className="main-content-body">
-//         <div className="chat-area">
-//           {/* Welcome / Feature Selection */}
-//           {messages.length === 0 && selectedTask === "" && (
-//             <div className="welcome-section">
-//               <h1 className="welcome-title">
-//                 Hi, I'm PrimeHire — Agentic AI for Recruiting
-//               </h1>
-//               <p className="welcome-subtitle">
-//                 Choose from powerful AI features below
-//               </p>
-//               <FeatureButtons
-//                 selectedFeature={selectedFeature}
-//                 onFeatureClick={handleFeatureClick}
-//               />
-//             </div>
-//           )}
+//         {/* ✅ Welcome Section */}
+//         {showWelcome && (
+//           <div className="welcome-section text-center mt-4">
+//             <h1 className="welcome-title">
+//               Hi, I'm <span className="brand-accent">PrimeHire</span> — Agentic AI for Recruiting
+//             </h1>
+//             <p className="welcome-subtitle">
+//               Your all-in-one recruitment assistant for sourcing, matching, and interviewing candidates.
+//             </p>
+//           </div>
+//         )}
 
-//           {/* Chat and Feature Content */}
+//         {/* ✅ Info Cards */}
+//         {showWelcome && <InfoCards />}
+
+//         {/* ✅ Chat Container (messages + chat input) */}
+//         <div className="chat-area">
 //           <ChatContainer
 //             messages={messages}
 //             selectedFeature={selectedFeature}
 //             selectedTask={selectedTask}
-//             isLoading={isLoading}
-//           />
-//         </div>
-
-//         {/* Bottom Sticky Section */}
-//         <div className="bottom-sticky-section">
-//           <TaskSelector
-//             selectedTask={selectedTask}
-//             onTaskSelect={handleTaskSelect}
-//             onUploadResumes={uploadResumes}
-//             onJdSend={handleJdSend}
-//             currentJdInput={currentJdInput}
-//             setCurrentJdInput={setCurrentJdInput}
-//             currentJdStep={currentJdStep}
 //             isLoading={isLoading}
 //             onSend={handleSend}
 //           />
@@ -74,92 +51,126 @@
 // };
 
 // export default MainContent;
-
-import React, { useState } from "react";
-import { useMainContent } from "@/hooks/useMainContent";
+// 📁 src/layout/MainContent.jsx
+// 📁 src/layout/MainContent.jsx
 import Header from "../common/Header";
-import FeatureButtons from "../common/FeatureButtons";
 import ChatContainer from "../chat/ChatContainer";
-import TaskSelector from "../common/TaskSelector";
-import WebcamRecorder from "../InterviewBot/WebcamRecorder";
+import InfoCards from "../InfoCards/InfoCards";
+import ProfileMatchHistory from "@/components/ProfileMatcher/ProfileMatchHistory";
+import JDTaskUI from "@/pages/JDTaskUI"; // ✅ ensure correct path
 import "./MainContent.css";
+import { useEffect } from "react";
 
-const MainContent = () => {
-  const {
-    messages,
-    selectedFeature,
-    selectedTask,
-    isLoading,
-    handleFeatureClick,
-    handleTaskSelect,
-    handleRefresh,
-    handleSend,
-    handleJdSend,
-    currentJdInput,
-    setCurrentJdInput,
-    currentJdStep,
-    uploadResumes,
-  } = useMainContent();
+const MainContent = ({
+  messages = [],
+  selectedFeature,
+  selectedTask,
+  isLoading,
+  handleFeatureClick,
+  handleRefresh,
+  handleSend,
 
-  const [interviewTranscript, setInterviewTranscript] = useState([]);
+  // ✅ JD-related props from useMainContent
+  currentJdStep,
+  currentJdInput,
+  setCurrentJdInput,
+  handleJdSend,
+  jdInProgress,
+}) => {
+  const showWelcome = messages?.length === 0 && !selectedTask && !selectedFeature;
+  useEffect(() => {
+    const closeHandler = () => {
+      if (window.__JD_REFRESHING__) {
+        console.log("⏸️ JD Drawer close ignored — refresh already in progress.");
+        return;
+      }
+      console.log("🧹 JD Drawer closed.");
+      handleRefresh();
+    };
 
-  const isWebcamActive = selectedTask === "webcam-interview";
+    window.addEventListener("jd_close", closeHandler);
+    return () => window.removeEventListener("jd_close", closeHandler);
+  }, [handleRefresh]);
+  useEffect(() => {
+    const openHandler = () => {
+      console.log("🪄 JD Drawer open triggered from WebSocket");
+      // ensures UI reflects JD active state
+      if (!window.__JD_MODE_ACTIVE__) window.__JD_MODE_ACTIVE__ = true;
+    };
+
+    window.addEventListener("jd_open", openHandler);
+    return () => window.removeEventListener("jd_open", openHandler);
+  }, []);
+  // ✅ Listen for Profile Matcher completion
+  useEffect(() => {
+    const handleProfileMatchDone = () => {
+      console.log("🧹 [MainContent] Profile Matcher done — returning to chat mode.");
+      if (typeof window !== "undefined") {
+        window.__PROFILE_MATCH_MODE_ACTIVE__ = false;
+      }
+    };
+
+    window.addEventListener("profile_match_done", handleProfileMatchDone);
+    return () => window.removeEventListener("profile_match_done", handleProfileMatchDone);
+  }, []);
 
   return (
     <div className="main-content">
+      {/* ✅ Header */}
       <Header onRefresh={handleRefresh} />
 
-      <main className={`main-content-body ${isWebcamActive ? "webcam-active" : ""}`}>
-        <div className="chat-area">
-          {/* Welcome / Feature Selection */}
-          {messages.length === 0 && selectedTask === "" && (
-            <div className="welcome-section">
-              <h1 className="welcome-title">
-                Hi, I'm PrimeHire <span>— Agentic AI for Recruiting</span>
-              </h1>
-              <p className="welcome-subtitle">
-                Choose from powerful AI features below
-              </p>
-              <FeatureButtons
-                selectedFeature={selectedFeature}
-                onFeatureClick={handleFeatureClick}
-              />
-            </div>
-          )}
+      <main className="main-content-body">
+        {/* ✅ Welcome Section */}
+        {showWelcome && (
+          <div className="welcome-section text-center mt-4">
+            <h1 className="welcome-title">
+              Hi, I'm <span className="brand-accent">PrimeHire</span> — Agentic AI for Recruiting
+            </h1>
+            <p className="welcome-subtitle">
+              Your all-in-one recruitment assistant for sourcing, matching, and interviewing candidates.
+            </p>
+          </div>
+        )}
 
-          {/* Conditional Rendering */}
-          {isWebcamActive ? (
-            <WebcamRecorder
-              candidateName={currentJdInput || "Candidate Name"}
-              onStopInterview={() => handleTaskSelect("")}
-              transcript={interviewTranscript}
-              setTranscript={setInterviewTranscript}
-            />
-          ) : (
+        {/* ✅ Info Cards */}
+        {showWelcome && <InfoCards />}
+
+        {/* ✅ Feature View (non-chat) */}
+        {selectedFeature === "ProfileMatchHistory" ? (
+          <div className="feature-view mt-6 p-4">
+            <ProfileMatchHistory />
+          </div>
+        ) : (
+          // ✅ Default chat interface
+          <div className="chat-area">
             <ChatContainer
-              messages={messages}
+              messages={[
+                ...messages,
+                ...(selectedTask === "JD Creator" || window.__JD_MODE_ACTIVE__
+                  ? [
+                    {
+                      role: "assistant",
+                      type: "jd_ui",
+                      data: {
+                        currentJdStep,
+                        currentJdPrompt: window.__CURRENT_JD_STEP__,
+                        currentJdInput,
+                        setCurrentJdInput,
+                        handleJdSend,
+                        jdInProgress,
+                        messages,
+                      },
+                    },
+                  ]
+                  : []),
+              ]}
               selectedFeature={selectedFeature}
               selectedTask={selectedTask}
-              isLoading={isLoading}
-            />
-          )}
-        </div>
-
-        {/* Bottom Sticky Section - only show if webcam is NOT active */}
-        {!isWebcamActive && (
-          <div className="bottom-sticky-section">
-            <TaskSelector
-              selectedTask={selectedTask}
-              onTaskSelect={handleTaskSelect}
-              onUploadResumes={uploadResumes}
-              onJdSend={handleJdSend}
-              currentJdInput={currentJdInput}
-              setCurrentJdInput={setCurrentJdInput}
-              currentJdStep={currentJdStep}
               isLoading={isLoading}
               onSend={handleSend}
             />
           </div>
+
         )}
       </main>
     </div>

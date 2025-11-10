@@ -1,177 +1,331 @@
-// import { useState, useEffect, useRef, useCallback } from "react";
-// import { WS_URL } from "@/utils/constants";
-
-// export const useWebSocket = () => {
-//   const [messages, setMessages] = useState([]);
-//   const wsRef = useRef(null);
-//   const reconnectRef = useRef(null);
-
-//   const connectWebSocket = useCallback(() => {
-//     const ws = new WebSocket(WS_URL);
-//     wsRef.current = ws;
-
-//     ws.onopen = () => console.log("✅ WebSocket connected");
-    
-//     ws.onmessage = (event) => {
-//       try {
-//         const msg = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
-//         handleWebSocketMessage(msg);
-//       } catch (err) {
-//         console.warn("⚠️ Failed to parse WebSocket message:", event.data);
-//       }
-//     };
-
-//     ws.onclose = () => {
-//       console.warn("❌ WebSocket disconnected. Reconnecting in 2s...");
-//       reconnectRef.current = setTimeout(connectWebSocket, 2000);
-//     };
-
-//     ws.onerror = (err) => {
-//       console.error("WebSocket error:", err);
-//       try { ws.close(); } catch (e) { }
-//     };
-//   }, []);
-
-//   const handleWebSocketMessage = useCallback((msg) => {
-//     if ((msg.type === "structured" || msg.type === "profile") && msg.data?.candidates) {
-//       setMessages(prev => [
-//         ...prev,
-//         { role: "assistant", type: "profile_table", data: msg.data.candidates }
-//       ]);
-//     } else if (msg.type === "text" || typeof msg === "string") {
-//       const content = typeof msg === "string" ? msg : msg.data ?? msg;
-//       setMessages(prev => [...prev, { role: "assistant", content: String(content) }]);
-//     }
-//   }, []);
-
-//   const handleSend = useCallback((message, selectedTask = "") => {
-//     const finalMessage = selectedTask ? `[${selectedTask}] ${message}` : message;
-    
-//     if (wsRef.current?.readyState === WebSocket.OPEN) {
-//       wsRef.current.send(JSON.stringify({ message: finalMessage }));
-//     } else {
-//       setMessages(prev => [
-//         ...prev,
-//         { role: "assistant", content: "❌ WebSocket not connected." }
-//       ]);
-//     }
-//   }, []);
-
-//   useEffect(() => {
-//     connectWebSocket();
-//     return () => {
-//       if (wsRef.current) wsRef.current.close();
-//       if (reconnectRef.current) clearTimeout(reconnectRef.current);
-//     };
-//   }, [connectWebSocket]);
-
-//   return {
-//     messages,
-//     setMessages,
-//     handleSend
-//   };
-// };
-
-import { useState, useEffect, useRef, useCallback } from "react";
+// 📁 src/hooks/useWebSocket.js
+import { useEffect, useRef, useCallback } from "react";
 import { WS_URL } from "@/utils/constants";
 
-export const useWebSocket = () => {
-  const [messages, setMessages] = useState([]);
+export const useWebSocket = (
+  setSelectedFeature,
+  setSelectedTask,
+  fetchProfileMatches,
+  setMessages,
+  setIsLoading,
+  handleJdProcess
+) => {
   const wsRef = useRef(null);
   const reconnectRef = useRef(null);
+  const lastIntentRef = useRef({ name: null });
+  const lastUserMessageRef = useRef("");
 
-  /** ✅ Connect WebSocket */
+  // 🧠 Detect possible intent in text responses
+  const detectIntentFromText = (text) => {
+    const intents = [
+      "ZohoBridge",
+      "MailMind",
+      "PrimeHireBrain",
+      "InterviewBot",
+      "LinkedInPoster",
+      "JD Creator",
+      "Profile Matcher",
+      "Upload Resumes",
+    ];
+    return intents.find((intent) => text.includes(intent));
+  };
+
+  // 🧩 Handle all WebSocket messages
+  const handleWebSocketMessage = useCallback(
+    async (msg) => {
+      console.log("📩 Received WS message:", msg);
+
+      // ✅ Handle structured intent (from backend)
+      if ((msg.type === "feature_detected" || msg.type === "task_detected") && msg.data) {
+        const intent = msg.data;
+        console.log(`🎯 Detected structured intent: ${intent}`);
+        await handleIntent(intent);
+        return;
+      }
+
+      // ✅ Fallback: detect intent from text message
+      if (msg.type === "text" && typeof msg.data === "string") {
+        const text = msg.data;
+        const detectedIntent = detectIntentFromText(text);
+        if (detectedIntent) {
+          console.log(`🧭 Auto-detected intent from text: ${detectedIntent}`);
+          await handleIntent(detectedIntent);
+          return;
+        }
+
+        // No intent detected — just display the text
+        setMessages((prev) => [...prev, { role: "assistant", content: text }]);
+        return;
+      }
+
+      // ✅ Handle structured data
+      if ((msg.type === "structured" || msg.type === "profile") && msg.data?.candidates) {
+        console.log("📊 [WebSocket] Received candidate table data");
+
+        // ✅ Show the table
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", type: "profile_table", data: msg.data.candidates },
+        ]);
+
+        // 🔓 Ensure chat unlock event fires
+        if (typeof window !== "undefined") {
+          window.__PROFILE_MATCH_MODE_ACTIVE__ = false;
+          window.dispatchEvent(new Event("profile_match_done"));
+          console.log("✅ [ProfileMatcher] Results shown — chat re-enabled.");
+        }
+
+        return;
+      }
+
+
+
+      if (msg.type === "resume" && msg.data) {
+        console.log("📄 [WebSocket] Received resume table data");
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", type: "resume_table", data: msg.data },
+        ]);
+        return;
+      }
+
+      // 🧾 Fallback plain text
+      if (typeof msg === "string") {
+        setMessages((prev) => [...prev, { role: "assistant", content: msg }]);
+      }
+    },
+    [setMessages]
+  );
+
+  // 🚀 Handle detected feature/task
+  const handleIntent = async (intent) => {
+    if (!intent || lastIntentRef.current.name === intent) return;
+    lastIntentRef.current.name = intent;
+
+    // === FEATURES ===
+    if (["ZohoBridge", "MailMind", "PrimeHireBrain", "InterviewBot", "LinkedInPoster"].includes(intent)) {
+      console.log(`🚀 Activating feature: ${intent}`);
+      setSelectedFeature(intent);
+      setSelectedTask("");
+
+      // 🧹 Reset context (if safe)
+      if (window.__JD_MODE_ACTIVE__) {
+        console.log("⏸️ [WebSocket] JD Creator active — skipping context reset.");
+      } else {
+        console.log("🔁 [WebSocket] Resetting context: clearing feature/task states");
+        lastIntentRef.current = { feature: null, task: null };
+        setSelectedFeature("");
+        setSelectedTask("");
+      }
+
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: `✨ Detected feature: **${intent}** — Opening ${intent} module...` },
+      ]);
+      return;
+    }
+
+    // === TASKS ===
+    if (["JD Creator", "Profile Matcher", "Upload Resumes"].includes(intent)) {
+      console.log(`🧩 Activating task: ${intent}`);
+      setSelectedFeature("");
+      setSelectedTask(intent);
+
+      // 🚫 JD Creator lock
+      if (intent === "JD Creator") {
+        if (window.__JD_REFRESHING__) {
+          console.log("⏸️ Skipping JD Creator activation during refresh.");
+          return;
+        }
+
+        console.log("🧩 [WebSocket] JD Creator activated — initializing UI panel.");
+        setSelectedFeature("");
+        setSelectedTask("JD Creator");
+
+        // ✅ Global state setup for JD session
+        if (typeof window !== "undefined") {
+          window.__JD_MODE_ACTIVE__ = true;
+          window.__JD_HISTORY__ = [];
+          window.__CURRENT_JD_STEP__ = "👉 What is the job title / role?";
+          window.dispatchEvent(new Event("jd_open"));
+        }
+
+        // ✅ Add assistant message in chat (append, not overwrite)
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: "✨ Detected task: **JD Creator** — Opening JD Creator module...",
+          },
+        ]);
+
+        // ✅ Try syncing React JD states for UI render
+        try {
+          if (typeof setCurrentJdStep === "function") setCurrentJdStep("role");
+          if (typeof setJdInProgress === "function") setJdInProgress(true);
+        } catch (err) {
+          console.warn("⚠️ JD state not ready yet:", err);
+        }
+
+        console.log("✅ JD Creator UI initialized successfully.");
+        return;
+      }
+
+
+
+      // 🎯 Profile Matcher
+      // if (intent === "Profile Matcher") {
+      //   console.log("🎯 [WebSocket] Profile Matcher activated");
+      //   setMessages([
+      //     { role: "assistant", content: "🎯 Profile Matcher activated — fetching candidates..." },
+      //   ]);
+
+      //   if (lastUserMessageRef.current) {
+      //     setIsLoading(true);
+      //     await fetchProfileMatches(lastUserMessageRef.current);
+      //     setIsLoading(false);
+      //   }
+      //   return;
+      // }
+      // 🎯 Profile Matcher
+      if (intent === "Profile Matcher") {
+        console.log("🎯 [WebSocket] Profile Matcher activated");
+
+        // 🔒 Lock chat and dispatch start event
+        window.__PROFILE_MATCH_MODE_ACTIVE__ = true;
+        window.dispatchEvent(new Event("profile_match_start"));
+
+        // Notify user
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: "🎯 Profile Matcher Active\n\nYour JD has been sent for candidate matching...",
+          },
+        ]);
+
+        try {
+          if (lastUserMessageRef.current) {
+            setIsLoading(true);
+            await fetchProfileMatches(lastUserMessageRef.current);
+            setIsLoading(false);
+          }
+        } catch (err) {
+          console.error("⚠️ [ProfileMatcher] Matching failed:", err);
+          setMessages((prev) => [
+            ...prev,
+            { role: "assistant", content: "❌ Matching failed. Please try again." },
+          ]);
+        } finally {
+          // 🔓 Unlock and dispatch completion event
+          if (typeof window !== "undefined") {
+            window.__PROFILE_MATCH_MODE_ACTIVE__ = false;
+            window.__PROFILE_MATCH_RECENTLY_DONE__ = Date.now();
+            window.dispatchEvent(new Event("profile_match_done"));
+          }
+          console.log("🔓 [ProfileMatcher] Chat re-enabled after matching.");
+        }
+
+        return;
+      }
+
+
+
+
+      // 📄 Upload Resumes
+      // 📄 Upload Resumes
+      if (intent === "Upload Resumes") {
+        console.log("📄 [WebSocket] Upload Resumes activated");
+
+        // ✅ Open the ResumeUpload feature in UI
+        setSelectedFeature("Upload Resumes");
+        setSelectedTask("");
+
+        // ✅ Append message (not overwrite)
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: "📎 Upload resumes to begin extraction.",
+          },
+        ]);
+
+        // 🧠 Optional: store intent name to prevent double trigger
+        lastIntentRef.current.name = intent;
+
+        return;
+      }
+
+    }
+  };
+
+  // 🔗 Establish WebSocket connection
   const connectWebSocket = useCallback(() => {
     console.log("🔗 Connecting WebSocket:", WS_URL);
     const ws = new WebSocket(WS_URL);
     wsRef.current = ws;
 
-    ws.onopen = () => console.log("✅ WebSocket connected");
-
-    ws.onmessage = (event) => {
-      console.log("📩 Raw WS:", event.data);
-
-      try {
-        const msg = typeof event.data === "string"
-          ? JSON.parse(event.data)
-          : event.data;
-
-        console.log("📝 Parsed:", msg);
-        handleWebSocketMessage(msg);
-      } catch (err) {
-        console.warn("⚠ Failed to parse message", err);
+    ws.onopen = () => {
+      console.log("✅ WebSocket connected");
+      if (reconnectRef.current) {
+        clearTimeout(reconnectRef.current);
+        reconnectRef.current = null;
       }
     };
 
-    ws.onclose = (e) => {
-      console.warn("❌ WebSocket closed. Reason:", e.reason);
-      if (!reconnectRef.current) {
-        reconnectRef.current = setTimeout(() => {
-          reconnectRef.current = null;
-          connectWebSocket();
-        }, 2000);
+    ws.onmessage = (event) => {
+      try {
+        const msg = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
+        handleWebSocketMessage(msg);
+      } catch (err) {
+        console.warn("⚠️ Failed to parse WS message:", event.data);
       }
+    };
+
+    ws.onclose = () => {
+      console.warn("❌ WebSocket disconnected. Reconnecting in 2s...");
+      reconnectRef.current = setTimeout(connectWebSocket, 2000);
     };
 
     ws.onerror = (err) => {
-      console.error("🔥 WS Error:", err);
-      try { ws.close(); } catch {}
+      console.error("🔥 WebSocket error:", err);
+      try {
+        ws.close();
+      } catch { }
     };
-  }, []);
+  }, [handleWebSocketMessage]);
 
-  /** ✅ Handle incoming WS messages */
-  const handleWebSocketMessage = useCallback((msg) => {
-    if ((msg.type === "structured" || msg.type === "profile") && msg.data?.candidates) {
-      return setMessages((p) => [...p, { role: "assistant", type: "profile_table", data: msg.data.candidates }]);
-    }
+  // 📤 Send message handler
+  const sendMessage = useCallback(
+    (message) => {
+      // 🚫 JD Creator lock guard
+      if (window.__JD_MODE_ACTIVE__) {
+        console.log("🧱 [WebSocket] JD Creator active — skipping WebSocket send.");
+        return;
+      }
+      if (window.__PROFILE_MATCH_MODE_ACTIVE__) {
+        console.log("🧱 [WebSocket] Profile Matcher active — skipping WebSocket send.");
+        return;
+      }
+      if (wsRef.current?.readyState === WebSocket.OPEN) {
+        const payload = JSON.stringify({ message });
+        console.log("📤 Sending WS message:", payload);
+        wsRef.current.send(payload);
+        lastUserMessageRef.current = message;
+        console.log("🧠 [WebSocket] lastUserMessageRef set to:", message);
+        setMessages((prev) => [...prev, { role: "user", content: message }]);
+      } else {
+        console.warn("⚠️ WebSocket not connected, cannot send.");
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", content: "❌ WebSocket not connected." },
+        ]);
+      }
+    },
+    [setMessages]
+  );
 
-    if (msg.type === "resume" && msg.data) {
-      return setMessages((p) => [...p, { role: "assistant", type: "resume_table", data: msg.data }]);
-    }
-
-    if (msg.type === "text" || typeof msg === "string") {
-      const content = typeof msg === "string" ? msg : msg.data ?? msg;
-      return setMessages((p) => [...p, { role: "assistant", content: String(content) }]);
-    }
-
-    if (msg.type === "structured" && msg.data) {
-      return setMessages((p) => [...p, { role: "assistant", content: JSON.stringify(msg.data, null, 2) }]);
-    }
-
-    // Fallback
-    setMessages((p) => [...p, { role: "assistant", content: JSON.stringify(msg) }]);
-  }, []);
-
-  /** ✅ Send messages */
-  const handleSend = useCallback((message, selectedTask = "") => {
-    let payload;
-
-    if (typeof message === "object") {
-      // Example: { type:"resume", data:[...] }
-      payload = JSON.stringify(message);
-    } else {
-      // Chat commands
-      const finalMessage = selectedTask
-        ? `[${selectedTask}] ${message}`
-        : message;
-
-      payload = JSON.stringify({ message: finalMessage });
-    }
-
-    console.log("📤 Sending WS:", payload);
-
-    if (wsRef.current?.readyState === WebSocket.OPEN) {
-      wsRef.current.send(payload);
-    } else {
-      console.warn("❌ WebSocket not connected");
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: "⚠️ WebSocket not connected." },
-      ]);
-    }
-  }, []);
-
-  /** ✅ Init + Cleanup */
+  // 🧹 Cleanup and reconnect management
   useEffect(() => {
     connectWebSocket();
     return () => {
@@ -180,5 +334,5 @@ export const useWebSocket = () => {
     };
   }, [connectWebSocket]);
 
-  return { messages, setMessages, handleSend };
+  return { sendMessage };
 };
