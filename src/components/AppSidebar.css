@@ -139,45 +139,105 @@
   animation: pulse 1.3s ease-out;
 }
 
-/* ✅ Fix ShadCN sidebar offset below fixed header */
-/* ✅ Final Fix: Sidebar offset below sticky header (ShadCN-compatible) */
+:root {
+  --sidebar-width-open: 260px;
+  --sidebar-width-closed: 72px;
+}
 
-/* Target the actual ShadCN sidebar wrappers */
-[data-sidebar="wrapper"],
-[data-sidebar="root"],
-[data-sidebar="content"] {
+/* ✅ Sidebar Wrapper (outermost container) */
+[data-sidebar="wrapper"] {
   position: fixed !important;
   top: 64px !important;
-  /* match your header height */
+  /* below header */
   left: 0 !important;
   height: calc(100vh - 64px) !important;
-  width: var(--sidebar-width, 260px) !important;
+  width: var(--sidebar-width-open) !important;
+  /* default width */
+  max-width: var(--sidebar-width-open) !important;
   background: linear-gradient(180deg, #ffffff, #f7f8fa) !important;
   border-right: 1px solid #e5e7eb !important;
   z-index: 25 !important;
-}
-
-/* ✅ Make sure the sidebar content still scrolls */
-[data-sidebar="content"] {
-  overflow-y: auto !important;
-  padding-top: 1rem !important;
-  height: 100% !important;
-  scrollbar-width: thin;
-}
-
-/* ✅ Prevent double scroll when sidebar collapses */
-[data-sidebar="wrapper"]>div {
-  height: 100%;
+  transition: width 0.3s ease !important;
   overflow: hidden !important;
+  box-sizing: border-box !important;
 }
 
-/* Optional: shadow divider for premium UI */
+/* ✅ Sidebar open & closed states */
+[data-sidebar="wrapper"][data-state="open"] {
+  width: var(--sidebar-width-open) !important;
+}
+
+[data-sidebar="wrapper"][data-state="closed"] {
+  width: var(--sidebar-width-closed) !important;
+}
+
+/* ✅ Inner content area only scrolls */
+/* ✅ Sidebar content (scroll area) */
+[data-sidebar="content"] {
+  height: 100% !important;
+  overflow-y: auto !important;
+  padding-top: calc(1rem + 16px) !important;
+  /* adds a 16px buffer below header */
+  padding-bottom: 1rem !important;
+  background: transparent !important;
+  box-sizing: border-box;
+}
+
+
+/* ✅ Sidebar root doesn't stretch entire screen */
+[data-sidebar="root"] {
+  width: 100% !important;
+  max-width: 100% !important;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ✅ Subtle divider for modern look */
 [data-sidebar="wrapper"]::after {
   content: "";
   position: absolute;
   top: 0;
-  right: -1px;
+  right: 0;
   height: 100%;
   width: 1px;
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.08);
+}
+
+/* ✅ Prevent layout overflow when sidebar toggles */
+html,
+body,
+#root {
+  overflow-x: hidden !important;
+  margin: 0;
+  padding: 0;
+}
+
+/* ✅ Main flex container should not stretch sidebar */
+.flex {
+  width: 100%;
+  max-width: 100vw;
+}
+
+/* ✅ Optional: Hover expand on desktop */
+@media (hover: hover) and (pointer: fine) {
+  [data-sidebar="wrapper"][data-state="closed"]:hover {
+    width: var(--sidebar-width-open) !important;
+  }
+}
+
+/* ✅ Fix first heading (Features/Tasks) overlapping header */
+[data-sidebar="content"]>div:first-child {
+  margin-top: 0.75rem !important;
+}
+
+/* ✅ Ensure SidebarGroupLabel never hides under header */
+[data-sidebar="content"] .sidebar-label:first-of-type,
+[data-sidebar="content"] [data-sidebar-group-label]:first-of-type {
+  margin-top: 1.5rem !important;
+  /* Pushes first heading down */
+}
+
+/* ✅ Extra buffer for better visual balance */
+[data-sidebar="content"]>*:first-child {
+  padding-top: 2.0rem !important;
 }
