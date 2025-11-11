@@ -1,0 +1,138 @@
+/* === Upload Resume UI Styling === */
+
+.upload-box {
+    background: #ffffff;
+    border: 2px dashed #d1d5db;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.upload-box:hover {
+    border-color: #3b82f6;
+    /* blue-500 */
+    background: #f9fafb;
+}
+
+.upload-label {
+    display: inline-block;
+    padding: 10px 18px;
+    border-radius: 8px;
+    background-color: #2563eb;
+    /* blue-600 */
+    color: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.upload-label:hover {
+    background-color: #1d4ed8;
+    /* blue-700 */
+}
+
+.selected-files {
+    margin-top: 1rem;
+    text-align: left;
+    background: #f3f4f6;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+.selected-files strong {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #111827;
+}
+
+.selected-files ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.selected-files li {
+    font-size: 0.875rem;
+    color: #374151;
+    padding: 3px 0;
+}
+
+.upload-progress {
+    margin-top: 1rem;
+    text-align: left;
+}
+
+.progress-bar {
+    height: 10px;
+    border-radius: 6px;
+    background-color: #e5e7eb;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #22c55e, #16a34a);
+    transition: width 0.5s ease;
+}
+
+.progress-status {
+    margin-top: 6px;
+    font-size: 0.85rem;
+    color: #4b5563;
+}
+
+.completed-list {
+    margin-top: 6px;
+    font-size: 0.75rem;
+    color: #10b981;
+    max-height: 60px;
+    overflow-y: auto;
+}
+
+.upload-btn {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    color: #fff;
+    background-color: #16a34a;
+    /* green-600 */
+    transition: all 0.25s ease;
+}
+
+.upload-btn:hover {
+    background-color: #15803d;
+    /* green-700 */
+}
+
+.upload-btn:disabled {
+    background-color: #9ca3af;
+    /* gray-400 */
+    cursor: not-allowed;
+}
+
+.processing {
+    color: #f59e0b;
+    font-weight: 500;
+}
+
+.success {
+    color: #16a34a;
+    font-weight: 500;
+}
+
+.error {
+    color: #dc2626;
+    font-weight: 500;
+}
+
+.upload-placeholder {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-top: 1rem;
+}

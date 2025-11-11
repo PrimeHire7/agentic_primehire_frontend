@@ -1,7 +1,10 @@
+
+// // export default TaskSelector;
 // import React from "react";
 // import { Button } from "../components/ui/button";
 // import ChatInput from "../chat/ChatInput";
 // import "./TaskSelector.css";
+
 
 // const TaskSelector = ({
 //   selectedTask,
@@ -29,6 +32,25 @@
 
 //   return (
 //     <>
+//         {selectedTask === "Upload Resumes" && (
+//   <div className="upload-resumes-section">
+//     <label htmlFor="resume-upload" className="upload-resumes-label">
+//       📎 Upload Candidate Resumes (PDF/DOCX)
+//     </label>
+//     <input
+//       id="resume-upload"
+//       type="file"
+//       multiple
+//       accept=".pdf,.docx"
+//       onChange={(e) => onUploadResumes(e.target.files)}
+//       className="upload-resumes-input"
+//     />
+//     <p className="upload-resumes-help">
+//       Upload multiple resumes. Extracted info will appear as a table.
+//     </p>
+//   </div>
+// )}
+
 //       {/* Task selector buttons */}
 //       <div className="task-selector-container">
 //         {["JD Creator", "Profile Matcher", "Upload Resumes"].map((task) => (
@@ -44,46 +66,38 @@
 //         ))}
 //       </div>
 
-//       {/* Upload Resumes Section */}
-//       {selectedTask === "Upload Resumes" && (
-//         <div className="upload-resumes-section">
-//           <label className="upload-resumes-label">📎 Upload Candidate Resumes (PDF/DOCX)</label>
-//           <input
-//             type="file"
-//             multiple
-//             accept=".pdf,.docx"
-//             onChange={(e) => onUploadResumes(e.target.files)}
-//             className="upload-resumes-input"
-//           />
-//           <p className="upload-resumes-help">
-//             Upload multiple resumes. Extracted info will appear as a table.
-//           </p>
-//         </div>
-//       )}
 
-//       {/* JD Creator input area */}
-//       {selectedTask === "JD Creator" ? (
-//         <div className="jd-creator-input">
-//           <input
-//             type="text"
-//             value={currentJdInput}
-//             onChange={(e) => setCurrentJdInput(e.target.value)}
-//             onKeyDown={(e) => e.key === "Enter" && onJdSend(currentJdInput)}  
-//             placeholder={currentJdStep ? stepPrompts[currentJdStep] : "Type your answer..."}
-//             className="jd-creator-text-input"
-//           />
-//           <Button onClick={() => onJdSend(currentJdInput)}>Next</Button>
-//         </div>
-//       ) : (
-//         // Default chat input for other tasks
+
+
+//       {/* JD Creator Input */}
+//    {selectedTask === "JD Creator" && (
+//   <div className="jd-creator-container">
+//     <div className="jd-creator-box">
+//       <input
+//         type="text"
+//         value={currentJdInput}
+//         onChange={(e) => setCurrentJdInput(e.target.value)}
+//         onKeyDown={(e) => e.key === "Enter" && onJdSend(currentJdInput)}
+//         placeholder={
+//           currentJdStep ? stepPrompts[currentJdStep] : "Type your answer..."
+//         }
+//         className="jd-creator-input"
+//       />
+
+//       <button className="jd-creator-btn" onClick={() => onJdSend(currentJdInput)}>
+//         Next
+//       </button>
+//     </div>
+//   </div>
+// )}
+
+
+//       {/* Chat input for Profile Matcher */}
+//       {selectedTask === "Profile Matcher" && (
 //         <ChatInput
 //           onSend={onSend}
 //           disabled={isLoading}
-//           placeholder={
-//             selectedTask === "Profile Matcher"
-//               ? "Type JD text or paste JSON to match..."
-//               : "Type a message..."
-//           }
+//           placeholder="Type JD text or paste JSON to match..."
 //         />
 //       )}
 //     </>
@@ -91,11 +105,11 @@
 // };
 
 // export default TaskSelector;
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "../components/ui/button";
 import ChatInput from "../chat/ChatInput";
+import ResumeTable from "@/chat/ResumeTable";
 import "./TaskSelector.css";
- 
 
 const TaskSelector = ({
   selectedTask,
@@ -106,8 +120,12 @@ const TaskSelector = ({
   setCurrentJdInput,
   currentJdStep,
   isLoading,
-  onSend
+  onSend,
 }) => {
+  const [uploading, setUploading] = useState(false);
+  const [uploadedData, setUploadedData] = useState(null); // ✅ For ResumeTable display
+  const [uploadProgress, setUploadProgress] = useState(0);
+
   const stepPrompts = {
     role: "👉 What is the job title / role?",
     location: "📍 Where is the job located? (City or Remote)",
@@ -121,29 +139,49 @@ const TaskSelector = ({
     perks: "🎁 Any perks or benefits to highlight? (optional).",
   };
 
-  return (
-    <>
-        {selectedTask === "Upload Resumes" && (
-  <div className="upload-resumes-section">
-    <label htmlFor="resume-upload" className="upload-resumes-label">
-      📎 Upload Candidate Resumes (PDF/DOCX)
-    </label>
-    <input
-      id="resume-upload"
-      type="file"
-      multiple
-      accept=".pdf,.docx"
-      onChange={(e) => onUploadResumes(e.target.files)}
-      className="upload-resumes-input"
-    />
-    <p className="upload-resumes-help">
-      Upload multiple resumes. Extracted info will appear as a table.
-    </p>
-  </div>
-)}
+  // ✅ Handle resume upload with progress simulation
+  const handleResumeUpload = async (files) => {
+    if (!files?.length) return;
+    setUploading(true);
+    setUploadedData(null);
+    setUploadProgress(0);
 
+    // Simulate smooth progress
+    const fakeProgress = setInterval(() => {
+      setUploadProgress((prev) => {
+        if (prev >= 90) {
+          clearInterval(fakeProgress);
+          return prev;
+        }
+        return prev + 10;
+      });
+    }, 200);
+
+    try {
+      // Pass to parent handler (connects to backend)
+      const result = await onUploadResumes(files);
+
+      // Once complete
+      setUploadProgress(100);
+      setTimeout(() => {
+        clearInterval(fakeProgress);
+        setUploading(false);
+        if (result?.uploaded_files) {
+          setUploadedData(result.uploaded_files);
+        }
+      }, 500);
+    } catch (err) {
+      console.error("❌ Upload failed:", err);
+      clearInterval(fakeProgress);
+      setUploading(false);
+      alert("Upload failed. Please try again.");
+    }
+  };
+
+  return (
+    <div className="task-selector-wrapper">
       {/* Task selector buttons */}
-      <div className="task-selector-container">
+      <div className="task-selector-container mb-4">
         {["JD Creator", "Profile Matcher", "Upload Resumes"].map((task) => (
           <Button
             key={task}
@@ -157,41 +195,89 @@ const TaskSelector = ({
         ))}
       </div>
 
-      
-  
+      {/* 🧠 JD Creator Input */}
+      {selectedTask === "JD Creator" && (
+        <div className="jd-creator-container">
+          <div className="jd-creator-box">
+            <input
+              type="text"
+              value={currentJdInput}
+              onChange={(e) => setCurrentJdInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && onJdSend(currentJdInput)}
+              placeholder={
+                currentJdStep ? stepPrompts[currentJdStep] : "Type your answer..."
+              }
+              className="jd-creator-input"
+            />
 
-      {/* JD Creator Input */}
-   {selectedTask === "JD Creator" && (
-  <div className="jd-creator-container">
-    <div className="jd-creator-box">
-      <input
-        type="text"
-        value={currentJdInput}
-        onChange={(e) => setCurrentJdInput(e.target.value)}
-        onKeyDown={(e) => e.key === "Enter" && onJdSend(currentJdInput)}
-        placeholder={
-          currentJdStep ? stepPrompts[currentJdStep] : "Type your answer..."
-        }
-        className="jd-creator-input"
-      />
-
-      <button className="jd-creator-btn" onClick={() => onJdSend(currentJdInput)}>
-        Next
-      </button>
-    </div>
-  </div>
-)}
-
-
-      {/* Chat input for Profile Matcher */}
-      {selectedTask === "Profile Matcher" && (
-        <ChatInput
-          onSend={onSend}
-          disabled={isLoading}
-          placeholder="Type JD text or paste JSON to match..."
-        />
+            <button
+              className="jd-creator-btn"
+              onClick={() => onJdSend(currentJdInput)}
+            >
+              Next
+            </button>
+          </div>
+        </div>
       )}
-    </>
+
+      {/* 🎯 Profile Matcher */}
+      {selectedTask === "Profile Matcher" && (
+        <div className="profile-matcher-section mt-4">
+          <ChatInput
+            onSend={onSend}
+            disabled={isLoading}
+            placeholder="Type JD text or paste JSON to match..."
+          />
+        </div>
+      )}
+
+      {/* 📎 Upload Resumes */}
+      {selectedTask === "Upload Resumes" && (
+        <div className="upload-resumes-section mt-4">
+          <label htmlFor="resume-upload" className="upload-resumes-label">
+            📎 Upload Candidate Resumes (PDF/DOCX)
+          </label>
+          <input
+            id="resume-upload"
+            type="file"
+            multiple
+            accept=".pdf,.docx"
+            onChange={(e) => handleResumeUpload(e.target.files)}
+            className="upload-resumes-input"
+            disabled={uploading}
+          />
+
+          {/* 🕐 Progress Bar */}
+          {uploading && (
+            <div className="upload-progress-bar mt-3">
+              <div
+                className="upload-progress-fill"
+                style={{ width: `${uploadProgress}%` }}
+              ></div>
+              <p className="upload-progress-text">
+                {uploadProgress < 100
+                  ? `Uploading... ${uploadProgress}%`
+                  : "Processing resumes..."}
+              </p>
+            </div>
+          )}
+
+          {/* ✅ After Upload — Show Table */}
+          {!uploading && uploadedData && (
+            <div className="uploaded-table mt-6">
+              <h4 className="font-semibold mb-2">📄 Extracted Resume Data</h4>
+              <ResumeTable data={uploadedData} />
+            </div>
+          )}
+
+          {!uploading && !uploadedData && (
+            <p className="upload-resumes-help mt-2 text-sm text-gray-600">
+              Upload multiple resumes. Extracted info will appear as a table.
+            </p>
+          )}
+        </div>
+      )}
+    </div>
   );
 };
 

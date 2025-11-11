@@ -1,19 +1,13 @@
 
+
 // // export default ChatContainer;
 // import React, { useEffect, useRef, useState } from "react";
 // import { motion, AnimatePresence } from "framer-motion";
 // import MessageRenderer from "./MessageRenderer";
 // import ChatInput from "./ChatInput";
 
-// import PrimeHireBrain from "../PrimeHireBrain/PrimeHireBrain";
-// import InterviewBot from "../InterviewBot/InterviewBot";
-// import LinkedInPosterButton from "../LinkedInPoster/LinkedInPosterButton";
-// import ZohoLoginButton from "../ZohoBridge/ZohoLoginButton";
-// import MailMindButton from "../MailMind/MailMindButton";
-
 // import "./ChatContainer.css";
 
-// // 🧭 Grid-Style Quick Prompts (always visible)
 // const groupedPrompts = [
 //   {
 //     category: "ZohoBridge",
@@ -83,34 +77,50 @@
 // }) => {
 //   const messagesEndRef = useRef(null);
 //   const [lockMode, setLockMode] = useState(null);
+//   const chatMessagesRef = useRef(null);
 
-//   // useEffect(() => {
-//   //   messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-//   // }, [messages, selectedFeature, selectedTask]);
+//   // 🧭 Scroll to newly rendered feature (triggered by MessageRenderer)
+//   // inside ChatContainer component, replace previous listener useEffect with this:
 
-//   // ✅ Improved Auto-scroll — wait for feature render commit before scrolling
 //   useEffect(() => {
-//     const chatMessages = document.querySelector(".chat-messages");
-//     if (!chatMessages) return;
+//     const HEADER_OFFSET = 64; // adjust to your header height (px)
 
-//     const scrollToTop = () => {
-//       chatMessages.scrollTo({ top: 0, behavior: "smooth" });
+//     const handleFeatureRendered = (e) => {
+//       const el = e.detail?.element;
+//       if (!el) return;
+
+//       const container = chatMessagesRef.current || document.querySelector(".chat-messages");
+//       if (!container) {
+//         // fallback: scroll element into view in viewport
+//         el.scrollIntoView({ behavior: "smooth", block: "start" });
+//         return;
+//       }
+
+//       // compute element offset relative to the scroll container
+//       const containerRect = container.getBoundingClientRect();
+//       const elRect = el.getBoundingClientRect();
+
+//       // distance from top of container's scrollable content to element
+//       const offsetWithinContainer = elRect.top - containerRect.top + container.scrollTop;
+
+//       // final scroll target (leave a bit of space for fixed header)
+//       const targetScroll = Math.max(0, offsetWithinContainer - HEADER_OFFSET + 8); // +8px padding
+
+//       // wait a frame to ensure layout stable, then smooth scroll container
+//       requestAnimationFrame(() => {
+//         // small delay if you have transitions; setTimeout fallback ensures it works with animations
+//         setTimeout(() => {
+//           container.scrollTo({ top: targetScroll, behavior: "smooth" });
+//         }, 30);
+//       });
 //     };
 
-//     // 🔹 Case 1: new feature or task selected — scroll to top
-//     if (selectedFeature || selectedTask) {
-//       // wait for DOM paint (React commit)
-//       requestAnimationFrame(() => {
-//         setTimeout(scrollToTop, 150);
-//       });
-//     }
-//     // 🔹 Case 2: normal chat updates — scroll to bottom
-//     else {
-//       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-//     }
-//   }, [selectedFeature, selectedTask, messages]);
+//     window.addEventListener("featureRendered", handleFeatureRendered);
+//     return () => window.removeEventListener("featureRendered", handleFeatureRendered);
+//   }, []);
 
 
+//   // 🧠 Handle lock modes (JD Creator / Profile Matcher / Upload Resumes)
 //   useEffect(() => {
 //     const interval = setInterval(() => {
 //       if (window.__JD_MODE_ACTIVE__) setLockMode("JD Creator");
@@ -121,10 +131,20 @@
 //     return () => clearInterval(interval);
 //   }, []);
 
+//   // 💬 Normal auto-scroll to bottom for messages
+//   useEffect(() => {
+//     if (!selectedFeature && !selectedTask) {
+//       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+//     }
+//   }, [messages]);
+
 //   return (
 //     <div className="chat-container flex flex-col h-full">
 //       {/* 💬 Chat messages */}
-//       <div className="chat-messages flex-1 overflow-y-auto px-4 pt-2 pb-20">
+//       <div
+//         ref={chatMessagesRef}
+//         className="chat-messages flex-1 overflow-y-auto px-4 pt-2 pb-20"
+//       >
 //         {messages.map((msg, idx) => (
 //           <MessageRenderer key={idx} message={msg} index={idx} />
 //         ))}
@@ -162,9 +182,12 @@
 //             transition={{ duration: 0.3 }}
 //             className="lock-mode-banner bg-muted/60 text-sm text-center py-2 border-t border-border"
 //           >
-//             {lockMode === "JD Creator" && "🧠 JD Creator is in progress — please complete the flow."}
-//             {lockMode === "Profile Matcher" && "🎯 Profile Matcher is analyzing candidates — please wait."}
-//             {lockMode === "Upload Resumes" && "📄 Resume extraction in progress — please wait for upload to finish."}
+//             {lockMode === "JD Creator" &&
+//               "🧠 JD Creator is in progress — please complete the flow."}
+//             {lockMode === "Profile Matcher" &&
+//               "🎯 Profile Matcher is analyzing candidates — please wait."}
+//             {lockMode === "Upload Resumes" &&
+//               "📄 Resume extraction in progress — please wait for upload to finish."}
 //           </motion.div>
 //         )}
 //       </AnimatePresence>
@@ -186,13 +209,14 @@
 // };
 
 // export default ChatContainer;
+// 📁 src/chat/ChatContainer.jsx
 import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import MessageRenderer from "./MessageRenderer";
 import ChatInput from "./ChatInput";
-
 import "./ChatContainer.css";
 
+// 💡 Grouped Prompts
 const groupedPrompts = [
   {
     category: "ZohoBridge",
@@ -260,68 +284,67 @@ const ChatContainer = ({
   isLoading,
   onSend,
 }) => {
+  const chatMessagesRef = useRef(null);
   const messagesEndRef = useRef(null);
   const [lockMode, setLockMode] = useState(null);
-  const chatMessagesRef = useRef(null);
 
-  // 🧭 Scroll to newly rendered feature (triggered by MessageRenderer)
-  // inside ChatContainer component, replace previous listener useEffect with this:
-
+  // 🧭 Auto-scroll when feature UI is rendered (triggered by MessageRenderer)
   useEffect(() => {
-    const HEADER_OFFSET = 64; // adjust to your header height (px)
+    const HEADER_OFFSET = 64; // header height in px
 
     const handleFeatureRendered = (e) => {
       const el = e.detail?.element;
       if (!el) return;
 
-      const container = chatMessagesRef.current || document.querySelector(".chat-messages");
+      const container =
+        chatMessagesRef.current || document.querySelector(".chat-messages");
       if (!container) {
-        // fallback: scroll element into view in viewport
         el.scrollIntoView({ behavior: "smooth", block: "start" });
         return;
       }
 
-      // compute element offset relative to the scroll container
+      // compute offset within the scroll container
       const containerRect = container.getBoundingClientRect();
       const elRect = el.getBoundingClientRect();
+      const offsetWithinContainer =
+        elRect.top - containerRect.top + container.scrollTop;
 
-      // distance from top of container's scrollable content to element
-      const offsetWithinContainer = elRect.top - containerRect.top + container.scrollTop;
+      const targetScroll = Math.max(
+        0,
+        offsetWithinContainer - HEADER_OFFSET + 10 // spacing below header
+      );
 
-      // final scroll target (leave a bit of space for fixed header)
-      const targetScroll = Math.max(0, offsetWithinContainer - HEADER_OFFSET + 8); // +8px padding
-
-      // wait a frame to ensure layout stable, then smooth scroll container
       requestAnimationFrame(() => {
-        // small delay if you have transitions; setTimeout fallback ensures it works with animations
         setTimeout(() => {
           container.scrollTo({ top: targetScroll, behavior: "smooth" });
-        }, 30);
+        }, 50);
       });
     };
 
     window.addEventListener("featureRendered", handleFeatureRendered);
-    return () => window.removeEventListener("featureRendered", handleFeatureRendered);
+    return () =>
+      window.removeEventListener("featureRendered", handleFeatureRendered);
   }, []);
 
-
-  // 🧠 Handle lock modes (JD Creator / Profile Matcher / Upload Resumes)
+  // 🧠 Lock modes for JD/Profile Matcher/Upload
   useEffect(() => {
     const interval = setInterval(() => {
       if (window.__JD_MODE_ACTIVE__) setLockMode("JD Creator");
-      else if (window.__PROFILE_MATCH_MODE_ACTIVE__) setLockMode("Profile Matcher");
-      else if (window.__UPLOAD_RESUME_MODE_ACTIVE__) setLockMode("Upload Resumes");
+      else if (window.__PROFILE_MATCH_MODE_ACTIVE__)
+        setLockMode("Profile Matcher");
+      else if (window.__UPLOAD_RESUME_MODE_ACTIVE__)
+        setLockMode("Upload Resumes");
       else setLockMode(null);
     }, 500);
     return () => clearInterval(interval);
   }, []);
 
-  // 💬 Normal auto-scroll to bottom for messages
+  // 💬 Default scroll to bottom when chat messages change
   useEffect(() => {
     if (!selectedFeature && !selectedTask) {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages]);
+  }, [messages, selectedFeature, selectedTask]);
 
   return (
     <div className="chat-container flex flex-col h-full">
@@ -336,7 +359,7 @@ const ChatContainer = ({
         <div ref={messagesEndRef} />
       </div>
 
-      {/* ⚡ Modern Grid Quick Prompts */}
+      {/* ⚡ Quick Prompts Grid */}
       <div className="quick-prompts-grid">
         {groupedPrompts.map((group, idx) => (
           <div key={idx} className="prompt-card">
@@ -356,7 +379,7 @@ const ChatContainer = ({
         ))}
       </div>
 
-      {/* ⚠️ Lock Mode Indicator */}
+      {/* ⚠️ Lock Mode Banner */}
       <AnimatePresence>
         {lockMode && (
           <motion.div

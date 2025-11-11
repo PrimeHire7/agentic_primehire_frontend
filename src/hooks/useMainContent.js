@@ -51,35 +51,50 @@ export const useMainContent = () => {
   };
 
   // 💡 Manual feature click
+  // 💡 Manual feature click
   const handleFeatureClick = (feature) => {
     console.log("🧭 Manual feature click:", feature);
-    resetAllFeatureStates();
+
+    // ✅ Don’t reset first; clear conflicting state after selection
+    setSelectedTask("");
     setSelectedFeature(feature);
+
+    // ✅ Display message to trigger UI (e.g., Zoho, MailMind)
+    setMessages([
+      {
+        role: "assistant",
+        content: `✨ Detected feature: **${feature}** — Opening ${feature} module...`,
+      },
+    ]);
   };
 
   // 💡 Task selector
   const handleTaskSelect = useCallback(
     (task) => {
       console.log("🧩 Task selected manually:", task);
-      resetAllFeatureStates();
+
+      // ✅ Don’t reset before; clear conflicting feature only
+      setSelectedFeature("");
       setSelectedTask(task);
 
+      // ✅ Generate first assistant message so UI renders
       switch (task) {
         case "JD Creator":
           setMessages([
-            { role: "assistant", content: "✨ Detected task: **JD Creator** — Opening JD Creator module..." },
-            // immediate first step prompt, use global (ensures step text is consistent)
-            // { role: "assistant", content: `Step 1/10 — ${window.__CURRENT_JD_STEP__ || "👉 What is the job title / role?"}` }
+            {
+              role: "assistant",
+              content:
+                "✨ JD Creator activated — ready to start job description flow.",
+            },
           ]);
           break;
-
 
         case "Profile Matcher":
           setMessages([
             {
               role: "assistant",
               content:
-                "✨ Detected task: **Profile Matcher** — Opening Profile Matcher module...",
+                "🎯 Profile Matcher activated — analyzing candidates...",
             },
           ]);
           break;
@@ -89,7 +104,7 @@ export const useMainContent = () => {
             {
               role: "assistant",
               content:
-                "✨ Detected task: **Upload Resumes** — Opening Upload Resumes module...",
+                "📎 Upload Resumes activated — ready to extract resumes.",
             },
           ]);
           break;

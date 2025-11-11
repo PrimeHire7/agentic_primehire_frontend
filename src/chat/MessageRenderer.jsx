@@ -1,116 +1,8 @@
-
-
-// // src/chat/MessageRenderer.jsx
-// import React, { useState } from "react";
-// import ChatMessage from "./ChatMessage";
-// import ProfileTable from "./ProfileTable";
-// import ResumeTable from "@/chat/ResumeTable";// adjust path if needed
-// import ResumeUpload from "@/pages/ResumeUpload";
-// import JDTaskUI from "@/pages/JDTaskUI";
-// import ProfileMatchHistory from "@/components/ProfileMatcher/ProfileMatchHistory";
-// import PrimeHireBrain from "../PrimeHireBrain/PrimeHireBrain";
-// import InterviewBot from "../InterviewBot/InterviewBot";
-// import LinkedInPosterButton from "../LinkedInPoster/LinkedInPosterButton";
-// import ZohoLoginButton from "../ZohoBridge/ZohoLoginButton";
-// import MailMindButton from "../MailMind/MailMindButton";
-
-// const MessageRenderer = ({ message, index }) => {
-//   if (!message) return null;
-
-//   // structured tables
-//   if (message.type === "profile_table") {
-//     return <ProfileTable key={index} data={message.data} index={index} />;
-//   }
-//   if (message.type === "resume_table") {
-//     return <ResumeTable key={index} data={message.data} index={index} />;
-//   }
-//   if (message.type === "jd_ui" && message.data) {
-//     const { currentJdStep, currentJdPrompt, currentJdInput, setCurrentJdInput, handleJdSend, jdInProgress, messages } =
-//       message.data;
-//     return (
-//       <div key={index} className="message-block">
-//         <JDTaskUI
-//           currentJdStep={currentJdStep}
-//           currentJdPrompt={currentJdPrompt}
-//           currentJdInput={currentJdInput}
-//           setCurrentJdInput={setCurrentJdInput}
-//           handleJdSend={handleJdSend}
-//           jdInProgress={jdInProgress}
-//           messages={messages}
-//         />
-//       </div>
-//     );
-//   }
-
-
-//   // Detect features & tasks from assistant messages
-//   const isAssistantText = message.role === "assistant" && typeof message.content === "string";
-//   const featureMatch =
-//     isAssistantText &&
-//     message.content.match(
-//       /ZohoBridge|MailMind|PrimeHireBrain|InterviewBot|LinkedInPoster|ProfileMatchHistory|JD\s?Creator|Profile\s?Matcher|Upload\s?Resumes?/i
-//     );
-//   const detectedFeature = featureMatch ? featureMatch[0] : null;
-
-//   // If JD Creator was detected, render JDTaskUI instead of showing the assistant bubble
-//   // If JD Creator was detected, skip rendering JD UI here.
-//   // MainContent handles JDTaskUI globally.
-//   if (detectedFeature && /JD\s?Creator/i.test(detectedFeature)) {
-//     console.log("🧠 JD Creator detected — skipping duplicate UI in MessageRenderer");
-//     return null;
-//   }
-
-
-//   // If Upload Resumes task was detected, render ResumeUpload inline (and skip bubble)
-//   if (detectedFeature && /Upload\s?Resumes?/i.test(detectedFeature)) {
-//     return (
-//       <div key={index} className="message-block">
-//         <ResumeUpload />
-//       </div>
-//     );
-//   }
-
-//   // ProfileMatchHistory inline
-//   if (detectedFeature && /ProfileMatchHistory/i.test(detectedFeature)) {
-//     return (
-//       <div key={index} className="message-block">
-//         <ProfileMatchHistory />
-//       </div>
-//     );
-//   }
-
-//   // Other features: still render a small inline control but also keep the chat bubble
-//   if (detectedFeature) {
-//     return (
-//       <div key={index} className="message-block">
-//         <ChatMessage role={message.role} content={message.content} />
-//         <div className="message-feature-ui mt-2">
-//           {detectedFeature === "ZohoBridge" && <ZohoLoginButton />}
-//           {detectedFeature === "MailMind" && <MailMindButton />}
-//           {detectedFeature === "PrimeHireBrain" && <PrimeHireBrain />}
-//           {detectedFeature === "InterviewBot" && <InterviewBot />}
-//           {detectedFeature === "LinkedInPoster" && <LinkedInPosterButton />}
-//           {detectedFeature === "ProfileMatchHistory" && <ProfileMatchHistory />}
-//         </div>
-//       </div>
-//     );
-//   }
-
-//   // default: render normal chat bubble
-//   return (
-//     <div key={index} className="message-block">
-//       <ChatMessage role={message.role} content={message.content} />
-//     </div>
-//   );
-// };
-
-// export default MessageRenderer;
-
 import React, { useEffect, useRef } from "react";
 import ChatMessage from "./ChatMessage";
+import ChatInput from "./ChatInput";
 import ProfileTable from "./ProfileTable";
 import ResumeTable from "@/chat/ResumeTable";
-import ResumeUpload from "@/pages/ResumeUpload";
 import JDTaskUI from "@/pages/JDTaskUI";
 import ProfileMatchHistory from "@/components/ProfileMatcher/ProfileMatchHistory";
 import PrimeHireBrain from "../PrimeHireBrain/PrimeHireBrain";
@@ -118,17 +10,20 @@ import InterviewBot from "../InterviewBot/InterviewBot";
 import LinkedInPosterButton from "../LinkedInPoster/LinkedInPosterButton";
 import ZohoLoginButton from "../ZohoBridge/ZohoLoginButton";
 import MailMindButton from "../MailMind/MailMindButton";
+import { useUploadProgress } from "@/hooks/useUploadProgress";
+import "./UploadResumeUI.css";
 
 const MessageRenderer = ({ message, index }) => {
   if (!message) return null;
 
-  // Structured tables
-  if (message.type === "profile_table") {
+  // ✅ Structured tables
+  if (message.type === "profile_table")
     return <ProfileTable key={index} data={message.data} index={index} />;
-  }
-  if (message.type === "resume_table") {
+
+  if (message.type === "resume_table")
     return <ResumeTable key={index} data={message.data} index={index} />;
-  }
+
+  // ✅ JD Creator inline UI
   if (message.type === "jd_ui" && message.data) {
     const {
       currentJdStep,
@@ -139,6 +34,7 @@ const MessageRenderer = ({ message, index }) => {
       jdInProgress,
       messages,
     } = message.data;
+
     return (
       <div key={index} className="message-block feature-block">
         <JDTaskUI
@@ -154,41 +50,197 @@ const MessageRenderer = ({ message, index }) => {
     );
   }
 
+  // ✅ Profile Matcher inline UI
+  if (message.type === "matcher_ui") {
+    const { isLoading, onSend } = message.data || {};
+    return (
+      <div key={index} className="message-block feature-block fade-highlight">
+        <ChatMessage
+          role="assistant"
+          content="🎯 Profile Matcher — enter JD to find best candidates."
+        />
+        <div className="message-feature-ui mt-2">
+          <ChatInput
+            onSend={onSend}
+            disabled={isLoading}
+            placeholder="Type JD text or paste JSON to match..."
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // ✅ Upload Resumes inline UI
+  // ✅ Upload Resumes inline UI with progress bar + ResumeTable
+  // ✅ Upload Resumes inline UI (styled)
+  if (message.type === "upload_ui") {
+    const [files, setFiles] = React.useState([]);
+    const [uploading, setUploading] = React.useState(false);
+    const [uploadedData, setUploadedData] = React.useState([]);
+    const { progressData, isProcessing } = useUploadProgress();
+
+    const handleFileChange = (e) => setFiles(Array.from(e.target.files));
+
+    const handleUpload = async () => {
+      if (!files.length) return;
+      setUploading(true);
+      try {
+        const formData = new FormData();
+        files.forEach((f) => formData.append("files", f));
+        const res = await fetch(
+          "https://primehire.nirmataneurotech.com/mcp/tools/resume/upload",
+          { method: "POST", body: formData }
+        );
+        const data = await res.json();
+        console.log("📂 Upload started:", data);
+      } catch (err) {
+        console.error("❌ Upload failed:", err);
+      } finally {
+        setUploading(false);
+      }
+    };
+
+    // Auto-fetch metadata when processing completes
+    React.useEffect(() => {
+      if (
+        progressData &&
+        progressData.total > 0 &&
+        progressData.processed === progressData.total
+      ) {
+        fetch("https://primehire.nirmataneurotech.com/mcp/tools/resume/recent")
+          .then((r) => r.json())
+          .then((d) => {
+            console.log("✅ Recent metadata:", d);
+            setUploadedData(d.recent_candidates || []);
+          });
+      }
+    }, [progressData]);
+
+    const progressPercent =
+      progressData && progressData.total
+        ? Math.round((progressData.processed / progressData.total) * 100)
+        : 0;
+
+    return (
+      <div key={index} className="message-block feature-block fade-highlight">
+        <ChatMessage
+          role="assistant"
+          content="📎 Upload Resumes — upload PDFs/DOCXs, track progress, and view details."
+        />
+
+        <div className="upload-box mt-3">
+          {/* File input */}
+          <input
+            id="resume-upload"
+            type="file"
+            multiple
+            accept=".pdf,.docx"
+            onChange={handleFileChange}
+            className="hidden"
+          />
+          <label htmlFor="resume-upload" className="upload-label">
+            Choose Files
+          </label>
+
+          {/* Selected files */}
+          {files.length > 0 ? (
+            <div className="selected-files">
+              <strong>{files.length} file(s) selected:</strong>
+              <ul>
+                {files.map((f, i) => (
+                  <li key={i}>📄 {f.name}</li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <div className="upload-placeholder">
+              No files selected yet — click “Choose Files” to begin.
+            </div>
+          )}
+
+          {/* Progress bar */}
+          {progressData && progressData.total > 0 && (
+            <div className="upload-progress">
+              <div className="progress-bar">
+                <div
+                  className="progress-bar-fill"
+                  style={{ width: `${progressPercent}%` }}
+                ></div>
+              </div>
+              <p className="progress-status">
+                {isProcessing ? (
+                  <span className="processing">
+                    Processing {progressData.processed}/{progressData.total}...
+                  </span>
+                ) : (
+                  <span className="success">✅ All resumes processed</span>
+                )}
+              </p>
+
+              {progressData.completed?.length > 0 && (
+                <div className="completed-list">
+                  {progressData.completed.slice(-3).map((name, i) => (
+                    <div key={i}>✅ {name}</div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Upload button */}
+          <button
+            onClick={handleUpload}
+            disabled={!files.length || uploading}
+            className="upload-btn"
+          >
+            {uploading ? "Uploading..." : "Start Upload"}
+          </button>
+        </div>
+
+        {/* Resume table */}
+        {uploadedData.length > 0 && (
+          <div className="mt-6">
+            <ResumeTable data={uploadedData} />
+          </div>
+        )}
+      </div>
+    );
+  }
+
+
+
+
+  // ✅ Feature Detection (Zoho, MailMind, etc.)
+  const featureRef = useRef(null);
   const isAssistantText =
     message.role === "assistant" && typeof message.content === "string";
+  const cleanContent = isAssistantText
+    ? message.content.replace(/[*_~`]/g, "")
+    : message.content;
+
   const featureMatch =
     isAssistantText &&
-    message.content.match(
+    cleanContent.match(
       /ZohoBridge|MailMind|PrimeHireBrain|InterviewBot|LinkedInPoster|ProfileMatchHistory|JD\s?Creator|Profile\s?Matcher|Upload\s?Resumes?/i
     );
+
   const detectedFeature = featureMatch ? featureMatch[0] : null;
 
-  // Feature detection logic
+  // 🔔 Dispatch "featureRendered" for scroll-to-feature behavior
+  useEffect(() => {
+    if (!featureRef.current || !detectedFeature) return;
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        const event = new CustomEvent("featureRendered", {
+          detail: { element: featureRef.current, feature: detectedFeature },
+        });
+        window.dispatchEvent(event);
+      }, 40);
+    });
+  }, [detectedFeature]);
+
+  // ✅ Render feature blocks
   if (detectedFeature) {
-    const featureRef = useRef(null);
-
-    // Dispatch event when the feature mounts
-    // inside MessageRenderer, where featureRef is defined
-    useEffect(() => {
-      // ensure event fires after paint/layout
-      if (!featureRef.current) return;
-
-      // next frame + small delay to ensure child UIs are mounted
-      requestAnimationFrame(() => {
-        setTimeout(() => {
-          if (featureRef.current) {
-            const event = new CustomEvent("featureRendered", {
-              detail: { element: featureRef.current, feature: detectedFeature },
-            });
-            window.dispatchEvent(event);
-            // dev log
-            // console.log("dispatched featureRendered for", detectedFeature);
-          }
-        }, 40); // 40ms is usually enough; adjust if animations delay mount
-      });
-    }, [detectedFeature]);
-
-
     return (
       <div
         ref={featureRef}
@@ -208,6 +260,7 @@ const MessageRenderer = ({ message, index }) => {
     );
   }
 
+  // ✅ Default message
   return (
     <div key={index} className="message-block">
       <ChatMessage role={message.role} content={message.content} />
