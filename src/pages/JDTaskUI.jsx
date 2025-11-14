@@ -1,7 +1,7 @@
-// src/pages/JDTaskUI.jsx
 import React, { useEffect, useRef, useState } from "react";
 import "./JDTaskUI.css";
 import { Send } from "lucide-react";
+import JDMessage from "@/components/JDMessage";   // ⬅️ ADD THIS
 
 const JDTaskUI = ({
     currentJdPrompt,
@@ -42,24 +42,19 @@ const JDTaskUI = ({
         if (t) t.scrollTop = t.scrollHeight;
     }, [localHistory]);
 
-    // 🧠 Send answer to JD flow
     const onSend = () => {
         const val = (currentJdInput || "").trim();
         if (!val) return;
-
-        // ✅ Only call handleJdSend — history handled in useJDCreator
         if (typeof handleJdSend === "function") handleJdSend(val);
-
-        // clear input locally
         if (typeof setCurrentJdInput === "function") setCurrentJdInput("");
     };
 
-    // 🧾 Clean summary builder (1 question → 1 answer)
+    // 🧾 Clean summary builder
     const mergedSummary = (() => {
         const qnaPairs = [];
         const seenSteps = new Set();
 
-        (localHistory || []).forEach((entry, i) => {
+        (localHistory || []).forEach((entry) => {
             if (entry.by === "ai" && !seenSteps.has(entry.step)) {
                 const nextUser = (localHistory || []).find(
                     (x) => x.by === "user" && x.step === entry.step
@@ -72,17 +67,21 @@ const JDTaskUI = ({
             }
         });
 
-        // handle last standalone user entry (rare)
-        const last = localHistory[localHistory.length - 1];
-        if (last && last.by === "user" && !seenSteps.has(last.step)) {
-            qnaPairs.push({ question: last.step, answer: last.value });
-        }
-
         return qnaPairs;
     })();
 
+    // 🧠 Detect final JD (assistant message after generation)
+    const finalJd = messages
+        ?.filter((m) => m.role === "assistant")
+        ?.map((m) => m.content)
+        ?.find((c) =>
+            typeof c === "string" &&
+            (c.includes("Job Description") || c.includes("Responsibilities"))
+        );
+
     return (
         <div className="jd-ui card">
+            {/* Header */}
             <div className="jd-header">
                 <div>
                     <div className="jd-badge">🧠 JD Creator</div>
@@ -97,6 +96,7 @@ const JDTaskUI = ({
             </div>
 
             <div className="jd-main">
+
                 {/* Timeline */}
                 <div className="jd-timeline">
                     {localHistory.length === 0 && (
@@ -105,18 +105,13 @@ const JDTaskUI = ({
                         </div>
                     )}
                     {localHistory.map((h, i) => (
-                        <div
-                            key={i}
-                            className={`timeline-item ${h.by === "user" ? "user" : "ai"}`}
-                        >
+                        <div key={i} className={`timeline-item ${h.by}`}>
                             <div className="timeline-avatar">
                                 {h.by === "user" ? "U" : "AI"}
                             </div>
                             <div className="timeline-body">
                                 <div className="timeline-meta">
-                                    <span className="meta-role">
-                                        {h.by === "user" ? "You" : "Assistant"}
-                                    </span>
+                                    {h.by === "user" ? "You" : "Assistant"}
                                 </div>
                                 <div className="timeline-text">
                                     {Array.isArray(h.value)
@@ -128,13 +123,12 @@ const JDTaskUI = ({
                     ))}
                 </div>
 
-                {/* Input + question */}
+                {/* Input */}
                 <div className="jd-question">
                     <div className="question-pill">
                         <strong>Question</strong>
                         <div className="question-text">
-                            {currentJdPrompt ||
-                                "👉 What is the job title?..."}
+                            {currentJdPrompt || "👉 What is the job title? ..."}
                         </div>
                     </div>
 
@@ -149,7 +143,7 @@ const JDTaskUI = ({
                             }}
                             placeholder={currentJdPrompt || "Type your answer..."}
                             onKeyDown={(e) => {
-                                if (e.key === "Enter" && !e.shiftKey) {
+                                if (e.key === "Enter") {
                                     e.preventDefault();
                                     onSend();
                                 }
@@ -161,10 +155,18 @@ const JDTaskUI = ({
                         </button>
                     </div>
 
-                    <div className="jd-hint">
-                        Tip: short answers for skills (comma separated)
-                    </div>
+                    <div className="jd-hint">Tip: short answers, comma separated</div>
                 </div>
+
+                {/* ⬇️⏬ FINAL JD WITH COPY BUTTON ⏬⬇️ */}
+                {finalJd && !jdInProgress && (
+                    <div className="jd-final-output" style={{ marginTop: "20px" }}>
+                        <h3 className="font-semibold mb-2 text-gray-800">
+                            📄 Generated Job Description
+                        </h3>
+                        <JDMessage content={finalJd} />
+                    </div>
+                )}
 
                 {/* Draft Summary */}
                 {!jdInProgress && mergedSummary.length > 0 && (
@@ -182,6 +184,8 @@ const JDTaskUI = ({
                                 </div>
                             ))}
                         </div>
+
+                        {/* Copy Summary */}
                         <div className="summary-actions">
                             <button
                                 className="btn primary"
@@ -189,11 +193,12 @@ const JDTaskUI = ({
                                     const text = mergedSummary
                                         .map((p) => `${p.question}: ${p.answer}`)
                                         .join("\n");
+
                                     navigator.clipboard.writeText(text);
-                                    alert("📋 Copied summary to clipboard!");
+                                    alert("📋 Summary copied!");
                                 }}
                             >
-                                Copy summary
+                                Copy Summary
                             </button>
                         </div>
                     </div>

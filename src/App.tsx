@@ -5,9 +5,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import CertificateData from "./pages/CertificateData"; 
+import CertificateData from "./pages/CertificateData";
 import WebcamRecorder from "./InterviewBot/WebcamRecorder";
 const queryClient = new QueryClient();
+import JDHistory from "@/pages/JDHistory";
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -20,6 +21,7 @@ const App = () => (
           <Route path="/webcam-recorder" element={<WebcamRecorder />} />
           <Route path="/certificatedata" element={<CertificateData />} /> {/* ✅ Add this route */}
           <Route path="*" element={<NotFound />} />
+          <Route path="/jd-history" element={<JDHistory />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>

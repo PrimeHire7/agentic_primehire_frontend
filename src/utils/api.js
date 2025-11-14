@@ -36,16 +36,45 @@ export const generateJd = async (inputs, setMessages, setIsLoading) => {
 
     if (!response.ok)
       throw new Error(`JD generation failed: ${response.status}`);
-    const result = await response.json();
 
+    const result = await response.json();
+    const jdText = result?.result?.markdown_jd || "";
+    window.__LAST_GENERATED_JD__ = jdText;
+
+    // -----------------------------------------
+    // ✅ SHOW GENERATED JD IN CHAT
+    // -----------------------------------------
     setMessages((prev) => [
       ...prev,
       {
         role: "assistant",
-        content: result.result?.markdown_jd || "✅ JD generated",
+        content: jdText || "✅ JD generated",
       },
     ]);
+
+    // -----------------------------------------
+    // ✅ SAVE JD TO DATABASE
+    // -----------------------------------------
+    const designation = inputs.role || "";
+    const skills = [
+      ...(inputs.skillsMandatory || []),
+      ...(inputs.skillsPreferred || []),
+    ].join(", ");
+
+    await fetch(`${API_BASE}/mcp/tools/jd_history/jd/save`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        designation,
+        skills,
+        jd_text: jdText,
+      }),
+    });
+
+    console.log("💾 JD saved to DB successfully!");
   } catch (err) {
+    console.error("❌ generateJd error:", err);
+
     setMessages((prev) => [
       ...prev,
       {
@@ -57,6 +86,7 @@ export const generateJd = async (inputs, setMessages, setIsLoading) => {
     setIsLoading(false);
   }
 };
+
 
 export const uploadResumes = async (files) => {
   const formData = new FormData();
@@ -215,3 +245,5 @@ export const checkWhatsAppStatus = async () => {
     return false;
   }
 };
+
+

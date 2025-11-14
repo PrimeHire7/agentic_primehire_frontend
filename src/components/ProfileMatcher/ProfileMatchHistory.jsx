@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { API_BASE } from "@/utils/constants";
 import { Calendar, Users, ChevronRight } from "lucide-react";
+import "./ProfileMatchHistory.css"; // ✅ Import external CSS
 
 const ProfileMatchHistory = () => {
     const [history, setHistory] = useState([]);
@@ -41,39 +42,44 @@ const ProfileMatchHistory = () => {
     };
 
     return (
-        <div className="p-4 bg-white rounded-xl shadow-md">
-            <h2 className="text-lg font-semibold mb-3">🧾 Profile Match History</h2>
+        <div className="profile-match-container">
+            <h2 className="profile-match-title">🧾 Profile Match History</h2>
 
-            {loading && <p className="text-sm text-gray-500">Loading...</p>}
+            {loading && <p className="profile-loading">Loading...</p>}
 
             {!loading && !selected && (
-                <ul className="divide-y divide-gray-200">
+                <ul className="profile-history-list">
                     {history.map((item) => (
                         <li
                             key={item.id}
-                            className="p-3 flex justify-between items-center hover:bg-gray-50 rounded cursor-pointer"
+                            className="profile-history-item"
                             onClick={() => fetchDetail(item.id)}
                         >
-                            <div>
-                                <p className="font-medium text-gray-800">
+                            <div className="profile-item-info">
+                                <p className="profile-item-role">
                                     {item.jd_meta?.role || "Unknown Role"}
                                 </p>
-                                <p className="text-xs text-gray-500 flex items-center gap-2">
-                                    <Users size={14} /> {item.total_candidates} candidates
-                                    <Calendar size={14} />{" "}
+                                <p className="profile-item-meta">
+                                    <span className="profile-meta-icon">
+                                        <Users size={14} />
+                                    </span>
+                                    {item.total_candidates} candidates
+                                    <span className="profile-meta-icon">
+                                        <Calendar size={14} />
+                                    </span>
                                     {new Date(item.created_at).toLocaleString()}
                                 </p>
                             </div>
-                            <ChevronRight size={18} className="text-gray-400" />
+                            <ChevronRight size={18} className="profile-chevron" />
                         </li>
                     ))}
                 </ul>
             )}
 
             {details && (
-                <div className="mt-4 border-t pt-3">
+                <div className="profile-details">
                     <button
-                        className="text-blue-600 text-sm mb-2"
+                        className="profile-back-btn"
                         onClick={() => {
                             setDetails(null);
                             setSelected(null);
@@ -82,18 +88,19 @@ const ProfileMatchHistory = () => {
                         ← Back to history
                     </button>
 
-                    <h3 className="font-semibold text-gray-800 mb-2">
+                    <h3 className="profile-details-title">
                         JD: {details.jd_meta?.role || "Unknown Role"}
                     </h3>
-                    <p className="text-sm text-gray-600 mb-4">{details.jd_text}</p>
+                    <p className="profile-details-text">{details.jd_text}</p>
 
-                    <h4 className="font-semibold text-sm mb-1">
+                    <h4 className="profile-candidate-header">
                         Matched Candidates ({details.candidates?.length || 0})
                     </h4>
-                    <ul className="text-sm text-gray-700 max-h-60 overflow-y-auto border rounded p-2">
+                    <ul className="profile-candidate-list">
                         {details.candidates?.map((c, i) => (
-                            <li key={i} className="mb-1">
-                                <strong>{c.name}</strong> — {c.designation} ({c.scores.final_score.toFixed(2)})
+                            <li key={i} className="profile-candidate-item">
+                                <strong>{c.name}</strong> — {c.designation} (
+                                {c.scores.final_score.toFixed(2)})
                             </li>
                         ))}
                     </ul>

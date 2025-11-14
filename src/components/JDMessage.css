@@ -1,0 +1,43 @@
+.jdmsg-container {
+    position: relative;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 16px;
+    color: #1f2937;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    white-space: pre-wrap;
+}
+
+.jdmsg-text {
+    font-size: 14px;
+    line-height: 1.6;
+    font-family: "Inter", sans-serif;
+    white-space: pre-wrap;
+}
+
+.jdmsg-copy-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    background: #3b82f6;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s ease-in-out;
+}
+
+.jdmsg-copy-btn:hover {
+    background: #5589f9;
+}
+
+.jdmsg-icon {
+    width: 12px;
+    height: 12px;
+}
