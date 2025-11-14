@@ -75,42 +75,59 @@ const MessageRenderer = ({ message, index }) => {
 
   // ✅ Upload Resumes inline UI
   // ✅ Upload Resumes inline UI (styled)
+  // ✅ Upload Resumes inline UI
   if (message.type === "upload_ui") {
     const [files, setFiles] = React.useState([]);
     const [uploading, setUploading] = React.useState(false);
-    const [uploadedData, setUploadedData] = React.useState([]);  // ⬅️ must come before the reset useEffect
+    const [uploadedData, setUploadedData] = React.useState([]);
+
     const { progressData, isProcessing } = useUploadProgress();
 
-    // 🧹 Reset uploaded data when feature/task changes or on refresh
+    // 🧹 Reset everything on refresh or feature change
     React.useEffect(() => {
       const resetHandler = () => {
-        console.log("🧹 Clearing uploaded resume data on refresh or feature change");
+        console.log("🧹 FULL Upload UI Reset Triggered");
+
+        setFiles([]);
         setUploadedData([]);
+        setUploading(false);
       };
-      window.addEventListener("jd_close", resetHandler);
-      window.addEventListener("feature_change", resetHandler);
+
       window.addEventListener("refresh_trigger", resetHandler);
+      window.addEventListener("feature_change", resetHandler);
+
       return () => {
-        window.removeEventListener("jd_close", resetHandler);
-        window.removeEventListener("feature_change", resetHandler);
         window.removeEventListener("refresh_trigger", resetHandler);
+        window.removeEventListener("feature_change", resetHandler);
       };
     }, []);
 
+    // 📁 Choose files
     const handleFileChange = (e) => setFiles(Array.from(e.target.files));
 
+    // 🚀 Start Upload
     const handleUpload = async () => {
       if (!files.length) return;
+
+      // 🔥 Clear frontend progress before new batch
+      window.dispatchEvent(new Event("refresh_trigger"));
+
+      console.log("🚀 Starting new upload batch:", files.length);
+
       setUploading(true);
+
       try {
         const formData = new FormData();
         files.forEach((f) => formData.append("files", f));
+
         const res = await fetch(
           "https://primehire.nirmataneurotech.com/mcp/tools/resume/upload",
           { method: "POST", body: formData }
         );
+
         const data = await res.json();
-        console.log("📂 Upload started:", data);
+        console.log("📤 Upload initiated:", data);
+
       } catch (err) {
         console.error("❌ Upload failed:", err);
       } finally {
@@ -118,17 +135,19 @@ const MessageRenderer = ({ message, index }) => {
       }
     };
 
-    // Auto-fetch metadata when processing completes
+    // 🧠 When backend finishes, load recent metadata
     React.useEffect(() => {
       if (
         progressData &&
         progressData.total > 0 &&
         progressData.processed === progressData.total
       ) {
+        console.log("🎯 All resumes processed — fetching recent metadata…");
+
         fetch("https://primehire.nirmataneurotech.com/mcp/tools/resume/recent")
           .then((r) => r.json())
           .then((d) => {
-            console.log("✅ Recent metadata:", d);
+            console.log("📥 Received recent candidates:", d);
             setUploadedData(d.recent_candidates || []);
           });
       }
@@ -143,10 +162,12 @@ const MessageRenderer = ({ message, index }) => {
       <div key={index} className="message-block feature-block fade-highlight">
         <ChatMessage
           role="assistant"
-          content="📎 Upload Resumes — upload PDFs/DOCXs, track progress, and view details."
+          content="📎 Upload Resumes — upload PDFs/DOCXs, track progress, and view parsed metadata."
         />
 
         <div className="upload-box mt-3">
+
+          {/* File Input */}
           <input
             id="resume-upload"
             type="file"
@@ -159,6 +180,7 @@ const MessageRenderer = ({ message, index }) => {
             Choose Files
           </label>
 
+          {/* File List */}
           {files.length > 0 ? (
             <div className="selected-files">
               <strong>{files.length} file(s) selected:</strong>
@@ -170,10 +192,11 @@ const MessageRenderer = ({ message, index }) => {
             </div>
           ) : (
             <div className="upload-placeholder">
-              No files selected yet — click “Choose Files” to begin.
+              No files selected — click “Choose Files”
             </div>
           )}
 
+          {/* Progress Bar */}
           {progressData && progressData.total > 0 && (
             <div className="upload-progress">
               <div className="progress-bar">
@@ -182,6 +205,7 @@ const MessageRenderer = ({ message, index }) => {
                   style={{ width: `${progressPercent}%` }}
                 ></div>
               </div>
+
               <p className="progress-status">
                 {isProcessing ? (
                   <span className="processing">
@@ -202,6 +226,7 @@ const MessageRenderer = ({ message, index }) => {
             </div>
           )}
 
+          {/* Upload button */}
           <button
             onClick={handleUpload}
             disabled={!files.length || uploading}
@@ -211,6 +236,7 @@ const MessageRenderer = ({ message, index }) => {
           </button>
         </div>
 
+        {/* Parsed Resume Results */}
         {uploadedData.length > 0 && (
           <div className="mt-6">
             <ResumeTable data={uploadedData} />
@@ -219,6 +245,7 @@ const MessageRenderer = ({ message, index }) => {
       </div>
     );
   }
+
 
   // ✅ Upload Resumes inline UI with progress bar + ResumeTable
   // ✅ Upload Resumes inline UI (styled)

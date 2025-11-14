@@ -243,6 +243,85 @@ export const useMainContent = () => {
   // ]);
 
 
+  // const handleRefresh = useCallback(() => {
+  //   if (window.__JD_REFRESHING__) {
+  //     console.log("⏸️ Skipping redundant refresh — already in progress.");
+  //     return;
+  //   }
+  //   window.__JD_REFRESHING__ = true;
+
+  //   console.log("🔄 Refresh triggered — full reset including JD Creator + Upload Resume state.");
+
+  //   // ✅ Fire event for upload UI cleanup
+  //   if (typeof window !== "undefined") {
+  //     window.dispatchEvent(new Event("refresh_trigger"));
+  //   }
+
+  //   // 🧹 Reset feature-specific UI
+  //   resetAllFeatureStates();
+
+  //   if (typeof window !== "undefined") {
+  //     // Clear JD state
+  //     window.__JD_MODE_ACTIVE__ = false;
+  //     window.__CURRENT_JD_STEP__ = null;
+  //     window.__JD_HISTORY__ = [];
+
+  //     // Clear JD handler
+  //     delete window.__HANDLE_JD_PROCESS__;
+
+  //     // Clear upload-related cached data
+  //     window.__UPLOAD_RESUME_CACHE__ = null;
+  //     window.__LAST_UPLOADED_FILES__ = null;
+  //   }
+
+  //   try {
+  //     // 🧹 Reset JD local states
+  //     setCurrentJdInput("");
+  //     if (typeof setCurrentJdStep === "function") setCurrentJdStep("role");
+  //     if (typeof setJdInProgress === "function") setJdInProgress(false);
+
+  //     // 🧹 Remove resume table messages
+  //     setMessages((prev) =>
+  //       prev.filter(
+  //         (msg) =>
+  //           msg.type !== "resume_table" &&
+  //           !msg?.data?.recent_candidates
+  //       )
+  //     );
+  //   } catch (err) {
+  //     console.warn("⚠️ JD/Upload reset skipped (hook refs not ready):", err);
+  //   }
+
+  //   console.log("✅ All JD Creator + Resume Upload states cleared.");
+
+  //   // ---------------------------------------------------------
+  //   // 🆕 NEW: After Refresh → Reload the last generated JD
+  //   // ---------------------------------------------------------
+  //   setTimeout(() => {
+  //     const lastJd = window.__LAST_GENERATED_JD__;
+  //     if (lastJd) {
+  //       console.log("♻ Restoring last generated JD after refresh...");
+  //       setMessages((prev) => [
+  //         ...prev,
+  //         {
+  //           role: "assistant",
+  //           content:
+  //             "🎉 Here's your latest generated JD (refreshed):\n\n" + lastJd,
+  //         },
+  //       ]);
+  //     }
+
+  //     delete window.__JD_REFRESHING__;
+  //   }, 300); // small delay for UI cleanup
+
+  // }, [
+  //   resetAllFeatureStates,
+  //   setCurrentJdInput,
+  //   setCurrentJdStep,
+  //   setJdInProgress,
+  //   setMessages
+  // ]);
+
   const handleRefresh = useCallback(() => {
     if (window.__JD_REFRESHING__) {
       console.log("⏸️ Skipping redundant refresh — already in progress.");
@@ -252,35 +331,49 @@ export const useMainContent = () => {
 
     console.log("🔄 Refresh triggered — full reset including JD Creator + Upload Resume state.");
 
-    // ✅ Fire event for upload UI cleanup
-    if (typeof window !== "undefined") {
-      window.dispatchEvent(new Event("refresh_trigger"));
+    // -------------------------------------------------------------
+    // 1️⃣ RESET BACKEND PROGRESS JSON
+    // -------------------------------------------------------------
+    try {
+      fetch("https://primehire.nirmataneurotech.com/mcp/tools/resume/reset-progress", {
+        method: "POST",
+      })
+        .then(() => console.log("🗑 Backend progress.json reset successfully"))
+        .catch((err) => console.error("❌ Backend progress reset failed:", err));
+    } catch (err) {
+      console.error("❌ Backend reset exception:", err);
     }
 
-    // 🧹 Reset feature-specific UI
+    // -------------------------------------------------------------
+    // 2️⃣ RESET FRONTEND UPLOAD UI (files, metadata, progress)
+    // -------------------------------------------------------------
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("refresh_trigger")); // Upload UI reset
+    }
+
+    // -------------------------------------------------------------
+    // 3️⃣ RESET ALL FEATURE STATES
+    // -------------------------------------------------------------
     resetAllFeatureStates();
 
-    if (typeof window !== "undefined") {
-      // Clear JD state
+    // -------------------------------------------------------------
+    // 4️⃣ CLEAR JD CREATOR STATE
+    // -------------------------------------------------------------
+    try {
       window.__JD_MODE_ACTIVE__ = false;
       window.__CURRENT_JD_STEP__ = null;
       window.__JD_HISTORY__ = [];
 
-      // Clear JD handler
       delete window.__HANDLE_JD_PROCESS__;
-
-      // Clear upload-related cached data
       window.__UPLOAD_RESUME_CACHE__ = null;
       window.__LAST_UPLOADED_FILES__ = null;
-    }
 
-    try {
-      // 🧹 Reset JD local states
+      // React state resets
       setCurrentJdInput("");
       if (typeof setCurrentJdStep === "function") setCurrentJdStep("role");
       if (typeof setJdInProgress === "function") setJdInProgress(false);
 
-      // 🧹 Remove resume table messages
+      // Remove resume table messages
       setMessages((prev) =>
         prev.filter(
           (msg) =>
@@ -294,9 +387,9 @@ export const useMainContent = () => {
 
     console.log("✅ All JD Creator + Resume Upload states cleared.");
 
-    // ---------------------------------------------------------
-    // 🆕 NEW: After Refresh → Reload the last generated JD
-    // ---------------------------------------------------------
+    // -------------------------------------------------------------
+    // 5️⃣ AFTER RESET → OPTIONAL: RESTORE LAST GENERATED JD
+    // -------------------------------------------------------------
     setTimeout(() => {
       const lastJd = window.__LAST_GENERATED_JD__;
       if (lastJd) {
@@ -312,8 +405,7 @@ export const useMainContent = () => {
       }
 
       delete window.__JD_REFRESHING__;
-    }, 300); // small delay for UI cleanup
-
+    }, 300);
   }, [
     resetAllFeatureStates,
     setCurrentJdInput,
@@ -321,7 +413,6 @@ export const useMainContent = () => {
     setJdInProgress,
     setMessages
   ]);
-
 
   // ✅ Fixed message handler
   const handleSend = useCallback(
