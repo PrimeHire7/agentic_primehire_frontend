@@ -198,7 +198,7 @@
     margin-top: 18px;
     width: 100%;
     padding: 12px 16px;
-    background: #10b981;
+    color: #4f46e5;
     color: white;
     font-size: 16px;
     border-radius: 8px;
@@ -208,7 +208,7 @@
 }
 
 .jd-save:hover {
-    background: #059669;
+    color: #4f46e5;
 }
 
 
@@ -230,7 +230,7 @@
    EDIT JD BUTTON
 ------------------------------ */
 .jd-button.jd-edit {
-    background: linear-gradient(135deg, #ff8a00, #ff4f1f);
+    background: #38bdf8;
     color: white;
     font-weight: 600;
     padding: 10px 16px;
@@ -245,9 +245,108 @@
     margin: 5px;
 }
 
+.large-modal {
+    padding: 25px;
+    max-width: 850px;
+    width: 100%;
+    border-radius: 14px;
+    background: #fff;
+}
+
+/* Title spacing */
+.large-modal .jd-modal-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Form layout */
+.edit-jd-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    /* 2-column layout */
+    gap: 20px;
+    width: 100%;
+    margin-bottom: 25px;
+}
+
+/* JD TEXT takes full width */
+.edit-jd-form .full-width {
+    grid-column: span 2;
+}
+
+/* Label styling */
+.large-modal label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: block;
+}
+
+/* Inputs shared styling */
+.edit-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+    background: #fafafa;
+    margin-bottom: 15px;
+}
+
+.edit-input:focus {
+    background: #fff;
+    border-color: #6366f1;
+    outline: none;
+}
+
+/* Textarea */
+.edit-textarea {
+    width: 100%;
+    min-height: 180px;
+    padding: 12px;
+    border: 1px solid #ccc;
+    background: #fafafa;
+    border-radius: 10px;
+    resize: vertical;
+    margin-bottom: 20px;
+    font-size: 15px;
+}
+
+.edit-textarea:focus {
+    background: #fff;
+    border-color: #6366f1;
+    outline: none;
+}
+
+/* SAVE BUTTON */
+.jd-save {
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+    color: white;
+    font-size: 17px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: 0.2s;
+}
+
+.jd-save:hover {
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+}
+
 .jd-button.jd-edit:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255, 128, 0, 0.35);
+    box-shadow: 0 6px 20px rgba(75, 121, 255, 0.35);
 }
 
 /* ------------------------------
@@ -311,7 +410,7 @@
    SAVE BUTTON
 ------------------------------ */
 .jd-button.jd-save {
-    background: linear-gradient(135deg, #00c76f, #03a85f);
+    background: linear-gradient(135deg, #4b79ff, #5b9dff);
     color: white;
     font-weight: 600;
     padding: 10px 18px;
@@ -324,7 +423,7 @@
 
 .jd-button.jd-save:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 199, 112, 0.35);
+    border-color: #6366f1;
 }
 
 /* Close Button */
