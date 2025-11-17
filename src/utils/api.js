@@ -179,7 +179,15 @@ export const sendMailMessage = async (item, jdId) => {
       return;
     }
 
-    const interviewLink = `https://primehire-beta-ui.vercel.app/validation_panel?candidateId=${encodeURIComponent(item.name)}&jd_id=${jdId}`;
+    // ⭐ FIX: Fetch JD text using jdId
+    const jdRes = await fetch(`${API_BASE}/mcp/tools/jd_history/jd/history/${jdId}`);
+    const jdData = await jdRes.json();
+
+    const jdText = jdData.jd_text || "Job description unavailable";
+
+    const interviewLink = `https://primehire-beta-ui.vercel.app/validation_panel?candidateId=${encodeURIComponent(
+      item.name
+    )}&jd_id=${jdId}`;
 
     const messageText = `
 Hi ${item.name},
@@ -187,7 +195,7 @@ Hi ${item.name},
 Below is your job description for the interview:
 
 -----------------------------------------
-${item.jd_text || "Job description unavailable"}
+${jdText}
 -----------------------------------------
 
 Please click the link below to begin your interview:
@@ -217,7 +225,6 @@ PrimeHire Team
     alert("Failed to send email. See console.");
   }
 };
-
 
 
 // ✅ IMPROVED WhatsApp function with better error handling

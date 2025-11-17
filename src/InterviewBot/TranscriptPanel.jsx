@@ -25,7 +25,7 @@ export default function TranscriptPanel({ candidateName = "Anonymous", candidate
 
   async function generateQuestion() {
     if (!jobDescription.trim()) {
-      alert("Please paste job description in the left panel.");
+      alert("Job description missing!");
       return;
     }
 
