@@ -171,20 +171,15 @@ export const uploadResumes = async (files) => {
   return await response.json();
 };
 
-// api.js
-// import { API_BASE } from "@/utils/constants";
-
-export const sendMailMessage = async (item) => {
+export const sendMailMessage = async (item, jdId) => {
   try {
     const email = item.email?.trim();
     if (!email) {
-      alert("⚠️ No email found for this candidate");
+      alert("⚠️ No email address available for this candidate");
       return;
     }
 
-    const interviewUrl = `https://primehire-beta-ui.vercel.app/validation?candidateId=${encodeURIComponent(
-      item.id || item.candidate_id
-    )}&jd_id=${encodeURIComponent(item.jd_id)}`;
+    const interviewLink = `https://primehire-beta-ui.vercel.app/validation_panel?candidateId=${encodeURIComponent(item.name)}&jd_id=${jdId}`;
 
     const messageText = `
 Hi ${item.name},
@@ -192,158 +187,38 @@ Hi ${item.name},
 Below is your job description for the interview:
 
 -----------------------------------------
-${item.jd_text}
+${item.jd_text || "Job description unavailable"}
 -----------------------------------------
 
 Please click the link below to begin your interview:
-${interviewUrl}
+${interviewLink}
 
 Thanks,
 PrimeHire Team
 `;
 
+    const payload = {
+      email,
+      candidate_name: item.name,
+      message: messageText,
+    };
+
     const res = await fetch(`${API_BASE}/mcp/tools/match/send_mail`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email,
-        candidate_name: item.name,
-        message: messageText,
-      }),
+      body: JSON.stringify(payload),
     });
 
-    if (!res.ok) throw new Error("Mail sending failed");
+    if (!res.ok) throw new Error("Email failed");
 
-    alert(`Email sent to ${email}`);
+    alert(`📧 Email sent to ${item.name}`);
   } catch (err) {
-    alert("Failed to send email: " + err.message);
+    console.error("Email send error:", err);
+    alert("Failed to send email. See console.");
   }
 };
 
 
-// export const sendMailMessage = async (item) => {
-//   try {
-//     const email = item.email?.trim();
-//     if (!email) {
-//       alert("⚠️ No email address available for this candidate");
-//       return;
-//     }
-
-//     // --- Dynamic Dates ---
-//     const startDate = new Date();
-//     const deadline = new Date();
-//     deadline.setDate(startDate.getDate() + 2);
-
-//     const formatDate = (d) =>
-//       d.toLocaleDateString("en-US", {
-//         year: "numeric",
-//         month: "long",
-//         day: "numeric",
-//       });
-
-//     const startDateStr = formatDate(startDate);
-//     const deadlineStr = formatDate(deadline);
-
-//     // --- Email Body ---
-//     const messageText = `
-// Hi ${item.name},
-
-// We hope you're doing well.
-
-// You have been shortlisted to complete the **PrimeHire Skill Assessment Test**.
-
-// You may take the test **anytime** within the following window:
-// **Start Date:** ${startDateStr}
-// **Deadline:** ${deadlineStr}
-
-// The test will take approximately **20 minutes**.
-
-// 🔗 **Test Link:**  
-// https://primehire-beta-ui.vercel.app/validation_panel
-
-// ---
-
-// ## 📘 Instructions Before You Begin
-
-// Please read and follow all instructions carefully:
-
-// 1. The interview **will be recorded** (video + audio + your responses).
-// 2. Your data will be used **strictly for evaluation purposes** only.
-// 3. Do **not** share personal, financial, or sensitive information.
-// 4. Ensure your **camera, microphone, and internet connection** are working properly.
-// 5. Choose a **quiet environment** with minimal background noise.
-// 6. Make sure your **face is clearly visible**, with proper lighting.
-// 7. Avoid switching tabs or minimizing your browser during the test.
-// 8. Do not use **external help, AI tools, or assistance** while answering.
-// 9. Use a **laptop/desktop** (mobile is not recommended).
-// 10. Once started, the test must be completed **in one sitting**.
-// 11. Maintain a professional posture and speak clearly throughout.
-
-// If you face any issues, feel free to reach out.
-
-// Best regards,  
-// PrimeHire Team  
-// www.primehire.ai
-// `;
-
-//     // --- Send Email API ---
-//     const response = await fetch(`${API_BASE}/mcp/tools/match/send_mail`, {
-//       method: "POST",
-//       headers: { "Content-Type": "application/json" },
-//       body: JSON.stringify({
-//         email: item.email,
-//         candidate_name: item.name,
-//         message: messageText,
-//       }),
-//     });
-
-//     if (!response.ok) {
-//       const text = await response.text();
-//       throw new Error(`Status ${response.status} - ${text}`);
-//     }
-
-//     const result = await response.json();
-//     console.log("✅ Mail sent:", result);
-//     alert(`✅ Email sent successfully to ${item.name}`);
-//   } catch (err) {
-//     console.error("❌ Failed to send email:", err);
-//     alert(`❌ Failed to send email: ${err.message}`);
-//   }
-// };
-
-// export const sendMailMessage = async (item) => {
-//   try {
-//     const email = item.email?.trim();
-//     if (!email) {
-//       alert("⚠️ No email address available for this candidate");
-//       return;
-//     }
-
-//     const messageText = `Hi ${item.name}, are you available for the interview?`;
-
-//     const response = await fetch(`${API_BASE}/mcp/tools/match/send_mail`, {
-//       method: "POST",
-//       headers: { "Content-Type": "application/json" },
-//       body: JSON.stringify({
-//         email: item.email,
-//         candidate_name: item.name,
-//         message: messageText,
-//       }),
-//     });
-
-//     if (!response.ok) {
-//       const text = await response.text();
-//       throw new Error(`Status ${response.status} - ${text}`);
-//     }
-
-//     const result = await response.json();
-//     console.log("✅ Mail sent:", result);
-//     alert(`✅ Email sent successfully to ${item.name}`);
-//   } catch (err) {
-//     console.error("❌ Failed to send email:", err);
-//     alert(`❌ Failed to send email: ${err.message}`);
-//   }
-// };
 
 // ✅ IMPROVED WhatsApp function with better error handling
 export const sendWhatsAppMessage = async (candidate) => {

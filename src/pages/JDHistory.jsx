@@ -95,8 +95,10 @@ const JDHistory = () => {
 
             setMatcherJD({
                 ...data,
+                jd_id: id,   // <-- ADD THIS
                 matches: Array.isArray(data.matches) ? data.matches : [],
             });
+
         } catch (err) {
             console.error("Failed to fetch matcher JD:", err);
             setMatcherJD({ matches: [] });
@@ -265,7 +267,9 @@ const JDHistory = () => {
 
                         <div className="matcher-content">
                             {matcherJD.matches.length > 0 ? (
-                                <ProfileTable data={matcherJD.matches} index={9999} />
+                                // <ProfileTable data={matcherJD.matches} index={9999} />
+                                <ProfileTable data={matcherJD.matches} jdId={matcherJD.jd_id} />
+
                             ) : (
                                 <p className="no-matches-text">❌ No matching profiles found.</p>
                             )}
