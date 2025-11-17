@@ -125,9 +125,24 @@ const JDHistory = () => {
 
             alert("JD Updated Successfully!");
 
+            // Close the edit modal
             setShowEditJD(false);
+
+            // Refresh list
             fetchHistory();
-            setSelected(null);
+
+            // 🔥 Re-fetch the updated JD and update modal content
+            setTimeout(async () => {
+                const res = await fetch(`${API_BASE}/mcp/tools/jd_history/jd/history/${selected.id}`);
+                const data = await res.json();
+
+                setSelected({
+                    ...data,
+                    manualQuestions: manualQuestions[selected.id] || [],
+                    aiQuestions: data.ai_questions || [],
+                });
+            }, 300);
+
         } catch (err) {
             console.error("Failed to save edited JD:", err);
             alert("Failed to save JD.");
