@@ -317,7 +317,7 @@ const JDHistory = () => {
                                         className="jd-button jd-add-questions"
                                         onClick={() => openAddQuestions(row)}
                                     >
-                                        <PlusSquare size={14} /> Add Questions
+                                        <PlusSquare size={14} /> Add Manual Questions
                                     </button>
                                 </td>
                             </tr>
