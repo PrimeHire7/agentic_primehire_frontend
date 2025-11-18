@@ -58,21 +58,25 @@ const JDHistory = () => {
             const res = await fetch(`${API_BASE}/mcp/tools/jd_history/jd/history/${id}`);
             const data = await res.json();
 
-            // Extract AI questions stored in DB (inside matches_json)
             const aiQs =
                 data?.matches?.ai_questions ??
                 data?.ai_questions ??
                 [];
 
+            const manualQs =
+                data?.matches?.manual_questions ??
+                [];
+
             setSelected({
                 ...data,
-                manualQuestions: manualQuestions[id] || [],
-                aiQuestions: aiQs,  // <-- IMPORTANT FIX
+                manualQuestions: manualQs,
+                aiQuestions: aiQs,
             });
         } catch (err) {
             console.error("Failed to fetch JD:", err);
         }
     };
+
 
 
     // ---------------------------------------------------------
@@ -94,17 +98,49 @@ const JDHistory = () => {
         setShowAddQuestions(true);
     };
 
-    const saveQuestions = () => {
+    const saveQuestions = async () => {
         if (!currentJD) return;
 
-        setManualQuestions((prev) => ({
-            ...prev,
-            [currentJD.id]: questions,
-        }));
+        try {
+            const res = await fetch(
+                `${API_BASE}/mcp/tools/jd_history/jd/save_manual_questions/${currentJD.id}`,
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ questions }),
+                }
+            );
 
-        setShowAddQuestions(false);
-        alert("Questions saved successfully!");
+            const data = await res.json();
+
+            if (!res.ok) {
+                alert("❌ Failed to save questions");
+                return;
+            }
+
+            // update local cache
+            setManualQuestions((prev) => ({
+                ...prev,
+                [currentJD.id]: data.questions,
+            }));
+
+            setShowAddQuestions(false);
+            alert("✔ Manual Questions Saved!");
+
+            // Refresh selected JD if it's open
+            if (selected && selected.id === currentJD.id) {
+                setSelected((prev) => ({
+                    ...prev,
+                    manualQuestions: data.questions,
+                }));
+            }
+
+        } catch (err) {
+            console.error("Failed to save manual questions:", err);
+            alert("Failed to save questions.");
+        }
     };
+
 
     // ---------------------------------------------------------
     // MATCHER
