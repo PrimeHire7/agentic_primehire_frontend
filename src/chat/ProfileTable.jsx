@@ -5,6 +5,18 @@ import { API_BASE } from "@/utils/constants";
 import { useNavigate } from "react-router-dom";
 import "./ProfileTable.css";
 
+/* ========================= SCORE (MOVED TO TOP) ========================= */
+const calculateAutoScore = (item) => {
+  if (item.experience_years >= 6)
+    return Math.floor(Math.random() * 10) + 90;
+  if (item.experience_years >= 2 && item.experience_years <= 3)
+    return Math.floor(Math.random() * 10) + 60;
+  if (item.experience_years === 0)
+    return Math.floor(Math.random() * 20) + 30;
+  return Math.floor(Math.random() * 20) + 50;
+};
+
+
 const ProfileTable = ({ data, index, jdId }) => {
   const [filterQuery, setFilterQuery] = useState("");
   const [minScoreFilter, setMinScoreFilter] = useState(0);
@@ -412,14 +424,5 @@ const ReviewSummary = ({ summary, selectedCategory, onCategorySelect }) => (
 );
 
 /* ========================= SCORE ========================= */
-const calculateAutoScore = (item) => {
-  if (item.experience_years >= 6)
-    return Math.floor(Math.random() * 10) + 90;
-  if (item.experience_years >= 2 && item.experience_years <= 3)
-    return Math.floor(Math.random() * 10) + 60;
-  if (item.experience_years === 0)
-    return Math.floor(Math.random() * 20) + 30;
-  return Math.floor(Math.random() * 20) + 50;
-};
 
 export default ProfileTable;

@@ -45,6 +45,7 @@ const PrimeHireBrain = () => {
             <thead>
               <tr>
                 <th>Name</th>
+                <th>Designation</th>   {/* 🆕 Added */}
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Skills</th>
@@ -53,10 +54,12 @@ const PrimeHireBrain = () => {
                 <th>Updated</th>
               </tr>
             </thead>
+
             <tbody>
               {resumes.map((r, i) => (
                 <tr key={i}>
                   <td data-label="Name">{r.full_name}</td>
+                  <td data-label="Designation">{r.current_title}</td> {/* 🆕 Added */}
                   <td data-label="Email">{r.email}</td>
                   <td data-label="Phone">{r.phone}</td>
                   <td data-label="Skills">{r.top_skills}</td>
