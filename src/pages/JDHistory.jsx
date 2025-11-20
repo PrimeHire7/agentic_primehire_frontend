@@ -22,6 +22,7 @@ const JDHistory = () => {
 
     // Matcher modal
     const [matcherJD, setMatcherJD] = useState(null);
+    const [matcherLoading, setMatcherLoading] = useState(false);
 
     // Edit JD
     const [showEditJD, setShowEditJD] = useState(false);
@@ -161,27 +162,30 @@ const JDHistory = () => {
     // MATCHER modal — fetch JD row (with matches)
     // ---------------------------------------------------------
     const openMatcher = async (id) => {
+        setMatcherLoading(true);  // 🔥 start loading
         try {
-            // call match_profiles endpoint to run matching & save results
             const matchRes = await fetch(`${API_BASE}/mcp/tools/jd_history/jd/match_profiles/${id}`, {
                 method: "POST"
             });
+
             const matchJson = await matchRes.json();
-            // then fetch latest JD row which now contains matches inside matches_json
             const data = await fetchSingleJD(id);
-            if (!data) {
-                setMatcherJD({ matches: [] });
-                return;
-            }
+
             setMatcherJD({
                 ...data,
                 matches: data.matches || []
             });
+
+            // refresh table counts
+            await fetchHistory();
         } catch (err) {
             console.error("Matcher failed:", err);
             setMatcherJD({ matches: [] });
         }
+        setMatcherLoading(false); // ❗ stop loading
     };
+
+
 
     // ---------------------------------------------------------
     // SEND JD TO CLIENT
@@ -316,6 +320,16 @@ const JDHistory = () => {
                 </table>
             ) : (
                 <p className="jd-loading">Loading…</p>
+            )}
+            {/* LOADING POPUP FOR MATCHER */}
+            {matcherLoading && (
+                <div className="jd-modal-overlay">
+                    <div className="jd-modal">
+                        <h3>🔍 Matching candidates...</h3>
+                        <p>Please wait...</p>
+                        <div className="spinner"></div>
+                    </div>
+                </div>
             )}
 
             {/* MATCHER POPUP */}
