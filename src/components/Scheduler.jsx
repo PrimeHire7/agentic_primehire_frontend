@@ -49,16 +49,22 @@ export default function Scheduler() {
         if (!candidateId || !jdId) return alert("Missing candidate or JD.");
 
         setLoading(true);
-        const start_iso = isoUTC(date, selectedTime);
-        const startDt = new Date(start_iso);
+        const start_iso_utc = isoUTC(date, selectedTime);
+
+        // ⬅️ Add 24 hours
+        const startDt = new Date(new Date(start_iso_utc).getTime() + 24 * 60 * 60 * 1000);
+
+        // End time after 20 minutes
         const endDt = new Date(startDt.getTime() + 20 * 60 * 1000);
+
         const payload = {
             candidate_id: candidateId,
             jd_id: parseInt(jdId, 10),
-            start_iso,
+            start_iso: startDt.toISOString(),
             end_iso: endDt.toISOString(),
             slot_minutes: 20,
         };
+
 
         try {
             const res = await fetch(`${API_BASE}/mcp/tools/jd_history/scheduler/schedule`, {
