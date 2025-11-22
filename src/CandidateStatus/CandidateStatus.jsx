@@ -1,144 +1,60 @@
-import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
-import "./CandidateStatus.css";
-
-import {
-    BarChart,
-    Bar,
-    XAxis,
-    YAxis,
-    Tooltip,
-    ResponsiveContainer,
-} from "recharts";
-
+import React, { useState, useEffect } from "react";
 import { API_BASE } from "@/utils/constants";
 
-const CandidateStatus = () => {
-    const { id } = useParams(); // jd_id
-    const [jdData, setJDData] = useState(null);
-    const [loading, setLoading] = useState(true);
+export default function CandidateStatus() {
+  const [attempts, setAttempts] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-    const fetchJDDetails = async () => {
-        try {
-            const res = await fetch(`${API_BASE}/mcp/tools/jd_history/jd/history/${id}`);
-            const data = await res.json();
-            setJDData(data);
-        } catch (err) {
-            console.error("Failed to load JD details:", err);
-        }
-        setLoading(false);
-    };
+  const fetchAttempts = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/mcp/tools/jd_history/scheduler/attempts/all`);
+      const data = await res.json();
+      if (data.ok) setAttempts(data.attempts);
+    } catch (err) {
+      console.error("Error fetching attempts:", err);
+    }
+    setLoading(false);
+  };
 
-    useEffect(() => {
-        fetchJDDetails();
-    }, []);
+  useEffect(() => {
+    fetchAttempts();
 
-    if (loading) return <p>Loading...</p>;
-    if (!jdData) return <p>JD not found.</p>;
+    // Auto-refresh every 10 seconds
+    const interval = setInterval(() => fetchAttempts(), 10000);
+    return () => clearInterval(interval);
+  }, []);
 
-    const matches = jdData.matches || [];
+  return (
+    <div style={{ padding: 20 }}>
+      <h2>📊 Candidate Interview Status</h2>
 
-    // Chart values
-    const chartData = [
-        { name: "Matched", value: matches.length },
-        { name: "Shortlisted", value: matches.filter(m => m.scores.final_score >= 75).length },
-        { name: "Moderate", value: matches.filter(m => m.scores.final_score >= 50 && m.scores.final_score < 75).length },
-        { name: "Low Fit", value: matches.filter(m => m.scores.final_score < 50).length },
-    ];
+      {loading && <div>Loading...</div>}
 
-    return (
-        <div className="dashboard-container">
-            <h2 className="dashboard-title">
-                Candidate Status — <span style={{ color: "#4a90e2" }}>{jdData.designation}</span>
-            </h2>
-
-            {/* Stats */}
-            <div className="stats-container">
-                <div className="stat-card">
-                    <p>Total Matched Candidates</p>
-                    <h3>{matches.length}</h3>
-                </div>
-
-                <div className="stat-card">
-                    <p>High Match Score</p>
-                    <h3>{chartData[1].value}</h3>
-                </div>
-
-                <div className="stat-card">
-                    <p>Moderate Fit</p>
-                    <h3>{chartData[2].value}</h3>
-                </div>
-
-                <div className="stat-card">
-                    <p>Low Fit</p>
-                    <h3>{chartData[3].value}</h3>
-                </div>
-
-                <div className="search-box">
-                    <input type="text" placeholder="Search candidates…" />
-                </div>
-            </div>
-
-            {/* Bottom Section */}
-            <div className="bottom-section">
-                {/* Chart */}
-                <div className="chart-box">
-                    <h3>Match Distribution</h3>
-
-                    <ResponsiveContainer width="100%" height={260}>
-                        <BarChart data={chartData}>
-                            <XAxis dataKey="name" stroke="#102a43" />
-                            <YAxis stroke="#102a43" />
-                            <Tooltip />
-                            <Bar dataKey="value" fill="#4a90e2" />
-                        </BarChart>
-                    </ResponsiveContainer>
-                </div>
-
-                {/* Candidate Table */}
-                <div className="table-box">
-                    <h3>Matched Candidates</h3>
-
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Designation</th>
-                                <th>Phone</th>
-                                <th>Email</th>
-                                <th>Score</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            {matches.map((m, i) => (
-                                <tr key={i}>
-                                    <td>{m.name}</td>
-                                    <td>{m.designation}</td>
-                                    <td>{m.phone || "—"}</td>
-                                    <td>{m.email || "—"}</td>
-                                    <td>{m.scores?.final_score}</td>
-                                    <td>
-                                        <Link
-                                            to={`/candidate-overview/${m.candidate_id}`}
-                                            className="candidate-link"
-                                        >
-                                            View
-                                        </Link>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-
-                    {matches.length === 0 && (
-                        <p style={{ padding: "12px", color: "gray" }}>No matched candidates.</p>
-                    )}
-                </div>
-            </div>
-        </div>
-    );
-};
-
-export default CandidateStatus;
+      <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "center" }}>
+        <thead style={{ background: "#f0f0f0" }}>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>JD ID</th>
+            <th>Scheduled Time</th>
+            <th>Status</th>
+            <th>Total Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          {attempts.map((a) => (
+            <tr key={a.attempt_id} style={{ borderBottom: "1px solid #ddd" }}>
+              <td>{a.name}</td>
+              <td>{a.email}</td>
+              <td>{a.jd_id}</td>
+              <td>{new Date(a.slot_start).toLocaleString()}</td>
+              <td>{a.progress}</td>
+              <td>{a.totalScore ?? "—"}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}

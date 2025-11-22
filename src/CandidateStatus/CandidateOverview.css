@@ -1,210 +1,447 @@
-/* Main wrapper */
-.candidate-status-container {
-    padding: 32px 48px;
-    font-family: "Inter", sans-serif;
-    background: #f5f7fa;
-    min-height: 100vh;
-    color: #1a1a1a;
+/* CandidateOverview.css */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-/* Page title */
+.candidate-status-container {
+    min-height: 100vh;
+    background: #f5f7fa;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    padding-bottom: 40px;
+}
+
+/* TOP HEADER */
+.top-header1 {
+    background: #fff;
+    padding: 0px 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    margin-bottom: 30px;
+}
+
+.top-logo2 {
+    height: 55px;
+    object-fit: contain;
+    cursor: pointer;
+}
+
+/* TITLE */
 .title {
     font-size: 28px;
-    font-weight: 700;
-    margin-bottom: 24px;
-    color: #111;
+    font-weight: 600;
+    color: #1a1a1a;
+    text-align: center;
+    margin-bottom: 30px;
+    letter-spacing: 1px;
 }
 
-/* Main card layout */
+/* MAIN STATUS CARD */
 .status-card {
-    display: flex;
-    gap: 32px;
-    background: #ffffff;
-    border-radius: 18px;
-    padding: 32px;
-    border: 1px solid #dedede;
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 30px;
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 25px;
 }
 
-/* Left Profile Section */
+/* PROFILE SECTION (LEFT SIDEBAR) */
 .profile-section {
-    width: 280px;
-    text-align: left;
-    border-right: 1px solid #ececec;
-    padding-right: 24px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 30px 25px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    height: fit-content;
 }
 
-/* Profile Image */
 .profile-img {
-    width: 100%;
-    height: 260px;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
     object-fit: cover;
-    border-radius: 14px;
-    border: 1px solid #e5e5e5;
+    margin-bottom: 20px;
+    border: 4px solid #f0f0f0;
 }
 
-/* Name */
 .candidate-name {
-    margin-top: 18px;
     font-size: 22px;
-    font-weight: 700;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 8px;
 }
 
-/* Role */
 .candidate-role {
     font-size: 15px;
-    margin-bottom: 18px;
-    font-weight: 500;
-    color: #555;
+    color: #5f6368;
+    margin-bottom: 20px;
 }
 
-/* Interview Score */
 .interview-score {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-bottom: 25px;
     display: flex;
     justify-content: space-between;
-    background: #eef5ff;
-    padding: 10px 12px;
-    border-radius: 10px;
-    margin-bottom: 20px;
+    align-items: center;
     font-size: 14px;
+    font-weight: 500;
 }
 
 .score {
     font-weight: 600;
-    color: #1343e3;
+    font-size: 16px;
+    color: white;
 }
 
-/* Contact */
 .contact-email,
 .contact-phone {
     font-size: 14px;
-    color: #333;
-    margin-top: 6px;
+    color: #5f6368;
+    margin-bottom: 10px;
+    padding: 10px 15px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    word-break: break-word;
 }
 
-/* Right Content Grid */
+/* CONTENT SECTION (RIGHT SIDE) */
 .content-section {
-    flex: 1;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 22px;
+    gap: 20px;
+    align-items: start;
 }
 
-/* Common block */
+/* BOX BASE STYLE */
 .box {
-    background: #fafafa;
-    padding: 18px;
-    border-radius: 14px;
-    border: 1px solid #e7e7e7;
+    background: #fff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: box-shadow 0.3s ease;
 }
 
-/* Section titles */
+.box:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
 .box h4 {
-    font-size: 16px;
-    font-weight: 700;
-    margin-bottom: 14px;
-    color: #000;
-}
-
-/* Info table */
-.info-grid {
-    display: grid;
-    grid-template-columns: 140px auto;
-    gap: 8px 10px;
-    font-size: 14px;
-    color: #444;
-}
-
-/* Step Progress Bar */
-.progress-bar {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 6px;
-}
-
-.step {
-    width: 90px;
-    height: 9px;
-    background: #d6d6d6;
-    border-radius: 6px;
-}
-
-.step.active {
-    background: #2563eb;
-}
-
-/* Labels */
-.progress-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    color: #555;
-}
-
-/* Profile Match */
-.half {
-    width: 100%;
-}
-
-.progress-wrapper {
-    display: flex;
-    align-items: center;
-    margin-bottom: 16px;
-}
-
-.line {
-    height: 8px;
-    width: 100%;
-    margin-right: 10px;
-    background: #2563eb;
-    border-radius: 6px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #f0f0f0;
 }
 
 .box h5 {
-    margin-top: 12px;
-    margin-bottom: 10px;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 600;
+    color: #333;
+    margin: 20px 0 12px 0;
 }
 
-.box p {
+/* FULL WIDTH BOXES */
+.box:nth-child(1),
+.box:nth-child(2) {
+    grid-column: 1 / -1;
+}
+
+/* JD DETAILS */
+.info-grid {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    gap: 15px 20px;
+    align-items: start;
+}
+
+.info-grid p {
     font-size: 14px;
-    margin-bottom: 8px;
+    font-weight: 600;
+    color: #5f6368;
+}
+
+.info-grid span {
+    font-size: 14px;
+    color: #333;
+    line-height: 1.5;
+}
+
+/* INTERVIEW PROGRESS */
+.progress-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    align-items: center;
+}
+
+.step {
+    flex: 1;
+    height: 12px;
+    background: #e9ecef;
+    border-radius: 6px;
+    position: relative;
+    transition: background 0.3s ease;
+}
+
+.step.active {
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+}
+
+.progress-labels {
     display: flex;
     justify-content: space-between;
+    font-size: 13px;
+    color: #5f6368;
+    font-weight: 500;
 }
 
-/* Resume Button */
+/* PROFILE MATCH */
+.progress-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.line {
+    flex: 1;
+    height: 12px;
+    background: #e9ecef;
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+}
+
+.line::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 95%;
+    background: linear-gradient(90deg, #2ecc71 0%, #27ae60 100%);
+    border-radius: 6px;
+}
+
+.progress-wrapper span {
+    font-size: 20px;
+    font-weight: 700;
+    color: #2ecc71;
+}
+
+.box.half p {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #5f6368;
+    margin-bottom: 12px;
+    padding: 10px 15px;
+    background: #f8f9fa;
+    border-radius: 6px;
+}
+
+.box.half p span {
+    font-weight: 600;
+    color: #333;
+}
+
+/* SCORE METRICS */
+.box.half:last-child p {
+    font-size: 14px;
+    color: #5f6368;
+    margin-bottom: 8px;
+}
+
+.box.half:last-child span {
+    display: block;
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+    background: #f8f9fa;
+    padding: 10px 15px;
+    border-radius: 6px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    word-break: break-all;
+}
+
 .resume-btn {
-    margin-top: 16px;
     width: 100%;
-    background: #2563eb;
-    border: none;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: #fff;
-    padding: 10px;
-    border-radius: 10px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
     font-weight: 600;
     cursor: pointer;
-    transition: 0.25s ease;
+    margin-top: 20px;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .resume-btn:hover {
-    background: #1747c5;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
 
-/* Responsive */
+.resume-btn:active {
+    transform: translateY(0);
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 1200px) {
+    .status-card {
+        grid-template-columns: 280px 1fr;
+    }
+}
+
 @media (max-width: 992px) {
     .status-card {
-        flex-direction: column;
+        grid-template-columns: 1fr;
+        padding: 0 20px;
     }
 
     .profile-section {
-        width: 100%;
-        padding-right: 0;
-        border: none;
+        max-width: 100%;
     }
 
     .content-section {
         grid-template-columns: 1fr;
+    }
+
+    .box:nth-child(1),
+    .box:nth-child(2) {
+        grid-column: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .top-header1 {
+        padding: 15px 20px;
+    }
+
+    .top-logo2 {
+        height: 45px;
+    }
+
+    .title {
+        font-size: 24px;
+        padding: 0 20px;
+    }
+
+    .status-card {
+        padding: 0 15px;
+        gap: 20px;
+    }
+
+    .profile-section {
+        padding: 25px 20px;
+    }
+
+    .profile-img {
+        width: 100px;
+        height: 100px;
+    }
+
+    .candidate-name {
+        font-size: 20px;
+    }
+
+    .box {
+        padding: 20px;
+    }
+
+    .box h4 {
+        font-size: 16px;
+    }
+
+    .info-grid {
+        grid-template-columns: 120px 1fr;
+        gap: 12px 15px;
+    }
+
+    .progress-labels {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .top-header1 {
+        padding: 12px 15px;
+    }
+
+    .top-logo2 {
+        height: 40px;
+    }
+
+    .title {
+        font-size: 20px;
+        margin-bottom: 20px;
+    }
+
+    .status-card {
+        padding: 0 10px;
+    }
+
+    .profile-section {
+        padding: 20px 15px;
+    }
+
+    .profile-img {
+        width: 90px;
+        height: 90px;
+    }
+
+    .candidate-name {
+        font-size: 18px;
+    }
+
+    .candidate-role {
+        font-size: 14px;
+    }
+
+    .interview-score {
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+    }
+
+    .box {
+        padding: 18px;
+    }
+
+    .box h4 {
+        font-size: 15px;
+        margin-bottom: 15px;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .info-grid p {
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+
+    .progress-wrapper {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .line {
+        width: 100%;
+    }
+
+    .resume-btn {
+        padding: 10px 16px;
+        font-size: 14px;
     }
 }

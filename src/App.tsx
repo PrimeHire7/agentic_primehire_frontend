@@ -28,7 +28,7 @@ const App = () => (
           <Route path="/instructions" element={<InstructionsPrompt />} />
           <Route path="/candidate-status/:id" element={<CandidateStatus />} />
           <Route path="/validation_panel" element={<ValidationPanel />} />
-          <Route path="/candidate-overview" element={<CandidateOverview />} />
+          <Route path="/candidate/:id" element={<CandidateOverview />} />
           <Route path="/scheduler" element={<Scheduler />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
