@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { API_BASE } from "@/utils/constants";
 import { useLocation, useNavigate } from "react-router-dom";
-import "./Scheduler.css"; // keep your CSS; minimal layout assumed
+import "./Scheduler.css";
 
 function isoUTC(date, timeStr) {
     // date: YYYY-MM-DD, timeStr: HH:MM (24h). returns ISO string in UTC
@@ -51,7 +51,7 @@ export default function Scheduler() {
         setLoading(true);
         const start_iso_utc = isoUTC(date, selectedTime);
 
-        // ⬅️ Add 24 hours
+        // Add 24 hours
         const startDt = new Date(new Date(start_iso_utc).getTime() + 24 * 60 * 60 * 1000);
 
         // End time after 20 minutes
@@ -64,7 +64,6 @@ export default function Scheduler() {
             end_iso: endDt.toISOString(),
             slot_minutes: 20,
         };
-
 
         try {
             const res = await fetch(`${API_BASE}/mcp/tools/jd_history/scheduler/schedule`, {
@@ -98,39 +97,33 @@ export default function Scheduler() {
     };
 
     return (
-        <div style={{ padding: 20 }}>
+        <div className="scheduler-container">
             <h2>Schedule Interview</h2>
             <p>
                 Candidate: <strong>{candidateName}</strong> (ID: {candidateId})
             </p>
             <p>Job ID: {jdId}</p>
 
-            <div style={{ marginTop: 12 }}>
+            <div className="date-section">
                 <label>
                     Choose date:
                     <input
                         type="date"
                         value={date}
                         onChange={(e) => setDate(e.target.value)}
-                        style={{ marginLeft: 8 }}
+                        className="date-input"
                     />
                 </label>
             </div>
 
-            <div style={{ marginTop: 12 }}>
+            <div className="slots-section">
                 <h4>Available 20-min slots</h4>
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                <div className="slots-grid">
                     {availableTimes.map((t) => (
                         <button
                             key={t}
                             onClick={() => setSelectedTime(t)}
-                            style={{
-                                padding: "8px 12px",
-                                borderRadius: 8,
-                                border: selectedTime === t ? "2px solid #0b5cff" : "1px solid #ccc",
-                                background: selectedTime === t ? "#eaf2ff" : "#fff",
-                                cursor: "pointer",
-                            }}
+                            className={`slot-button ${selectedTime === t ? 'selected' : ''}`}
                         >
                             {t}
                         </button>
@@ -138,15 +131,21 @@ export default function Scheduler() {
                 </div>
             </div>
 
-            <div style={{ marginTop: 16 }}>
-                <button onClick={handleConfirm} disabled={loading}>
+            <div className="actions-section">
+                <button 
+                    className="confirm-button" 
+                    onClick={handleConfirm} 
+                    disabled={loading}
+                >
                     {loading ? "Scheduling..." : "Confirm Slot"}
                 </button>
-                <button style={{ marginLeft: 8 }} onClick={() => navigate(-1)}>Cancel</button>
+                <button className="cancel-button" onClick={() => navigate(-1)}>
+                    Cancel
+                </button>
             </div>
 
             {confirmed && (
-                <div style={{ marginTop: 16, background: "#f3f3f3", padding: 12 }}>
+                <div className="confirmation-box">
                     <h4>Scheduled (pending confirmation email)</h4>
                     <div>Start (UTC): {confirmed.start_iso}</div>
                     <div>End (UTC): {confirmed.end_iso}</div>
