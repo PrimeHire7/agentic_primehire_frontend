@@ -1,72 +1,8 @@
-
-// export default ChatContainer;
-// 📁 src/chat/ChatContainer.jsx
 import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import MessageRenderer from "./MessageRenderer";
 import ChatInput from "./ChatInput";
 import "./ChatContainer.css";
-
-// 💡 Grouped Prompts
-const groupedPrompts = [
-  {
-    category: "ZohoBridge",
-    prompts: [
-      "Update job status on Zoho Recruit database",
-      "Fetch all candidates from Zoho Recruit",
-      "Sync candidate records with Zoho database",
-    ],
-  },
-  {
-    category: "MailMind",
-    prompts: [
-      "Extract candidate resumes from emails",
-      "Parse attachments in HR mailbox",
-      "Analyze Outlook inbox for candidate data",
-    ],
-  },
-  {
-    category: "Profile Matcher",
-    prompts: [
-      "Find best candidate for AI Engineer",
-      "Find best match for Software Engineer with Python and ML experience",
-      "Compare candidate profiles for Data Scientist role",
-      "Identify top resumes for Full Stack Developer",
-    ],
-  },
-  {
-    category: "JD Creator",
-    prompts: [
-      "Create JD for Machine Learning Engineer",
-      "Generate job description for Product Manager",
-      "Refine job post for Backend Developer role",
-    ],
-  },
-  {
-    category: "InterviewBot",
-    prompts: [
-      "Run AI interview for selected candidate",
-      "Simulate technical interview questions",
-      "Evaluate candidate performance using AI",
-    ],
-  },
-  {
-    category: "PrimeHireBrain",
-    prompts: [
-      "Search candidates in internal database",
-      "Analyze skill gaps for hiring",
-      "View all uploaded resumes",
-    ],
-  },
-  {
-    category: "LinkedInPoster",
-    prompts: [
-      "Post job update on LinkedIn company page",
-      "Share hiring post for Software Engineer",
-      "Manage LinkedIn job posts",
-    ],
-  },
-];
 
 const ChatContainer = ({
   messages,
@@ -79,7 +15,7 @@ const ChatContainer = ({
   const messagesEndRef = useRef(null);
   const [lockMode, setLockMode] = useState(null);
 
-  // 🧭 Auto-scroll when feature UI is rendered (triggered by MessageRenderer)
+  // 🧭 Auto-scroll when feature UI is rendered
   useEffect(() => {
     const HEADER_OFFSET = 64; // header height in px
 
@@ -89,12 +25,12 @@ const ChatContainer = ({
 
       const container =
         chatMessagesRef.current || document.querySelector(".chat-messages");
+
       if (!container) {
         el.scrollIntoView({ behavior: "smooth", block: "start" });
         return;
       }
 
-      // compute offset within the scroll container
       const containerRect = container.getBoundingClientRect();
       const elRect = el.getBoundingClientRect();
       const offsetWithinContainer =
@@ -102,7 +38,7 @@ const ChatContainer = ({
 
       const targetScroll = Math.max(
         0,
-        offsetWithinContainer - HEADER_OFFSET + 10 // spacing below header
+        offsetWithinContainer - HEADER_OFFSET + 10
       );
 
       requestAnimationFrame(() => {
@@ -130,7 +66,7 @@ const ChatContainer = ({
     return () => clearInterval(interval);
   }, []);
 
-  // 💬 Default scroll to bottom when chat messages change
+  // 💬 Default scroll to bottom on new chat messages
   useEffect(() => {
     if (!selectedFeature && !selectedTask) {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -148,26 +84,6 @@ const ChatContainer = ({
           <MessageRenderer key={idx} message={msg} index={idx} />
         ))}
         <div ref={messagesEndRef} />
-      </div>
-
-      {/* ⚡ Quick Prompts Grid */}
-      <div className="quick-prompts-grid">
-        {groupedPrompts.map((group, idx) => (
-          <div key={idx} className="prompt-card">
-            <h4 className="prompt-title">{group.category}</h4>
-            <div className="prompt-buttons">
-              {group.prompts.map((prompt, i) => (
-                <button
-                  key={i}
-                  onClick={() => onSend(prompt)}
-                  className="prompt-btn"
-                >
-                  {prompt}
-                </button>
-              ))}
-            </div>
-          </div>
-        ))}
       </div>
 
       {/* ⚠️ Lock Mode Banner */}
