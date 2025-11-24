@@ -18,7 +18,8 @@ export default function Scheduler() {
     const params = new URLSearchParams(location.search);
     const candidateId = params.get("candidateId");
     const candidateName = params.get("candidateName") || "Candidate";
-    const jdId = params.get("jd_id");
+    const jdId = params.get("jd_id") || params.get("jdId");
+
 
     const [date, setDate] = useState(() => {
         const d = new Date();
@@ -56,7 +57,7 @@ export default function Scheduler() {
 
         // End time after 20 minutes
         const endDt = new Date(startDt.getTime() + 20 * 60 * 1000);
-
+        console.log("PAYLOAD >>>", payload);
         const payload = {
             candidate_id: candidateId,
             jd_id: parseInt(jdId, 10),
@@ -64,7 +65,7 @@ export default function Scheduler() {
             end_iso: endDt.toISOString(),
             slot_minutes: 20,
         };
-
+        console.log("JD PARAMS >>>", jdId, typeof jdId);
         try {
             const res = await fetch(`${API_BASE}/mcp/tools/jd_history/scheduler/schedule`, {
                 method: "POST",
