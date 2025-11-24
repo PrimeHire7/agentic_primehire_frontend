@@ -27,10 +27,12 @@
   left: -150%;
   width: 150%;
   height: 100%;
-  background: linear-gradient(110deg,
-      transparent 0%,
-      rgba(255, 255, 255, 0.25) 50%,
-      transparent 100%);
+  background: linear-gradient(
+    110deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.25) 50%,
+    transparent 100%
+  );
   transform: skewX(-25deg);
   animation: box-shine 6s ease-in-out infinite;
 }
@@ -69,27 +71,24 @@
 
 /* Colors */
 .badge.best {
-  background: #28a745;
-  /* Green */
+  background: #28a745; /* Green */
   color: #fff;
 }
 
 .badge.good {
-  background: #f1c40f;
-  /* Yellow */
+  background: #f1c40f; /* Yellow */
   color: #000;
 }
 
 .badge.partial {
-  background: #e74c3c;
-  /* Red */
+  background: #e74c3c; /* Red */
   color: #fff;
 }
 
 /* Active animation */
 .badge.active {
   transform: scale(1.12);
-  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.25);
+  box-shadow: 0px 0px 8px rgba(0,0,0,0.25);
 }
 
 
@@ -237,7 +236,7 @@
 /* Your updated dropdown */
 .send-dropdown {
   position: absolute;
-  top: 158px;
+     top: 158px;
   /* right: 0; */
   background: white;
   border: 2px solid #38bdf8;
@@ -379,9 +378,22 @@
 }
 
 
-/* =================================================
-      NAME + SCORE + LABEL
-================================================= */
+ .loader {
+  border: 2px solid #eee;
+  border-top: 2px solid #000;
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  display: inline-block;
+  margin-right: 6px;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 
 .name {
   font-weight: 700;
@@ -460,8 +472,7 @@
 
 /* STATUS BUTTON (same style family as Mail/WhatsApp) */
 .action-btn.status {
-  border: 2px solid #f16464;
-  /* Purple stroke */
+  border: 2px solid #f16464; /* Purple stroke */
   color: #f16464;
   background: #fff;
 }
@@ -485,7 +496,7 @@
   background: #ffffff;
   border: 2px solid #e5e7eb;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   z-index: 999;
   overflow: hidden;
   animation: fadeDown 0.22s ease-in-out;
@@ -504,35 +515,26 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  border-left: 6px solid transparent;
-  /* colored indicator */
+  border-left: 6px solid transparent; /* colored indicator */
 }
 
 .status-dropdown button:hover {
   background: #f4f7ff;
 }
-
 .status-dropdown button.shortlisted {
-  border-left-color: #16a34a;
-  /* green */
+  border-left-color: #16a34a; /* green */
   color: #065f46;
 }
-
 .status-dropdown button.rejected {
-  border-left-color: #dc2626;
-  /* red */
+  border-left-color: #dc2626; /* red */
   color: #7f1d1d;
 }
-
 .status-dropdown button.on-hold {
-  border-left-color: #f59e0b;
-  /* yellow/orange */
+  border-left-color: #f59e0b; /* yellow/orange */
   color: #78350f;
 }
-
 .status-dropdown button.interview-scheduled {
-  border-left-color: #2563eb;
-  /* blue */
+  border-left-color: #2563eb; /* blue */
   color: #1e40af;
 }
 
@@ -543,15 +545,8 @@
 
 /* Smooth dropdown animation */
 @keyframes fadeDown {
-  from {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 
@@ -560,37 +555,16 @@
 ================================================= */
 
 @keyframes luxury-entrance {
-  0% {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  0% { opacity: 0; transform: translateY(16px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes box-shine {
-
-  0%,
-  100% {
-    left: -150%;
-  }
-
-  50% {
-    left: 150%;
-  }
+  0%, 100% { left: -150%; }
+  50% { left: 150%; }
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(5px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
 }
