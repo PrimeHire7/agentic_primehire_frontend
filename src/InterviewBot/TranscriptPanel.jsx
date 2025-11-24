@@ -98,7 +98,7 @@ export default function TranscriptPanel({ candidateName = "Anonymous", candidate
         setTranscript((t) => [...t, { sender: "user", text: d.transcribed_text }]);
       }
       if (d.next_question && !d.completed) {
-        setTranscript((t) => [...t, { sender: "ai", text: d.next_question }]);
+        // setTranscript((t) => [...t, { sender: "ai", text: d.next_question }]);
         speak(d.next_question);
       }
       if (d.completed) {
