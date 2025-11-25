@@ -27,7 +27,7 @@
 body,
 .main-content,
 .chat-container {
-  padding-top: 64px;
+  padding-top: 20px;
   /* Same height as header */
 }
 
