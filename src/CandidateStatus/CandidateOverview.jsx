@@ -95,6 +95,25 @@ export default function CandidateOverview() {
                         <p>Skill Score <span>{attempt.skill_score ?? 0}</span></p>
                     </div>
 
+                    <div className="box">
+                        <h4>Anomalies Detected</h4>
+
+                        {attempt.anomalies?.length > 0 ? (
+                            <ul className="anomaly-list">
+                                {attempt.anomalies.map((a, i) => (
+                                    <li key={i}>
+                                        <strong>{a.type}</strong> — {a.msg}
+                                        <br />
+                                        <small>{a.timestamp}</small>
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p>No anomalies recorded.</p>
+                        )}
+                    </div>
+
+
                     <div className="box half">
                         <h4>Metadata</h4>
                         <p>Created <span>{new Date(attempt.created_at).toLocaleString()}</span></p>
