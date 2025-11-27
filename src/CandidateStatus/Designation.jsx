@@ -7,17 +7,51 @@ import "./Designation.css";
 const Designation = () => {
     const [jobs, setJobs] = useState([]);
     const [loading, setLoading] = useState(true);
-
     const fetchJDHistory = async () => {
-        try {
-            const res = await fetch(`${API_BASE}/mcp/tools/jd_history/jd/history`);
-            const data = await res.json();
-            setJobs(data.history || []);
-        } catch (err) {
-            console.error("Failed to load JD list", err);
-        }
-        setLoading(false);
-    };
+    try {
+        const res = await fetch(`${API_BASE}/mcp/tools/jd_history/jd/history`);
+        const data = await res.json();
+
+        const history = data.history || [];
+
+        // Fetch attempts per JD
+        const withAttempts = await Promise.all(
+            history.map(async (jd) => {
+                const attemptsRes = await fetch(`${API_BASE}/mcp/tools/jd_history/scheduler/attempts/${jd.id}`);
+                const attemptsData = await attemptsRes.json();
+
+                // Filter out useless / unstarted attempts
+                const usefulAttempts = attemptsData.attempts?.filter(
+                    a =>
+                        a.progress &&
+                        a.progress !== "Applied" &&
+                        a.progress !== "Not Started"
+                );
+
+                return {
+                    ...jd,
+                    attemptCount: usefulAttempts.length || 0,
+                };
+            })
+        );
+
+        setJobs(withAttempts);
+    } catch (err) {
+        console.error("Failed to load JD list", err);
+    }
+    setLoading(false);
+};
+
+    // const fetchJDHistory = async () => {
+    //     try {
+    //         const res = await fetch(`${API_BASE}/mcp/tools/jd_history/jd/history`);
+    //         const data = await res.json();
+    //         setJobs(data.history || []);
+    //     } catch (err) {
+    //         console.error("Failed to load JD list", err);
+    //     }
+    //     setLoading(false);
+    // };
 
     useEffect(() => {
         fetchJDHistory();
@@ -42,7 +76,9 @@ const Designation = () => {
                     >
                         <div className="card-content">
                             <h3 className="jd-title">{item.designation}</h3>
-                            <p className="sub-info">{item.match_count} Matches</p>
+                            {/* <p className="sub-info">{item.match_count} Matches</p> */}
+                            <p className="sub-info">{item.attemptCount} Attempts</p>
+
                         </div>
 
                         <ChevronRight size={20} className="arrow-icon" />
