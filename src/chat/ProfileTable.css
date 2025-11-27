@@ -1,27 +1,37 @@
-/* =================================================
-   MAIN PROFILE BOX
-================================================= */
-.profile-box {
+/* ===================================================
+   ResumeTable.css
+   ✨ Elegant Professional Table Styling
+=================================================== */
+
+/* ===== Base Resume Table Container ===== */
+.resume-box {
   background: linear-gradient(to bottom, #ffffff, #fafafa);
   padding: 24px;
   border-radius: 16px;
   border: 2px solid #1a1a1a;
-
-  /* Your requested shadow */
   box-shadow:
-    0 12px 24px -10px rgba(0, 0, 0, 0.1),
-    0 8px 16px -8px rgba(0, 0, 0, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-
+    0 10px 20px -8px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
   margin-bottom: 24px;
   position: relative;
-  animation: luxury-entrance 0.6s ease-out backwards;
-  overflow: hidden;
+  animation: resume-appear 0.6s ease-out;
 }
 
-/* Shine Animation */
-.profile-box::before {
-  content: '';
+@keyframes resume-appear {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== Subtle Shine Animation ===== */
+.resume-box::before {
+  content: "";
   position: absolute;
   top: 0;
   left: -150%;
@@ -32,546 +42,11 @@
       rgba(255, 255, 255, 0.25) 50%,
       transparent 100%);
   transform: skewX(-25deg);
-  animation: box-shine 6s ease-in-out infinite;
+  animation: resume-shine 6s ease-in-out infinite;
+  pointer-events: none;
 }
 
-
-/* =================================================
-      SEND BUTTON + BADGES CONTAINER
-================================================= */
-
-.send-review-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 15px 0;
-  gap: 25px;
-}
-
-/* BADGES ROW */
-.review-badges {
-  display: flex;
-  gap: 12px;
-}
-
-/* Compact badge design */
-.badge {
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.2s;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-/* Colors */
-.badge.best {
-  background: #28a745;
-  /* Green */
-  color: #fff;
-}
-
-.badge.good {
-  background: #f1c40f;
-  /* Yellow */
-  color: #000;
-}
-
-.badge.partial {
-  background: #e74c3c;
-  /* Red */
-  color: #fff;
-}
-
-/* Active animation */
-.badge.active {
-  transform: scale(1.12);
-  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.25);
-}
-
-
-/* =================================================
-      FILTERS
-================================================= */
-
-.filters-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 16px;
-  border-bottom: 2px solid #e5e7eb;
-}
-
-.title {
-  font-size: 20px;
-  font-weight: 700;
-  color: #1a1a1a;
-}
-
-.filter-inputs {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
-
-.input-box {
-  border: 2px solid #1a1a1a;
-  background: linear-gradient(to bottom, #ffffff, #f9fafb);
-  padding: 8px 14px;
-  border-radius: 10px;
-  font-weight: 600;
-  font-size: 14px;
-  transition: all 0.25s ease;
-}
-
-.input-box:focus {
-  outline: none;
-  border-color: #38bdf8;
-  background: #ffffff;
-  box-shadow: 0 4px 10px rgba(56, 189, 248, 0.25);
-  transform: translateY(-2px);
-}
-
-.input-box.small {
-  width: 120px;
-}
-
-.sort-btn {
-  border: 2px solid #1a1a1a;
-  background: linear-gradient(to bottom, #ffffff, #fafafa);
-  padding: 8px 14px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.25s ease;
-  color: #1a1a1a;
-  font-size: 14px;
-}
-
-.sort-btn:hover {
-  border-color: #38bdf8;
-  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
-  color: #fff;
-  transform: translateY(-3px);
-  box-shadow:
-    0 8px 16px rgba(56, 189, 248, 0.25),
-    0 4px 8px rgba(14, 165, 233, 0.2);
-}
-
-
-/* =================================================
-      SELECT ALL + CHECKBOXES
-================================================= */
-
-.profiles-table input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-  appearance: none;
-  border: 2px solid #cbd5e1;
-  border-radius: 4px;
-  position: relative;
-  transition: all 0.2s ease-in-out;
-}
-
-.profiles-table input[type="checkbox"]:checked {
-  background-color: #0284c7;
-  border-color: #0284c7;
-}
-
-.profiles-table input[type="checkbox"]:checked::after {
-  content: "✓";
-  position: absolute;
-  top: -2px;
-  left: 2px;
-  font-size: 16px;
-  font-weight: bold;
-  color: #fff;
-}
-
-.profiles-table input[type="checkbox"]:hover {
-  border-color: #38bdf8;
-}
-
-.profiles-table td:first-child,
-.profiles-table th:first-child {
-  width: 40px;
-  text-align: center;
-}
-
-
-/* =================================================
-      BULK SEND BUTTON + DROPDOWN
-================================================= */
-
-.bulk-send-container {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 12px;
-}
-
-.bulk-send-btn {
-  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
-  color: white;
-  padding: 10px 18px;
-  border-radius: 10px;
-  border: none;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: 0.25s ease;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.bulk-send-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 16px rgba(56, 189, 248, 0.25);
-}
-
-/* Your updated dropdown */
-.send-dropdown {
-  position: absolute;
-  top: 158px;
-  /* right: 0; */
-  background: white;
-  border: 2px solid #38bdf8;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
-  border-radius: 12px;
-  width: 160px;
-  padding: 6px 0;
-  z-index: 30;
-}
-
-.send-option {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  color: #0f172a;
-  transition: 0.2s ease;
-}
-
-.send-option:hover {
-  background: #e0f7ff;
-}
-
-.send-option svg {
-  color: #0284c7;
-}
-
-
-/* =================================================
-      TABLE STYLING
-================================================= */
-
-.profiles-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  margin-top: 12px;
-  background: #ffffff;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow:
-    0 4px 8px rgba(0, 0, 0, 0.05),
-    0 1px 3px rgba(0, 0, 0, 0.08);
-}
-
-.profiles-table th {
-  background: linear-gradient(135deg, #0ea5e9, #0284c7);
-  color: #ffffff;
-  text-align: left;
-  font-weight: 700;
-  padding: 14px 12px;
-  font-size: 12px;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-}
-
-.profiles-table td {
-  padding: 14px 12px;
-  border-bottom: 1px solid #e2e8f0;
-  background: #ffffff;
-  transition: 0.2s ease;
-}
-
-.profiles-table tbody tr:hover {
-  background: rgba(56, 189, 248, 0.06);
-  transform: translateX(5px);
-}
-
-
-/* =================================================
-      ACTION BUTTONS
-================================================= */
-
-.actions-cell {
-  min-width: 200px;
-}
-
-.action-group {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  align-items: flex-start;
-}
-
-.action-btn {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  padding: 10px 14px;
-  border-radius: 10px;
-  border: 2px solid #e5e7eb;
-  background: #ffffff;
-  cursor: pointer;
-  transition: 0.25s ease;
-}
-
-.action-btn.mail {
-  border-color: #0284c7;
-  color: #0284c7;
-}
-
-.action-btn.mail:hover {
-  background: #e0f2fe;
-  transform: translateY(-2px);
-}
-
-.action-btn.whatsapp {
-  border-color: #22c55e;
-  color: #16a34a;
-}
-
-.action-btn.whatsapp:hover {
-  background: #dcfce7;
-  transform: translateY(-2px);
-}
-
-.action-btn.bot {
-  border-color: #7c3aed;
-  color: #6d28d9;
-}
-
-.action-btn.bot:hover {
-  background: #ede9fe;
-  transform: translateY(-2px);
-}
-
-.action-btn.whatsapp.disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-
-/* =================================================
-      NAME + SCORE + LABEL
-================================================= */
-
-.name {
-  font-weight: 700;
-  font-size: 15px;
-}
-
-.score {
-  font-weight: 700;
-  text-align: center;
-  color: #0284c7;
-}
-
-.match-label {
-  font-size: 11px;
-  font-weight: 700;
-  padding: 4px 10px;
-  border-radius: 6px;
-  display: inline-block;
-  margin: 4px 0;
-}
-
-.match-best {
-  background: #d1fae5;
-  color: #065f46;
-  border: 1px solid #34d399;
-}
-
-.match-good {
-  background: #fef3c7;
-  color: #92400e;
-  border: 1px solid #fbbf24;
-}
-
-.match-partial {
-  background: #fee2e2;
-  color: #991b1b;
-  border: 1px solid #f87171;
-}
-
-
-/* =================================================
-      SUMMARY CARDS (OLD)
-================================================= */
-
-.review-cards {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-  margin-top: 20px;
-}
-
-.review-card {
-  background: linear-gradient(to bottom, #ffffff, #f8fafc);
-  padding: 18px 20px;
-  border-radius: 12px;
-  border: 2px solid #e2e8f0;
-  cursor: pointer;
-  transition: 0.25s ease;
-  min-width: 150px;
-  text-align: center;
-  font-weight: 600;
-}
-
-.review-card:hover {
-  background: #f0f9ff;
-  border-color: #38bdf8;
-  transform: translateY(-3px);
-}
-
-.review-card.active {
-  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
-  color: #ffffff;
-  border-color: #0284c7;
-  transform: translateY(-3px);
-}
-
-/* STATUS BUTTON (same style family as Mail/WhatsApp) */
-.action-btn.status {
-  border: 2px solid #f16464;
-  /* Purple stroke */
-  color: #f16464;
-  background: #fff;
-}
-
-.action-btn.status:hover {
-  background: #f3e8ff;
-  transform: translateY(-2px);
-}
-
-/* STATUS DROPDOWN STYLES - matching new design */
-.status-wrapper {
-  position: relative;
-  width: 100%;
-}
-
-.status-dropdown {
-  position: absolute;
-  top: 42px;
-  right: 0;
-  width: 100%;
-  background: #ffffff;
-  border: 2px solid #e5e7eb;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  z-index: 999;
-  overflow: hidden;
-  animation: fadeDown 0.22s ease-in-out;
-}
-
-.status-dropdown button {
-  width: 100%;
-  background: none;
-  border: none;
-  padding: 12px;
-  font-size: 13px;
-  text-align: left;
-  cursor: pointer;
-  transition: 0.25s ease;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  border-left: 6px solid transparent;
-  /* colored indicator */
-}
-
-.status-dropdown button:hover {
-  background: #f4f7ff;
-}
-
-.status-dropdown button.shortlisted {
-  border-left-color: #16a34a;
-  /* green */
-  color: #065f46;
-}
-
-.status-dropdown button.rejected {
-  border-left-color: #dc2626;
-  /* red */
-  color: #7f1d1d;
-}
-
-.status-dropdown button.on-hold {
-  border-left-color: #f59e0b;
-  /* yellow/orange */
-  color: #78350f;
-}
-
-.status-dropdown button.interview-scheduled {
-  border-left-color: #2563eb;
-  /* blue */
-  color: #1e40af;
-}
-
-/* Hover effect for all options */
-.status-dropdown button:hover {
-  background: #f0f9ff;
-}
-
-/* Smooth dropdown animation */
-@keyframes fadeDown {
-  from {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-
-/* =================================================
-      ANIMATIONS
-================================================= */
-
-@keyframes luxury-entrance {
-  0% {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes box-shine {
+@keyframes resume-shine {
 
   0%,
   100% {
@@ -583,51 +58,129 @@
   }
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(5px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* ===== Header ===== */
+.resume-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a1a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
 }
 
-/* =================================================
-   SCORE BAR FIX (VISIBLE COLORS)
-================================================= */
-/* FORCE SCORE TEXT VISIBILITY */
-td.score {
-  color: #0284c7 !important;   /* Deep blue */
-  font-weight: 800;
-  font-size: 15px;
-}
-
-.match-bar {
+/* ===== Table ===== */
+.resume-table {
   width: 100%;
-  height: 8px;
-  background: #e5e7eb; /* light grey track */
-  border-radius: 10px;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 14px;
+  color: #374151;
+  background: #ffffff;
+  border-radius: 12px;
   overflow: hidden;
-  margin-top: 6px;
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.05),
+    0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
-.bar-fill {
-  height: 100%;
-  transition: width 0.35s ease;
+/* ===== Table Header ===== */
+.resume-table thead {
+  background: linear-gradient(135deg, #0ea5e9, #0284c7);
 }
 
-/* Colors for score levels */
-.bar-fill.best {
-  background: #16a34a; /* green */
+.resume-table th {
+  color: #ffffff;
+  text-align: left;
+  font-weight: 700;
+  padding: 14px 12px;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.5px;
 }
 
-.bar-fill.good {
-  background: #f59e0b; /* yellow/gold */
+/* ===== Table Body ===== */
+.resume-table td {
+  border-bottom: 1px solid #e5e7eb;
+  padding: 14px 12px;
+  background: #ffffff;
+  vertical-align: middle;
+  transition: all 0.25s ease;
 }
 
-.bar-fill.partial {
-  background: #dc2626; /* red */
+/* ===== Hover Row ===== */
+.resume-table tbody tr:hover {
+  background: linear-gradient(90deg, rgba(56, 189, 248, 0.05), #ffffff);
+  transform: translateX(3px);
+  box-shadow:
+    -3px 0 0 #38bdf8,
+    0 3px 10px rgba(56, 189, 248, 0.12);
 }
+
+/* ===== Name Cell ===== */
+.name-cell {
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.resume-table tbody tr:hover .name-cell {
+  color: #0ea5e9;
+}
+
+/* ===== Contact Column ===== */
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13px;
+}
+
+.contact-info span {
+  color: #374151;
+  line-height: 1.3;
+}
+
+/* ===== Skills Column ===== */
+.skills-cell {
+  max-width: 220px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #1f2937;
+  font-weight: 500;
+}
+
+/* ===== Empty State ===== */
+.empty-state {
+  background: #ffffff;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  color: #6b7280;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin: 20px 0;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .resume-box {
+    padding: 16px;
+  }
+
+  .resume-table th,
+  .resume-table td {
+    padding: 10px 8px;
+    font-size: 13px;
+  }
+
+  .skills-cell {
+    max-width: 150px;
+  }
+
+  .resume-title {
+    font-size: 18px;
+  }
+}
+
