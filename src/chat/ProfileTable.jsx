@@ -1,3 +1,5 @@
+
+
 // src/components/ProfileTable.jsx
 import React, { useState, useEffect } from "react";
 import { Mail, MessageSquare, Send } from "lucide-react";
@@ -66,7 +68,7 @@ const ProfileTable = ({ data = [], index = 0, jdId = null }) => {
       if (selectedCategory) {
         if (selectedCategory === "best" && m.finalScore < 85) return false;
         if (selectedCategory === "good" && (m.finalScore < 60 || m.finalScore >= 85)) return false;
-        if (selectedCategory === "partial" && m.finalScore >= 60) return false;
+        // if (selectedCategory === "partial" && m.finalScore >= 60) return false;
       }
 
       if (!filterQuery) return true;
@@ -88,12 +90,12 @@ const ProfileTable = ({ data = [], index = 0, jdId = null }) => {
   const displayedMatches = sortAndFilterMatches(prepared);
 
   /* ------------------- Summary counts ------------------- */
-  const summary = { best: 0, good: 0, partial: 0 };
+  const summary = { best: 0, good: 0 };
   prepared.forEach((item) => {
     if (item.finalScore >= 85) summary.best++;
     else if (item.finalScore >= 60) summary.good++;
-    else summary.partial++;
   });
+
 
   /* ------------------- Select All handler ------------------- */
   useEffect(() => {
@@ -183,9 +185,9 @@ const ProfileTable = ({ data = [], index = 0, jdId = null }) => {
             👍 Good ({summary.good})
           </span>
 
-          <span className={`badge partial ${selectedCategory === "partial" ? "active" : ""}`} onClick={() => setSelectedCategory("partial")}>
+          {/* <span className={`badge partial ${selectedCategory === "partial" ? "active" : ""}`} onClick={() => setSelectedCategory("partial")}>
             ⚙ Partial ({summary.partial})
-          </span>
+          </span> */}
         </div>
       </div>
 
@@ -286,7 +288,8 @@ const ProfileTableRow = ({
 
   const score = item.finalScore ?? 0;
 
-  const matchLevel = score >= 85 ? "Best match" : score >= 60 ? "Good match" : "Partial match";
+  const matchLevel = score >= 85 ? "Best match" : "Good match";
+
   const barWidth = Math.min(Math.max(score, 5), 100) + "%";
 
   const normalizedPhone = (item.phone || "").replace(/\D/g, "");
@@ -368,19 +371,16 @@ const ProfileTableRow = ({
           <span className="name">{item.name}</span>
 
           <span
-            className={`match-label ${
-              matchLevel === "Best match" ? "match-best" : matchLevel === "Good match" ? "match-good" : "match-partial"
-            }`}
+            className={`match-label ${matchLevel === "Best match" ? "match-best" : matchLevel === "Good match" ? "match-good" : "match-partial"
+              }`}
           >
             {matchLevel}
           </span>
 
-          <div className="match-bar">
-            <div
-              className={`bar-fill ${score >= 85 ? "best" : score >= 60 ? "good" : "partial"}`}
-              style={{ width: barWidth }}
-            />
-          </div>
+          <div
+            className={`bar-fill ${score >= 85 ? "best" : "good"}`}
+            style={{ width: barWidth }}
+          />
         </div>
       </td>
 
