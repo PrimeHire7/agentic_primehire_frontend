@@ -233,3 +233,23 @@
     font-size: 12px;
   }
 }
+
+.suggested-prompts {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.prompt-chip {
+  padding: 6px 12px;
+  background: #f4f4f5;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.prompt-chip:hover {
+  background: #e4e4e7;
+}
