@@ -1,327 +1,289 @@
-/* === ChatInput.css (UPDATED) === */
-
-/* positioning */
-.chat-input-center {
-  position: fixed;
-  top: 50%;
-  left: 60%;
-  transform: translate(-50%, -50%);
-  width: 90%;
-  max-width: 700px;
-  z-index: 100;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  padding-left: 10px;
+/* ===========================================================
+    MAIN WRAPPER
+=========================================================== */
+.chat-input-wrapper {
+  position: sticky;
+  bottom: 0;
+  width: 100%;
+  padding: 18px 28px;
+  backdrop-filter: blur(14px);
+  background: rgba(245, 247, 255, 0.4);
+  z-index: 50;
 }
 
-.chat-input-bottom {
-  position: fixed;
-  bottom: 20px;
-  left: 60%;
-  transform: translateX(-50%);
-  width: 90%;
-  max-width: 700px;
-  z-index: 100;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
+/* ===========================================================
+    SHELL (Glass Container)
+=========================================================== */
+.ci-shell {
+  width: 100%;
+  max-width: 920px;
+  margin: 0 auto;
 
-/* container */
-.chat-input-container {
   display: flex;
   align-items: flex-end;
-  gap: 8px;
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 8px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  transition: box-shadow 0.2s ease;
+  gap: 14px;
+
+  padding: 18px 22px;
+  border-radius: 22px;
+
+  background: rgba(255, 255, 255, 0.70);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow:
+    0 10px 26px rgba(0, 0, 0, 0.08),
+    0 0 50px rgba(99, 102, 241, 0.15);
+
+  backdrop-filter: blur(20px);
+  transition: 0.25s ease;
 }
 
-.chat-input-container:focus-within {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  border-color: #3b82f6;
+.ci-shell:hover {
+  box-shadow:
+    0 16px 36px rgba(0, 0, 0, 0.12),
+    0 0 80px rgba(99, 102, 241, 0.25);
 }
 
-/* buttons */
-.attach-btn,
-.send-btn {
-  flex-shrink: 0;
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-  display: inline-flex;
+/* ===========================================================
+    ICON BUTTONS
+=========================================================== */
+.ci-icon-btn {
+  width: 46px;
+  height: 46px;
+
+  display: flex;
   align-items: center;
   justify-content: center;
+
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
+
+  cursor: pointer;
+  transition: 0.2s ease;
 }
 
-.attach-btn:hover:not(:disabled) {
-  background-color: #f3f4f6;
+.ci-icon-btn:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.9);
 }
 
-.send-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+/* Mic special tint */
+.ci-mic-btn {
+  background: rgba(231, 238, 255, 0.8);
 }
 
-.send-btn:not(:disabled) {
-  background-color: #3b82f6;
+/* File upload tint */
+.ci-file-btn {
+  background: rgba(255, 255, 255, 0.75);
+}
+
+/* ===========================================================
+    SEND BUTTON (Primary CTA)
+=========================================================== */
+.ci-send-btn {
+  width: 48px;
+  height: 48px;
+
+  border-radius: 16px;
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
   color: white;
-}
 
-.send-btn:not(:disabled):hover {
-  background-color: #2563eb;
-}
-
-/* mic button */
-.mic-btn {
-  width: 40px;
-  height: 40px;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
-  transition: all 0.15s ease;
-  background: transparent;
-  border: none;
+
+  cursor: pointer;
+  transition: 0.25s ease;
+
+  box-shadow: 0 8px 18px rgba(99, 102, 241, 0.3);
 }
 
-.mic-btn:hover:not(:disabled) {
-  background: #f3f4f6;
+.ci-send-btn:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 14px 30px rgba(99, 102, 241, 0.4);
 }
 
-.mic-btn.active {
-  background: rgba(59, 130, 246, 0.12);
-  box-shadow: 0 6px 18px rgba(59, 130, 246, 0.08);
-  color: #0366d6;
-}
-
-/* input panel */
-.input-with-panel {
-  position: relative;
+/* ===========================================================
+    CENTER PANEL
+=========================================================== */
+.ci-center {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
-/* dropdown row */
-.dropdown-buttons-row {
+/* ===========================================================
+    TOP ROW (Dropdowns)
+=========================================================== */
+.ci-top-row {
   display: flex;
-  gap: 8px;
-  padding: 0 4px;
+  gap: 14px;
 }
 
-.dropdown-wrapper {
+.ci-dropdown-wrapper {
   position: relative;
-  z-index: 1001;
 }
 
-.dropdown-trigger {
+.ci-dropdown-trigger {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px;
-  background: #f3f4f6;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 500;
-  color: #374151;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.dropdown-trigger:hover:not(:disabled) {
-  background: #e5e7eb;
-  border-color: #d1d5db;
-}
-
-.dropdown-trigger:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* dropdown menu */
-.dropdown-menu {
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-  min-width: 220px;
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08),
-    0 6px 10px -4px rgba(0, 0, 0, 0.04);
-  padding: 6px;
-  z-index: 1600;
-  animation: slideDown 0.18s ease-out;
-}
-
-.dropdown-item {
-  display: block;
-  width: 100%;
-  text-align: left;
   padding: 8px 12px;
-  font-size: 14px;
-  color: #374151;
-  background: transparent;
-  border: none;
-  border-radius: 6px;
+
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+
+  border-radius: 10px;
   cursor: pointer;
-  transition: background-color 0.12s ease;
+  transition: 0.2s ease;
+
+  backdrop-filter: blur(10px);
 }
 
-.dropdown-item:hover {
-  background-color: #f3f4f6;
+.ci-dropdown-trigger:hover {
+  background: rgba(255, 255, 255, 0.95);
 }
 
-/* textarea */
-.chat-textarea {
-  width: 100%;
-  min-height: 40px;
-  max-height: 220px;
-  padding: 8px 12px;
-  border: none;
+/* Always-open tasks hover fix */
+.always-open-trigger {
+  border-color: rgba(90, 200, 250, 0.45);
+}
+
+/* ===========================================================
+    DROPDOWN MENU
+=========================================================== */
+.ci-dropdown-menu {
+  margin-top: 6px;
+  padding: 8px;
+
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+
+  backdrop-filter: blur(14px);
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.12);
+
+  animation: fadeDown 0.18s ease-out;
+}
+
+.ci-dropdown-item {
+  padding: 10px 12px;
   border-radius: 8px;
-  resize: none;
   font-size: 14px;
-  line-height: 1.5;
-  background: transparent;
-  transition: background-color 0.2s ease;
-  box-sizing: border-box;
+
+  cursor: pointer;
+  transition: 0.15s ease;
 }
 
-.chat-textarea:focus {
-  outline: none;
-  background-color: #f9fafb;
+.ci-dropdown-item:hover {
+  background: rgba(99, 102, 241, 0.12);
 }
 
-.chat-textarea:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  background-color: #f3f4f6;
+/* Active Task */
+.task-active {
+  background: #00ffaa !important;
+  color: #0a0a0a !important;
+  font-weight: 600;
+  border-left: 4px solid #34ffd3;
 }
 
-.chat-textarea::placeholder {
-  color: #9ca3af;
-}
-
-/* suggested prompts / chips */
-.suggested-prompts,
-.chips-row {
+/* ===========================================================
+    PROMPT CHIPS
+=========================================================== */
+.ci-chip-row {
   display: flex;
-  gap: 8px;
-  margin-bottom: 4px;
-  flex-wrap: wrap;
-  align-items: center;
+  gap: 10px;
+  padding: 6px 2px;
+  overflow-x: auto;
+
+  scrollbar-width: none;
 }
 
-.prompt-chip {
-  padding: 6px 12px;
-  background: #f4f4f5;
+.ci-chip-row::-webkit-scrollbar {
+  display: none;
+}
+
+.ci-chip {
+  padding: 8px 14px;
   border-radius: 20px;
-  font-size: 13px;
+
+  background: rgba(240, 240, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+
+  backdrop-filter: blur(10px);
   cursor: pointer;
-  transition: all 0.16s ease;
-  border: 1px solid transparent;
-  user-select: none;
-}
-
-.prompt-chip:hover {
-  background: #e9e9ea;
-  border-color: #e1e1e2;
-}
-
-.prompt-chip:active {
-  transform: translateY(1px);
-}
-
-/* suggestions dropdown (autocomplete) */
-.suggestions-dropdown {
-  position: absolute;
-  z-index: 1500;
-  top: calc(100% + 6px);
-  left: 8px;
-  right: 8px;
-  max-width: calc(100% - 16px);
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  box-shadow: 0 14px 30px rgba(14, 30, 37, 0.06);
-  overflow: hidden;
-  padding: 6px 6px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.suggestion-item {
-  padding: 8px 10px;
-  border-radius: 6px;
-  font-size: 13px;
-  color: #111827;
-  cursor: pointer;
-  transition: background 0.12s ease;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+
+  transition: 0.2s ease;
 }
 
-.suggestion-item:hover {
-  background: #f3f4f6;
+.ci-chip:hover {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: #6366f1;
 }
 
-/* small helper styles for responsive */
-@media (max-width: 768px) {
-
-  .chat-input-center,
-  .chat-input-bottom {
-    width: 95%;
-    max-width: none;
-  }
-
-  .chat-input-bottom {
-    bottom: 10px;
-  }
-
-  .dropdown-buttons-row {
-    flex-wrap: wrap;
-  }
-
-  .dropdown-menu {
-    min-width: 160px;
-  }
+/* ===========================================================
+    TEXTAREA
+=========================================================== */
+.ci-textarea-wrapper {
+  position: relative;
 }
 
-@media (max-width: 480px) {
-  .chat-input-container {
-    padding: 6px;
-    gap: 6px;
-  }
+.ci-textarea {
+  width: 100%;
+  min-height: 56px !important;
+  max-height: 260px;
 
-  .attach-btn,
-  .send-btn,
-  .mic-btn {
-    width: 36px;
-    height: 36px;
-  }
+  border-radius: 16px;
+  padding: 14px 16px;
 
-  .chat-textarea {
-    font-size: 13px;
-    padding: 6px 10px;
-  }
+  background: rgba(255, 255, 255, 0.65) !important;
+  border: 1px solid rgba(255, 255, 255, 0.5);
 
-  .dropdown-trigger {
-    padding: 5px 10px;
-    font-size: 12px;
-  }
+  backdrop-filter: blur(12px);
+  font-size: 15px;
+
+  transition: 0.25s ease;
+  resize: none;
 }
 
-/* subtle animation */
-@keyframes slideDown {
+.ci-textarea:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-color: #6366f1;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.2);
+}
+
+/* ===========================================================
+    AUTOCOMPLETE
+=========================================================== */
+.ci-suggestions {
+  margin-top: 8px;
+  padding: 8px;
+
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.ci-suggestion-item {
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.ci-suggestion-item:hover {
+  background: rgba(99, 102, 241, 0.12);
+}
+
+/* ===========================================================
+    ANIMATIONS
+=========================================================== */
+@keyframes fadeDown {
   from {
     opacity: 0;
     transform: translateY(-6px);
@@ -333,8 +295,80 @@
   }
 }
 
-.active-task-pill {
-  position: absolute;
-  right: 10px;
-  /* top: 50px; */
+/* --------------------------------------------------------
+   🟦 COMPACT CHAT INPUT MODE — THE FIX
+---------------------------------------------------------*/
+
+.ci-shell {
+  padding: 12px 16px !important;
+  border-radius: 16px !important;
+  gap: 10px !important;
+}
+
+/* ICON BUTTONS SMALLER */
+.ci-icon-btn,
+.ci-mic-btn,
+.ci-send-btn {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 12px !important;
+}
+
+/* SEND BUTTON trim */
+.ci-send-btn {
+  box-shadow: 0 4px 10px rgba(99, 102, 241, 0.25) !important;
+}
+
+.ci-send-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+}
+
+/* TEXTAREA COMPACT */
+.ci-textarea {
+  min-height: 38px !important;
+  max-height: 140px !important;
+  padding: 10px 12px !important;
+  font-size: 14px !important;
+}
+
+/* CHIPS — now one-line scroll */
+.ci-chip-row {
+  padding: 4px 0 !important;
+  gap: 8px !important;
+  max-height: 40px !important;
+}
+
+/* SUGGESTIONS compact */
+.ci-suggestions {
+  padding: 6px !important;
+}
+
+.ci-suggestion-item {
+  padding: 6px 10px !important;
+}
+
+/* DROPDOWN ROW COMPACT */
+.ci-top-row {
+  gap: 8px !important;
+}
+
+.ci-dropdown-trigger {
+  padding: 6px 8px !important;
+  border-radius: 8px !important;
+  font-size: 13px !important;
+}
+
+/* DROPDOWN MENU compact */
+.ci-dropdown-menu {
+  padding: 6px !important;
+}
+
+.ci-dropdown-item {
+  padding: 7px 10px !important;
+  font-size: 13px !important;
+}
+
+/* LIMIT TEXTAREA EXPANSION */
+textarea.ci-textarea {
+  overflow-y: auto !important;
 }

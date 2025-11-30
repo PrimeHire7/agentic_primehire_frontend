@@ -107,3 +107,14 @@ All colors MUST be HSL.
     padding-top: 0px;
   }
 }
+
+
+.page-root {
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+.page-main {
+  min-height: calc(100vh - 64px);
+  box-sizing: border-box;
+}

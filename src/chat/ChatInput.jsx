@@ -1,56 +1,70 @@
-// 📁 src/components/ChatInput.jsx
-import React, { useState, useRef, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Send, Paperclip, ChevronDown, Zap, ListTodo, Mic } from "lucide-react";
 import "./ChatInput.css";
 
-/**
- * ChatInput with:
- * - locked prefixes for tasks
- * - prompt chips that ALWAYS insert prefixed text
- * - inline auto-suggestions dropdown (ChatGPT-like)
- * - mic (speech-to-text) button (Web Speech API)
- */
-
 const ChatInput = ({
   onSend,
   onFileUpload,
-  disabled: externalDisabled = false,
-  placeholder = "Ask me anything...",
+  placeholder = "Ask PrimeHire anything…",
+  activeTask: propActiveTask = null,
+  forceShowChips = false,
 }) => {
   const [input, setInput] = useState("");
-  const [isLocked, setIsLocked] = useState(false);
-  const [dynamicPlaceholder, setDynamicPlaceholder] = useState(placeholder);
-  const [isCentered, setIsCentered] = useState(true);
+  const [showTasksDropdown, setShowTasksDropdown] = useState(true);
   const [showFeaturesDropdown, setShowFeaturesDropdown] = useState(false);
-  const [showTasksDropdown, setShowTasksDropdown] = useState(false);
   const [activeTask, setActiveTask] = useState(null);
-
-  const [suggestionsVisible, setSuggestionsVisible] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
-  const [micActive, setMicActive] = useState(false);
+  const [suggestionsVisible, setSuggestionsVisible] = useState(false);
 
-  const fileInputRef = useRef(null);
-  const featuresRef = useRef(null);
-  const tasksRef = useRef(null);
   const textareaRef = useRef(null);
-  const recognitionRef = useRef(null);
+  const fileInputRef = useRef(null);
+  const tasksRef = useRef(null);
+  const featuresRef = useRef(null);
+  useEffect(() => {
+    const update = () => {
+      const el = document.querySelector(".ci-shell");
+      if (el) {
+        const safe = el.offsetHeight + 40;
+        document.documentElement.style.setProperty("--ci-safe-height", `${safe}px`);
+      }
+    };
+    update();
+    const obs = new ResizeObserver(update);
+    const shell = document.querySelector(".ci-shell");
+    if (shell) obs.observe(shell);
+    return () => obs.disconnect();
+  }, []);
 
-  // features & tasks
-  const features = [
-    "ZohoBridge",
-    "MailMind",
-    "PrimeHire Brain",
+  /* ============================================================
+     ⭐ INTERNAL TOKEN MAPPING (CRITICAL FOR WS ROUTING)
+  ============================================================ */
+  const internalKeyFor = {
+    "JD Creator": "JD Creator",
+    "Profile Matcher": "Profile Matcher",
+    "Upload Resumes": "Upload Resumes",
+    "Interview Bot": "InterviewBot",
+
+    // NEW FIX: history & status modules
+    "JD History": "JDHistory",
+    "Match History": "ProfileMatchHistory",
+    "Candidate Status": "CandidateStatus",
+  };
+
+  const tasks = [
+    "JD Creator",
+    "Profile Matcher",
+    "Upload Resumes",
     "Interview Bot",
-    "LinkedIn Poster",
     "JD History",
-    "Candidates Status",
+    "Match History",
+    "Candidate Status",
   ];
 
-  const tasks = ["JD Creator", "Profile Matcher", "Upload Resumes"];
-
-  // prompt chips content (prefixed strings)
+  /* ============================================================
+     ⭐ Prompt Chips for Quick Actions
+  ============================================================ */
   const promptChips = {
     "JD Creator": [
       {
@@ -61,34 +75,14 @@ const ChatInput = ({
       {
         label: "🤖 AI Engineer @ Nirmata",
         text:
-          "Start JD Creator: Create a JD for an AI Engineer at Nirmata Neurotech — 3+ years experience, Python, LLMs, Vector DBs, Transformers, Hyderabad.",
-      },
-      {
-        label: "⚡ Node.js Backend @ InnovateX",
-        text:
-          "Start JD Creator: Create a JD for a Node.js Backend Developer at InnovateX — API development, MongoDB, Postgres, AWS, Remote.",
-      },
-      {
-        label: "📱 Flutter Developer @ PixelApps",
-        text:
-          "Start JD Creator: Create a JD for a Flutter Mobile Developer at PixelApps — 2–3 years experience, Flutter, Dart, Firebase, Remote.",
-      },
-      {
-        label: "⚙️ DevOps Engineer @ CloudNova",
-        text:
-          "Start JD Creator: Create a JD for a DevOps Engineer at CloudNova — AWS, Kubernetes, CI/CD, 4+ years experience, Bangalore.",
+          "Start JD Creator: Create a JD for an AI Engineer at Nirmata Neurotech — 3+ years experience, Python, LLMs, Vector DBs.",
       },
     ],
     "Profile Matcher": [
       {
         label: "🔍 React Developer",
         text:
-          "Start Profile Matcher: React Developer — 2–4 years experience, strong in React, JavaScript, API integrations.",
-      },
-      {
-        label: "🤖 AI Engineer",
-        text:
-          "Start Profile Matcher: AI Engineer — 3+ YOE, Python, Transformers, LLMs, Vector DBs.",
+          "Start Profile Matcher: React Developer — 2–4 years experience, strong in React, JavaScript, APIs.",
       },
       {
         label: "⚡ Node.js Backend",
@@ -102,61 +96,60 @@ const ChatInput = ({
         text: "Start Upload Resumes: Upload all candidate resumes for bulk processing.",
       },
       {
-        label: "📎 Upload Shortlisted",
-        text: "Start Upload Resumes: Upload shortlisted candidate resumes for screening.",
+        label: "🗂 Bulk Extract",
+        text:
+          "Start Upload Resumes: Bulk extract skills and experience from multiple resumes.",
+      },
+    ],
+    "Interview Bot": [
+      {
+        label: "🎤 Quick Candidate Screen",
+        text:
+          "Start InterviewBot: Run a 5-min voice screening for the candidate — focus on communication and problem solving.",
       },
       {
-        label: "🗂 Bulk Resume Extraction",
-        text: "Start Upload Resumes: Upload multiple resumes to extract skills and experience.",
+        label: "🎥 Full Video Interview",
+        text:
+          "Start InterviewBot: Run a full video interview simulation — include technical and behavioral questions.",
+      },
+    ],
+    "JD History": [
+      { label: "🕘 Recent JDs", text: "Show JDHistory: Fetch last 10 job descriptions." },
+    ],
+    "Match History": [
+      { label: "📈 Last Matches", text: "Show ProfileMatchHistory: recent match runs." },
+    ],
+    "Candidate Status": [
+      {
+        label: "📌 Candidate Overview",
+        text: "Show CandidateStatus: Overview of candidate pipeline.",
       },
     ],
   };
 
-  /* -----------------------
-     Locked prefix helpers
-  ------------------------*/
+  /* ============================================================
+     ⭐ Prefix builder
+  ============================================================ */
   const getPrefix = (task = activeTask) => {
+    if (!task) return "";
     if (task === "JD Creator") return "Start JD Creator: ";
     if (task === "Profile Matcher") return "Start Profile Matcher: ";
     if (task === "Upload Resumes") return "Start Upload Resumes: ";
+    if (task === "InterviewBot" || task === "Interview Bot")
+      return "Start InterviewBot: ";
     return "";
   };
 
-  // Restore/maintain prefix when user types or paste
   const enforcePrefix = (value) => {
-    const prefix = getPrefix();
+    const prefix = getPrefix(activeTask);
     if (!prefix) return value;
-    if (!value.startsWith(prefix)) {
-      // If user pasted a whole sentence starting with the short text (without prefix),
-      // remove any stray duplicate prefix-like fragments and restore proper prefix.
-      const cleaned = value.replace(/^Start\s+(JD Creator:|Profile Matcher:|Upload Resumes:)/i, "").trimStart();
-      return prefix + cleaned;
-    }
+    if (!value.startsWith(prefix)) return prefix + value.trimStart();
     return value;
   };
 
-  // Put caret at end of input
-  const focusAndMoveCaretToEnd = () => {
-    requestAnimationFrame(() => {
-      const t = textareaRef.current;
-      if (!t) return;
-      t.focus();
-      const len = t.value.length;
-      t.setSelectionRange(len, len);
-    });
-  };
-
-  // Set input (used by chips) and focus textarea at end
-  const setInputAndFocus = (val) => {
-    setInput(val);
-    setTimeout(() => focusAndMoveCaretToEnd(), 30);
-  };
-
-  /* -----------------------
-     Auto-suggestions logic
-     - simple client-side list
-     - shows when user types after prefix
-  ------------------------*/
+  /* ============================================================
+     ⭐ Auto-complete logic
+  ============================================================ */
   const suggestionPool = [
     "React",
     "Redux",
@@ -164,438 +157,259 @@ const ChatInput = ({
     "Node.js",
     "API",
     "AWS",
-    "Docker",
-    "Kubernetes",
-    "Python",
-    "PyTorch",
-    "TensorFlow",
-    "Transformers",
-    "LLMs",
-    "Vector DB",
-    "Postgres",
     "MongoDB",
     "Remote",
-    "Bangalore",
     "Hyderabad",
-    "Full-time",
-    "Contract",
+    "Bangalore",
+    "Python",
+    "Transformers",
+    "LLMs",
   ];
 
-  const updateSuggestions = (currentVal) => {
-    const prefix = getPrefix();
-    const after = prefix ? currentVal.slice(prefix.length) : currentVal;
-    const token = after.trim().split(/\s+/).pop() || "";
-    if (!token || token.length < 2) {
-      setSuggestions([]);
+  const updateSuggestions = (value) => {
+    const prefix = getPrefix(activeTask);
+    const actual = prefix ? value.slice(prefix.length) : value;
+    if (actual.length < 2) {
       setSuggestionsVisible(false);
       return;
     }
-    const q = token.toLowerCase();
-    const filtered = suggestionPool.filter((s) => s.toLowerCase().includes(q)).slice(0, 6);
-    setSuggestions(filtered);
-    setSuggestionsVisible(filtered.length > 0);
+    const filtered = suggestionPool.filter((w) =>
+      w.toLowerCase().includes(actual.toLowerCase())
+    );
+    setSuggestions(filtered.slice(0, 6));
+    setSuggestionsVisible(true);
   };
 
-  const acceptSuggestion = (sugg) => {
-    const prefix = getPrefix();
-    const cur = textareaRef.current;
-    if (!cur) {
-      // fallback: append
-      setInput((prev) => enforcePrefix(prev) + " " + sugg);
-      focusAndMoveCaretToEnd();
-      return;
-    }
-
-    // insert at caret (after prefix enforcement)
-    const start = Math.max(cur.selectionStart, prefix.length);
-    const end = Math.max(cur.selectionEnd, prefix.length);
-    const before = input.slice(0, start);
-    const after = input.slice(end);
-    const separator = before.endsWith(" ") || sugg.startsWith(" ") ? "" : " ";
-    const newVal = before + separator + sugg + (after.startsWith(" ") ? after : " " + after);
-    const enforced = enforcePrefix(newVal);
-    setInput(enforced);
-
-    // set caret to just after inserted suggestion
-    setTimeout(() => {
-      const pos = before.length + separator.length + sugg.length;
-      cur.focus();
-      cur.setSelectionRange(pos, pos);
-      updateSuggestions(enforced);
-    }, 10);
+  const acceptSuggestion = (word) => {
+    setInput((prev) => {
+      const prefix = getPrefix(activeTask);
+      const next = prev.trim() ? prev + " " + word : prefix + word;
+      setSuggestionsVisible(false);
+      return next;
+    });
   };
 
-  /* -----------------------
-     Mic (SpeechRecognition)
-  ------------------------*/
-  const startMic = () => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      alert("Speech recognition not supported in this browser.");
-      return;
-    }
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
-      recognitionRef.current = null;
-    }
+  /* ============================================================
+     ⭐ Handle chip click — with INTERNAL TOKEN FIX
+  ============================================================ */
+  const handleChipClick = (taskFriendly, text) => {
+    const internal = internalKeyFor[taskFriendly] || taskFriendly;
 
-    const rec = new SpeechRecognition();
-    rec.interimResults = false;
-    rec.lang = "en-US";
-    rec.continuous = false;
+    // Set task + prefix
+    setActiveTask(internal);
 
-    rec.onstart = () => {
-      setMicActive(true);
-    };
-
-    rec.onresult = (ev) => {
-      const transcript = Array.from(ev.results)
-        .map((r) => r[0])
-        .map((r) => r.transcript)
-        .join(" ")
-        .trim();
-
-      if (!transcript) return;
-
-      // append transcript to input (after prefix)
-      const prefix = getPrefix();
-      let base = input;
-      if (!base.startsWith(prefix)) base = prefix;
-      if (base.endsWith(" ") || transcript.startsWith(" ")) {
-        setInput(base + transcript);
-      } else {
-        setInput(base + " " + transcript);
-      }
-
-      setTimeout(() => focusAndMoveCaretToEnd(), 20);
-    };
-
-    rec.onerror = (e) => {
-      console.error("Speech rec error:", e);
-      setMicActive(false);
-    };
-
-    rec.onend = () => {
-      setMicActive(false);
-    };
-
-    recognitionRef.current = rec;
-    try {
-      rec.start();
-    } catch (err) {
-      console.warn("Mic start error:", err);
-    }
-  };
-
-  const stopMic = () => {
-    const rec = recognitionRef.current;
-    if (!rec) return;
-    rec.stop();
-    recognitionRef.current = null;
-    setMicActive(false);
-  };
-
-  const toggleMic = () => {
-    if (micActive) stopMic();
-    else startMic();
-  };
-
-  /* -----------------------
-     Event Effects
-  ------------------------*/
-  useEffect(() => {
-    const moveInputDown = () => setIsCentered(false);
-    window.addEventListener("sidebar_item_clicked", moveInputDown);
-    return () => window.removeEventListener("sidebar_item_clicked", moveInputDown);
-  }, []);
-
-  useEffect(() => {
-    const updateLockState = () => {
-      const jdActive = !!window.__JD_MODE_ACTIVE__;
-      const matchActive = !!window.__PROFILE_MATCH_MODE_ACTIVE__;
-      const locked = jdActive || matchActive;
-      setIsLocked(locked);
-      if (jdActive) setDynamicPlaceholder("🧠 JD Creator active — please complete the flow...");
-      else if (matchActive) setDynamicPlaceholder("🎯 Profile Matcher running — please wait...");
-      else setDynamicPlaceholder(placeholder);
-    };
-
-    updateLockState();
-
-    const events = ["jd_open", "jd_close", "jd_step_update", "profile_match_start", "profile_match_done"];
-    events.forEach((e) => window.addEventListener(e, updateLockState));
-    return () => events.forEach((e) => window.removeEventListener(e, updateLockState));
-  }, [placeholder]);
-
-  useEffect(() => {
-    const handleClickOutside = (ev) => {
-      if (featuresRef.current && !featuresRef.current.contains(ev.target)) setShowFeaturesDropdown(false);
-      if (tasksRef.current && !tasksRef.current.contains(ev.target)) setShowTasksDropdown(false);
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  // update suggestions when input changes
-  useEffect(() => {
-    updateSuggestions(input);
-  }, [input, activeTask]);
-
-  /* -----------------------
-     Handlers: send, file, features, tasks
-  ------------------------*/
-  const handleSend = () => {
-    if (!input.trim() || isLocked || externalDisabled) return;
-    onSend(input);
-    setInput("");
-    setActiveTask(null);
-    setSuggestionsVisible(false);
-    setIsCentered(false);
-  };
-
-  const handleKeyDown = (e) => {
-    const prefix = getPrefix();
-    // block backspace/delete into prefix
-    if ((e.key === "Backspace" || e.key === "Delete") && textareaRef.current) {
-      const pos = textareaRef.current.selectionStart;
-      if (pos <= prefix.length) {
-        e.preventDefault();
-        return;
-      }
-    }
-
-    // press Enter to send (unless shift+enter)
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-
-    // arrow down to open suggestions navigation (basic)
-    if (e.key === "ArrowDown" && suggestionsVisible) {
-      e.preventDefault();
-      // blur/focus to allow mouse selection; we keep simple: move focus out then back
-      // more complex keyboard nav can be added
-    }
-  };
-
-  const handleFileSelect = (event) => {
-    const files = event.target.files;
-    if (!files?.length) return;
-    if (onFileUpload) onFileUpload(Array.from(files));
-    event.target.value = null;
-  };
-
-  const handleFeatureSelect = (feature) => {
-    setInput(`Use ${feature}: `);
-    setShowFeaturesDropdown(false);
-    focusAndMoveCaretToEnd();
-  };
-
-  const handleTaskSelect = (task) => {
-    setShowTasksDropdown(false);
-    setActiveTask(task);
-    // set prefixed empty prompt
-    const prefix = getPrefix(task);
-    setInput(prefix);
-    setTimeout(() => focusAndMoveCaretToEnd(), 50);
-  };
-
-  /* helper: getPrefix by explicit task */
-
-
-  /* allow chip click which ensures prefix & full example inserted */
-  const handleChipClick = (task, text) => {
-    setActiveTask(task);
-    // text already contains prefix, but enforce just in case
+    // Pre-fill the textarea with chip text (NOT sending)
     const enforced = enforcePrefix(text);
     setInput(enforced);
-    setTimeout(() => focusAndMoveCaretToEnd(), 40);
+
+    // ❌ No auto send here
   };
 
-  const fullyDisabled = externalDisabled || isLocked;
+
+  /* ============================================================
+     ⭐ Respect parent activeTask
+  ============================================================ */
+  useEffect(() => {
+    if (propActiveTask) {
+      const internal = internalKeyFor[propActiveTask] || propActiveTask;
+      setActiveTask(internal);
+      setInput(getPrefix(internal));
+    }
+  }, [propActiveTask]);
+
+  /* ============================================================
+     ⭐ Sending message
+  ============================================================ */
+  const send = () => {
+    const trimmed = input.trim();
+    if (!trimmed) return;
+    onSend?.(trimmed);
+    setInput("");
+    setActiveTask(null);
+  };
+  useEffect(() => {
+    const updateHeight = () => {
+      const el = document.querySelector(".ci-shell");
+      if (el) {
+        document.documentElement.style.setProperty(
+          "--ci-height",
+          `${el.offsetHeight + 40}px`
+        );
+      }
+    };
+
+    updateHeight();
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(document.querySelector(".ci-shell"));
+
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <div className={isCentered ? "chat-input-center" : "chat-input-bottom"}>
-      <div className="chat-input-container">
-        {/* left icons */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="attach-btn"
+    <div className="chat-input-wrapper">
+      <div className="ci-shell">
+
+        {/* LEFT ACTION: FILE UPLOAD */}
+        <button
+          className="ci-icon-btn ci-file-btn"
           onClick={() => fileInputRef.current?.click()}
-          disabled={fullyDisabled}
         >
           <Paperclip className="w-5 h-5" />
-        </Button>
+        </button>
 
         <input
           ref={fileInputRef}
           type="file"
-          accept=".pdf,.doc,.docx,.txt"
           multiple
-          onChange={handleFileSelect}
           style={{ display: "none" }}
+          onChange={(e) => onFileUpload?.(Array.from(e.target.files))}
         />
 
-        {/* main panel */}
-        <div className="input-with-panel">
-          <div className="dropdown-buttons-row">
-            {/* Features */}
-            <div className="dropdown-wrapper" ref={featuresRef}>
+        {/* CENTER AREA */}
+        <div className="ci-center">
+
+          {/* TOP ROW : FEATURES + TASKS */}
+          <div className="ci-top-row">
+
+            {/* FEATURES DROPDOWN */}
+            <div className="ci-dropdown-wrapper">
               <button
-                className="dropdown-trigger"
+                className="ci-dropdown-trigger"
                 onClick={() => {
-                  setShowFeaturesDropdown(!showFeaturesDropdown);
+                  setShowFeaturesDropdown((s) => !s);
                   setShowTasksDropdown(false);
                 }}
-                disabled={fullyDisabled}
               >
                 <Zap className="w-4 h-4" />
                 <span>Features</span>
                 <ChevronDown className="w-4 h-4" />
               </button>
+
               {showFeaturesDropdown && (
-                <div className="dropdown-menu">
-                  {features.map((f, i) => (
-                    <button key={i} className="dropdown-item" onClick={() => handleFeatureSelect(f)}>
-                      {f}
-                    </button>
-                  ))}
+                <div className="ci-dropdown-menu">
+                  {["ZohoBridge", "MailMind", "LinkedInPoster", "PrimeHireBrain", "Interview Bot"].map(
+                    (f, i) => (
+                      <button
+                        key={i}
+                        className="ci-dropdown-item"
+                        onClick={() => {
+                          const internal = internalKeyFor[f] || f;
+                          setActiveTask(internal);
+                          setInput(getPrefix(internal));
+                        }}
+                      >
+                        {f}
+                      </button>
+                    )
+                  )}
                 </div>
               )}
             </div>
 
-            {/* Tasks */}
-            <div className="dropdown-wrapper" ref={tasksRef}>
+            {/* TASKS DROPDOWN (ALWAYS OPEN) */}
+            <div className="ci-dropdown-wrapper">
               <button
-                className="dropdown-trigger"
-                onClick={() => {
-                  setShowTasksDropdown(!showTasksDropdown);
-                  setShowFeaturesDropdown(false);
-                }}
-                disabled={fullyDisabled}
+                className="ci-dropdown-trigger always-open-trigger"
+                onClick={() => setShowTasksDropdown(!showTasksDropdown)}
               >
                 <ListTodo className="w-4 h-4" />
                 <span>Tasks</span>
                 <ChevronDown className="w-4 h-4" />
               </button>
+
               {showTasksDropdown && (
-                <div className="dropdown-menu">
+                <div className="ci-dropdown-menu ci-task-menu">
                   {tasks.map((t, i) => (
-                    <button key={i} className="dropdown-item" onClick={() => handleTaskSelect(t)}>
+                    <button
+                      key={i}
+                      className={`ci-dropdown-item ${activeTask === internalKeyFor[t] ? "task-active" : ""
+                        }`}
+                      onClick={() => {
+                        const internal = internalKeyFor[t];
+                        setActiveTask(internal);
+                        setInput(getPrefix(internal));
+                      }}
+                    >
                       {t}
                     </button>
                   ))}
                 </div>
               )}
-
             </div>
           </div>
-          {/* Active Task Pill Indicator
-          {activeTask && (
-            <div className="active-task-pill">
-              {activeTask === "JD Creator" && "🧠 JD Creator"}
-              {activeTask === "Profile Matcher" && "🎯 Profile Matcher"}
-              {activeTask === "Upload Resumes" && "📄 Upload Resumes"}
 
-              <button
-                className="pill-close"
-                onClick={() => {
-                  setActiveTask(null);
-                  setInput(""); // remove forced prefix
-                }}
-              >
-                ✕
-              </button>
-            </div>
-          )} */}
-
-
-          {/* Prompt chips (task-specific) */}
-          <div className="chips-row">
-            {activeTask && (promptChips[activeTask] || []).map((c, idx) => (
-              <div
-                key={idx}
-                className="prompt-chip"
-                onClick={() => handleChipClick(activeTask, c.text)}
-              >
-                {c.label}
-              </div>
-            ))}
-          </div>
-
-          {/* textarea + suggestions */}
-          <div style={{ position: "relative", width: "100%" }}>
-            {activeTask && (
-              <div className="floating-prefix">
-                🟢 {activeTask} Active —
+          {/* PROMPT CHIPS */}
+          {activeTask &&
+            promptChips[
+            Object.keys(internalKeyFor).find((k) => internalKeyFor[k] === activeTask)
+            ] && (
+              <div className="ci-chip-row">
+                {promptChips[
+                  Object.keys(internalKeyFor).find((k) => internalKeyFor[k] === activeTask)
+                ].map((chip, idx) => (
+                  <div
+                    key={idx}
+                    className="ci-chip"
+                    onClick={() =>
+                      handleChipClick(
+                        Object.keys(internalKeyFor).find(
+                          (k) => internalKeyFor[k] === activeTask
+                        ),
+                        chip.text
+                      )
+                    }
+                  >
+                    {chip.label}
+                  </div>
+                ))}
               </div>
             )}
+
+          {/* TEXTAREA */}
+          <div className="ci-textarea-wrapper">
             <Textarea
-              ref={textareaRef}
+              className="ci-textarea"
+              placeholder={placeholder}
               value={input}
+              ref={textareaRef}
               onChange={(e) => {
                 const enforced = enforcePrefix(e.target.value);
                 setInput(enforced);
+                updateSuggestions(enforced);
               }}
-              onKeyDown={handleKeyDown}
-              onClick={(e) => {
-                const prefix = getPrefix();
-                const t = textareaRef.current;
-                if (t && t.selectionStart < prefix.length) {
-                  t.setSelectionRange(prefix.length, prefix.length);
-                }
-              }}
-              placeholder={
-                activeTask === "Profile Matcher"
-                  ? "Describe the role to match… (Example: React Developer with 2–4 YOE, strong in React + JS)"
-                  : activeTask === "JD Creator"
-                    ? "Create a JD… (Example: Senior React Developer, 5 YOE, Bangalore, Company: PrimeHire, Skills: React, TS)"
-                    : dynamicPlaceholder
-              }
-              disabled={fullyDisabled}
-              className="chat-textarea"
-              rows={1}
-              onFocus={() => updateSuggestions(input)}
             />
 
-            {/* suggestions dropdown */}
-            {suggestionsVisible && !fullyDisabled && (
-              <div className="suggestions-dropdown">
-                {suggestions.map((s, i) => (
-                  <div key={i} className="suggestion-item" onMouseDown={() => acceptSuggestion(s)}>
+            {/* AUTOCOMPLETE SUGGESTIONS */}
+            {suggestionsVisible && (
+              <div className="ci-suggestions">
+                {suggestions.map((s, idx) => (
+                  <div
+                    key={idx}
+                    className="ci-suggestion-item"
+                    onMouseDown={() => acceptSuggestion(s)}
+                  >
                     {s}
                   </div>
                 ))}
               </div>
             )}
           </div>
+
         </div>
 
-        {/* right icons: mic + send */}
-        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleMic}
-            disabled={fullyDisabled}
-            className={`mic-btn ${micActive ? "active" : ""}`}
-          >
+        {/* RIGHT PANEL: MIC + SEND */}
+        <div className="ci-right">
+          <button className="ci-icon-btn ci-mic-btn">
             <Mic className="w-5 h-5" />
-          </Button>
+          </button>
 
-          <Button
-            onClick={handleSend}
-            disabled={!input.trim() || fullyDisabled}
-            size="icon"
-            className="send-btn"
-          >
+          <button className="ci-send-btn" onClick={send}>
             <Send className="w-5 h-5" />
-          </Button>
+          </button>
         </div>
+
       </div>
     </div>
   );
 };
-
 export default ChatInput;

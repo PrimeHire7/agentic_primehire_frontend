@@ -1,297 +1,123 @@
-/* 🔥 Fixed Header — Always Visible on Scroll */
-.header {
-  position: fixed;
+/* HEADER BASE */
+.ph-header {
+  width: 100%;
+  position: sticky;
   top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-  height: 64px;
-  background: linear-gradient(to bottom, #ffffff, #fefefe);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  z-index: 100;
+
+  padding: 10px 0;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 2px 18px rgba(0, 0, 0, 0.04);
 }
 
-/* ✅ Keep container centered and responsive */
-.header-container {
+/* INNER FLEX */
+.ph-header-inner {
+  width: 100%;
+  max-width: 1480px;
+  margin: 0 auto;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 24px;
-  max-width: 100%;
-  margin: 0 auto;
+
+  padding: 0 30px;
 }
 
-/* 👇 Add padding below main layout to prevent content overlap */
-body,
-.main-content,
-.chat-container {
-  padding-top: 20px;
-  /* Same height as header */
-}
-
-
-/* Left Side */
-.header-left {
+/* LEFT SECTION (logo) */
+.ph-logo-wrap {
+  margin: 0;
+  padding: 0;
   display: flex;
   align-items: center;
-  gap: 16px;
 }
 
-.logo-link {
-  display: inline-flex;
-  align-items: center;
-  text-decoration: none;
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.logo-link:hover {
-  transform: scale(1.05);
-}
-
-.logo {
-  height: 36px;
+.ph-logo {
+  height: 44px;
   width: auto;
-  object-fit: contain;
-  transition: filter 0.3s ease;
+  display: block;
 }
 
-.logo-link:hover .logo {
-  filter: brightness(1.1);
-}
-
-/* Right Side */
-.header-right {
+/* RIGHT SECTION (buttons) */
+.ph-header-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
+
+  /* ★ Pushes the buttons completely to the right ★ */
+  margin-left: auto;
 }
 
 /* Refresh Button */
-.refresh-button {
-  border: 2px solid #1a1a1a !important;
-  background: linear-gradient(to bottom, #ffffff, #fafafa) !important;
-  color: #1a1a1a !important;
-  font-weight: 600 !important;
-  padding: 8px 16px !important;
-  border-radius: 10px !important;
-  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+.ph-refresh-btn {
+  padding: 8px 14px;
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(12px);
+
+  font-size: 0.85rem;
+  color: #1e293b;
+  font-weight: 500;
+
   display: flex;
   align-items: center;
-  gap: 8px;
-  position: relative;
-  overflow: hidden;
+  gap: 6px;
+
+  transition: 0.25s ease;
+}
+
+.ph-refresh-btn:hover {
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(99, 102, 241, 0.18);
+}
+
+/* Sign In Button */
+.ph-signin-btn {
+  padding: 8px 16px;
+  border-radius: 10px;
+
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  color: white;
+  border: none;
+
+  font-weight: 600;
+  font-size: 0.88rem;
+
+  box-shadow: 0 6px 18px rgba(99, 102, 241, 0.25);
+  transition: 0.25s ease;
+}
+
+.ph-signin-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(99, 102, 241, 0.35);
+}
+
+/* Primary Button */
+.ph-btn-primary {
+  padding: 9px 20px;
+  font-size: 0.97rem;
+  font-weight: 700;
+
+  background: linear-gradient(120deg, #2563eb, #4f46e5);
+  color: white;
+
+  border-radius: 12px;
+  cursor: pointer;
+
   box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    0 4px 14px rgba(37, 99, 235, 0.28),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+
+  transition: 0.25s ease;
 }
 
-/* Shine effect */
-.refresh-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -150%;
-  width: 150%;
-  height: 100%;
-  background: linear-gradient(110deg,
-      transparent 0%,
-      transparent 40%,
-      rgba(255, 255, 255, 0.5) 50%,
-      transparent 60%,
-      transparent 100%);
-  transform: skewX(-25deg);
-  transition: left 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.refresh-button:hover::before {
-  left: 150%;
-}
-
-.refresh-button:hover {
-  border-color: #38bdf8 !important;
-  background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%) !important;
-  color: white !important;
+.ph-btn-primary:hover {
   transform: translateY(-2px);
   box-shadow:
-    0 8px 16px -6px rgba(56, 189, 248, 0.4),
-    0 4px 8px -4px rgba(14, 165, 233, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
-}
-
-.refresh-button:active {
-  transform: translateY(0) scale(0.98);
-  box-shadow:
-    0 2px 4px rgba(14, 165, 233, 0.2),
-    inset 0 1px 2px rgba(0, 0, 0, 0.1) !important;
-  transition: all 0.1s ease;
-}
-
-/* Refresh Icon Animation */
-.refresh-icon {
-  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-  will-change: transform;
-}
-
-.refresh-button:hover .refresh-icon {
-  animation: elegant-rotate 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
-}
-
-@keyframes elegant-rotate {
-
-  0%,
-  100% {
-    transform: rotate(0deg);
-  }
-
-  50% {
-    transform: rotate(180deg);
-  }
-}
-
-.refresh-button:active .refresh-icon {
-  transform: rotate(360deg) scale(0.9);
-  transition: transform 0.4s ease;
-}
-
-/* Sign-in Button */
-.signin-button {
-  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%) !important;
-  border: 2px solid #0284c7 !important;
-  color: white !important;
-  font-weight: 600 !important;
-  padding: 8px 20px !important;
-  border-radius: 10px !important;
-  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
-  position: relative;
-  overflow: hidden;
-  box-shadow:
-    0 4px 12px -4px rgba(14, 165, 233, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-
-/* Gradient flow animation */
-@keyframes gradient-flow {
-
-  0%,
-  100% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
-}
-
-.signin-button {
-  background: linear-gradient(135deg,
-      #0ea5e9 0%,
-      #0284c7 50%,
-      #0ea5e9 100%) !important;
-  background-size: 200% 200%;
-  animation: gradient-flow 4s ease infinite;
-}
-
-.signin-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -150%;
-  width: 150%;
-  height: 100%;
-  background: linear-gradient(110deg,
-      transparent 0%,
-      transparent 40%,
-      rgba(255, 255, 255, 0.3) 50%,
-      transparent 60%,
-      transparent 100%);
-  transform: skewX(-25deg);
-  transition: left 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.signin-button:hover::before {
-  left: 150%;
-}
-
-.signin-button:hover {
-  transform: translateY(-2px) scale(1.03);
-  box-shadow:
-    0 12px 24px -8px rgba(14, 165, 233, 0.5),
-    0 6px 12px -6px rgba(14, 165, 233, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
-}
-
-.signin-button:active {
-  transform: translateY(0) scale(0.98);
-  box-shadow:
-    0 2px 4px rgba(14, 165, 233, 0.3),
-    inset 0 1px 2px rgba(0, 0, 0, 0.15) !important;
-  transition: all 0.1s ease;
-}
-
-/* Responsive Design */
-@media (max-width: 640px) {
-  .header-container {
-    padding: 10px 16px;
-  }
-
-  .header-left {
-    gap: 12px;
-  }
-
-  .header-right {
-    gap: 8px;
-  }
-
-  .logo {
-    height: 30px;
-  }
-
-  .refresh-button,
-  .signin-button {
-    font-size: 0.875rem;
-    padding: 6px 12px !important;
-  }
-
-  .refresh-button span {
-    display: none;
-  }
-}
-
-/* Glass morphism on scroll */
-.header.scrolled {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(20px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-/* Premium text rendering */
-.refresh-button,
-.signin-button {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-}
-
-/* Focus states for accessibility */
-.refresh-button:focus-visible,
-.signin-button:focus-visible {
-  outline: 2px solid rgba(56, 189, 248, 0.5);
-  outline-offset: 2px;
-}
-
-/* Loading state for refresh button */
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.refresh-button.loading .refresh-icon {
-  animation: spin 1s linear infinite;
+    0 10px 26px rgba(37, 99, 235, 0.35),
+    0 0 22px rgba(59, 130, 246, 0.3);
 }

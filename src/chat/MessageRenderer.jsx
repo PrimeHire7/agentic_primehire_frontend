@@ -1,7 +1,5 @@
-
 import React, { useEffect, useRef } from "react";
 import ChatMessage from "./ChatMessage";
-import ChatInput from "./ChatInput";
 import ProfileTable from "./ProfileTable";
 import ResumeTable from "@/chat/ResumeTable";
 import JDTaskUI from "@/pages/JDTaskUI";
@@ -13,16 +11,16 @@ import LinkedInPosterButton from "../LinkedInPoster/LinkedInPosterButton";
 import ZohoLoginButton from "../ZohoBridge/ZohoLoginButton";
 import MailMindButton from "../MailMind/MailMindButton";
 import JDHistory from "@/pages/JDHistory";
-import "./UploadUI.css";
 import Designation from "../CandidateStatus/Designation";
 
+import "./UploadUI.css";
 
-
-
-const MessageRenderer = React.memo(({ message }) => {
+const MessageRenderer = React.memo(({ message, onTriggerFeature }) => {
   if (!message) return null;
 
-  /* ---------- STRUCTURED TABLES ---------- */
+  /* ============================================================
+     STRUCTURED TABLES
+  ============================================================ */
   if (message.type === "profile_table") {
     return <ProfileTable data={message.data || {}} />;
   }
@@ -31,8 +29,10 @@ const MessageRenderer = React.memo(({ message }) => {
     return <ResumeTable data={message.data || {}} />;
   }
 
-  /* ---------- JD TASK UI ---------- */
-  if (message.type === "jd_ui" && message.data) {
+  /* ============================================================
+     JD UI (legacy)
+  ============================================================ */
+  if (message.type === "jd_ui") {
     const {
       currentJdStep,
       currentJdPrompt,
@@ -41,18 +41,17 @@ const MessageRenderer = React.memo(({ message }) => {
       handleJdSend,
       jdInProgress,
       messages,
-    } = message.data;
-
-    const safePrompt =
-      typeof currentJdPrompt === "object"
-        ? currentJdPrompt?.prompt || ""
-        : currentJdPrompt || "";
+    } = message.data || {};
 
     return (
       <div className="message-block feature-block">
         <JDTaskUI
           currentJdStep={currentJdStep}
-          currentJdPrompt={safePrompt}
+          currentJdPrompt={
+            typeof currentJdPrompt === "object"
+              ? currentJdPrompt?.prompt
+              : currentJdPrompt
+          }
           currentJdInput={currentJdInput}
           setCurrentJdInput={setCurrentJdInput}
           handleJdSend={handleJdSend}
@@ -63,44 +62,49 @@ const MessageRenderer = React.memo(({ message }) => {
     );
   }
 
-  /* ---------- MATCHER UI ---------- */
-  if (message.type === "matcher_ui") {
-    const { isLoading, onSend } = message.data || {};
-
-    return (
-      <div className="message-block feature-block fade-highlight">
-        {/* <ChatMessage
-          role="assistant"
-          content="🎯 Profile Matcher — enter JD to find best candidates."
-        /> */}
-        <div className="message-feature-ui mt-2">
-          {/* <ChatInput
-            onSend={onSend}
-            disabled={isLoading}
-            placeholder="Type JD text or paste JSON to match..."
-          /> */}
-        </div>
-      </div>
-    );
-  }
-
-  /* ---------- UPLOAD UI ---------- */
+  /* ============================================================
+     UPLOAD UI
+  ============================================================ */
   if (message.type === "upload_ui") {
     return (
       <div className="message-block feature-block fade-highlight">
-        <ChatMessage
-          role="assistant"
-          content="📎 Upload Resumes — upload PDFs/DOCXs, track progress, and view metadata."
-        />
+        <ChatMessage role="assistant" content="📎 Upload Resumes" />
         <UploadUI />
       </div>
     );
   }
 
-  /* ---------- FEATURE DETECTION (Zoho, MailMind, JDHistory...) ---------- */
-  const featureRef = useRef(null);
-  const isAssistant = message.role === "assistant";
+  /* ============================================================
+     DIRECT FEATURE UI RENDERING (FROM WS)
+  ============================================================ */
+  if (message.type === "feature_ui") {
+    return (
+      <div className="message-block feature-block fade-highlight">
+        {message.content && (
+          <ChatMessage role="assistant" content={message.content} />
+        )}
 
+        <div className="message-feature-ui mt-2">
+          {message.feature === "JDHistory" && <JDHistory />}
+          {message.feature === "ProfileMatchHistory" && <ProfileMatchHistory />}
+          {message.feature === "CandidateStatus" && <Designation />}
+
+          {message.feature === "InterviewBot" && <InterviewBot />}
+          {message.feature === "ZohoBridge" && <ZohoLoginButton />}
+          {message.feature === "MailMind" && <MailMindButton />}
+          {message.feature === "PrimeHireBrain" && <PrimeHireBrain />}
+          {message.feature === "LinkedInPoster" && <LinkedInPosterButton />}
+        </div>
+      </div>
+    );
+  }
+
+  /* ============================================================
+     TEXT-BASED FEATURE DETECTION (fallback)
+  ============================================================ */
+  const featureRef = useRef(null);
+
+  const isAssistant = message.role === "assistant";
   const cleanText =
     isAssistant && typeof message.content === "string"
       ? message.content.replace(/[*_~`]/g, "")
@@ -113,39 +117,33 @@ const MessageRenderer = React.memo(({ message }) => {
   const detectedFeature = featureMatch ? featureMatch[1] : null;
 
   useEffect(() => {
-    if (!detectedFeature || !featureRef.current) return;
-
-    requestAnimationFrame(() => {
-      const event = new CustomEvent("featureRendered", {
-        detail: { element: featureRef.current, feature: detectedFeature },
-      });
-      window.dispatchEvent(event);
-    });
+    if (!detectedFeature) return;
+    onTriggerFeature && onTriggerFeature(detectedFeature);
   }, [detectedFeature]);
 
   if (detectedFeature) {
     return (
-      <div
-        ref={featureRef}
-        className="message-block feature-block fade-highlight"
-      >
+      <div ref={featureRef} className="message-block feature-block fade-highlight">
         <ChatMessage role={message.role} content={message.content} />
+
         <div className="message-feature-ui mt-2">
+          {detectedFeature === "JDHistory" && <JDHistory />}
+          {detectedFeature === "ProfileMatchHistory" && <ProfileMatchHistory />}
+          {detectedFeature === "CandidateStatus" && <Designation />}
+
+          {detectedFeature === "InterviewBot" && <InterviewBot />}
           {detectedFeature === "ZohoBridge" && <ZohoLoginButton />}
           {detectedFeature === "MailMind" && <MailMindButton />}
           {detectedFeature === "PrimeHireBrain" && <PrimeHireBrain />}
-          {detectedFeature === "InterviewBot" && <InterviewBot />}
           {detectedFeature === "LinkedInPoster" && <LinkedInPosterButton />}
-          {detectedFeature === "ProfileMatchHistory" && <ProfileMatchHistory />}
-          {detectedFeature === "JDHistory" && <JDHistory />}
-          {detectedFeature === "CandidateStatus" && <Designation />}
-
         </div>
       </div>
     );
   }
 
-  /* ---------- DEFAULT CHAT MESSAGE ---------- */
+  /* ============================================================
+     DEFAULT
+  ============================================================ */
   return (
     <div className="message-block">
       <ChatMessage role={message.role} content={message.content} />

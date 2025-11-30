@@ -1,73 +1,34 @@
-// import { useEffect, useRef } from "react";
-// import ReactMarkdown from "react-markdown";
-// import remarkGfm from "remark-gfm";
-// import { cn } from "@/lib/utils";
-// import "./ChatMessage.css";
-
-// const ChatMessage = ({ role, content }) => {
-//   const messageEndRef = useRef(null);
-
-//   useEffect(() => {
-//     messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
-//   }, [content]);
-
-//   return (
-//     <div
-//       className={cn(
-//         "chat-message",
-//         role === "assistant" && "chat-message-assistant"
-//       )}
-//       ref={messageEndRef}
-//     >
-//       <div className="chat-avatar">{role === "user" ? "U" : "AI"}</div>
-
-//       <div className="chat-content markdown-body">
-//         <ReactMarkdown
-//           remarkPlugins={[remarkGfm]}
-//           components={{
-//             p: ({ children }) => <p className="chat-text">{children}</p>,
-//             ul: ({ children }) => <ul className="chat-list">{children}</ul>,
-//             li: ({ children }) => <li className="chat-list-item">{children}</li>,
-//             strong: ({ children }) => <strong className="chat-bold">{children}</strong>,
-//             h1: ({ children }) => <h1 className="chat-heading">{children}</h1>,
-//             h2: ({ children }) => <h2 className="chat-heading">{children}</h2>,
-//             h3: ({ children }) => <h3 className="chat-heading">{children}</h3>,
-//           }}
-//         >
-//           {content}
-//         </ReactMarkdown>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default ChatMessage;
 import React, { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import "./ChatMessage.css";
 
-// Icons (you can replace with lucide-react if you prefer)
-const CopyIcon = () => (
-  <span style={{ fontSize: "14px", opacity: 0.8 }}>📋</span>
-);
-const ThumbsUp = () => (
-  <span style={{ fontSize: "16px" }}>👍</span>
-);
-const ThumbsDown = () => (
-  <span style={{ fontSize: "16px" }}>👎</span>
-);
+const CopyIcon = () => <span style={{ fontSize: "14px" }}>📋</span>;
+const ThumbsUp = () => <span style={{ fontSize: "16px" }}>👍</span>;
+const ThumbsDown = () => <span style={{ fontSize: "16px" }}>👎</span>;
 
-const ChatMessage = ({ role, content, onFeedback }) => {
+const ChatMessage = ({ role, content, onFeedback, onTriggerFeature }) => {
   const messageEndRef = useRef(null);
   const [copied, setCopied] = useState(false);
-  const [feedback, setFeedback] = useState(null); // "up" | "down"
+  const [feedback, setFeedback] = useState(null);
 
-  // Scroll into view
   useEffect(() => {
     messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [content]);
 
-  // Copy message text
+  /* ---------------- Feature detection for normal chat ---------------- */
+
+  useEffect(() => {
+    if (!content || role !== "assistant") return;
+
+    const clean = content.replace(/[*_~`]/g, "");
+
+    const match = clean.match(/\b(JDHistory)\b/i);
+    if (match && onTriggerFeature) {
+      onTriggerFeature("JDHistory"); // auto fetch
+    }
+  }, [content]);
+
+  /* ---------------- Copy ---------------- */
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(content);
@@ -78,7 +39,6 @@ const ChatMessage = ({ role, content, onFeedback }) => {
     }
   };
 
-  // Feedback
   const handleFeedback = (type) => {
     setFeedback(type);
     if (onFeedback) onFeedback({ message: content, feedback: type });
@@ -99,31 +59,21 @@ const ChatMessage = ({ role, content, onFeedback }) => {
           <p className="chat-text">{content}</p>
         </div>
 
-        {/* Action Buttons: Copy + Feedback */}
         {role === "assistant" && (
           <div className="chat-actions">
-            {/* Copy Button */}
-            <button
-              className="chat-btn copy-btn"
-              onClick={handleCopy}
-              title="Copy"
-            >
+            <button className="chat-btn copy-btn" onClick={handleCopy}>
               {copied ? "✔ Copied!" : <CopyIcon />}
             </button>
 
-            {/* Thumbs Up */}
             <button
-              className={`chat-btn thumb-btn ${feedback === "up" ? "active" : ""
-                }`}
+              className={`chat-btn thumb-btn ${feedback === "up" ? "active" : ""}`}
               onClick={() => handleFeedback("up")}
             >
               <ThumbsUp />
             </button>
 
-            {/* Thumbs Down */}
             <button
-              className={`chat-btn thumb-btn ${feedback === "down" ? "active" : ""
-                }`}
+              className={`chat-btn thumb-btn ${feedback === "down" ? "active" : ""}`}
               onClick={() => handleFeedback("down")}
             >
               <ThumbsDown />

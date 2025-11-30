@@ -247,8 +247,15 @@ export const useMainContent = () => {
   // ✅ Fixed message handler
   const handleSend = useCallback(
     (message) => {
-      if (!message.trim()) return;
-      setIsLoading(true);
+      // if (!message.trim()) return;
+      // setIsLoading(true);
+
+      if (!message || message.trim() === "") {
+        // Just open chat mode UI
+        setMessages([{ role: "assistant", content: "👋 How can I assist you today?" }]);
+        return;
+      }
+
 
       // 🚫 JD Creator Mode Lock
       if (window.__JD_MODE_ACTIVE__ || (selectedTask === "JD Creator" && jdInProgress)) {
