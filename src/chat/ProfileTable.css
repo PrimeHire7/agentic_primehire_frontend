@@ -4,21 +4,26 @@
 .profile-box {
   background: linear-gradient(to bottom, #ffffff, #fafafa);
   padding: 24px;
-  padding-bottom: 100px;
-  /* extra breathing room for popups */
   border-radius: 16px;
   border: 2px solid #1a1a1a;
+  box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  overflow: visible;
+}
 
-  box-shadow:
-    0 12px 24px -10px rgba(0, 0, 0, 0.10),
-    0 8px 16px -8px rgba(0, 0, 0, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-
-  margin-bottom: 24px;
-  position: relative;
-  animation: luxury-entrance 0.6s ease-out backwards;
-  overflow: visible !important;
-  z-index: 1;
+/* STATUS POPUP ------------------------------------------------------ */
+.status-popup {
+  position: absolute;
+  top: 10px;
+  left: 120%;
+  width: 160px;
+  background: #fff;
+  border: 2px solid #eee;
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  z-index: 50;
+  animation: fadeDown 0.2s ease-out;
 }
 
 /* Shine Animation — behind content */

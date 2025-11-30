@@ -7,10 +7,12 @@
 
 .chat-scroll-area {
   flex: 1;
-  padding: 16px;
+  padding: 4px 12px;
+  /* super clean, minimal left padding */
   overflow-y: auto;
-  box-sizing: border-box;
 }
+
+
 
 /* empty placeholder */
 .empty-placeholder {
@@ -45,8 +47,4 @@
     transform: translateY(-6px);
     opacity: 1;
   }
-}
-
-.mc-chat-scroll {
-  padding-bottom: calc(var(--ci-safe-height, 140px) + 24px);
 }

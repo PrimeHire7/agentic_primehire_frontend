@@ -1,23 +1,24 @@
-
-
 // src/components/ProfileTable.jsx
 import React, { useState, useEffect } from "react";
-import { Mail, MessageSquare, Send } from "lucide-react";
+import {
+  Mail,
+  MessageSquare,
+  Send,
+  Loader2,
+} from "lucide-react";
 import { sendMailMessage, sendWhatsAppMessage } from "@/utils/api";
 import { API_BASE } from "@/utils/constants";
 import { useNavigate } from "react-router-dom";
 import { BsGraphUpArrow } from "react-icons/bs";
 import "./ProfileTable.css";
 
-/* ===========================================================
-  ProfileTable.jsx
-  - Merged: sorting/filtering/badges + working send-to-client flow
-  - Option B: bar + label (Best/Good/Partial)
-  =========================================================== */
 const ProfileTable = ({ data = [], index = 0, jdId = null }) => {
   const [filterQuery, setFilterQuery] = useState("");
   const [minScoreFilter, setMinScoreFilter] = useState(0);
-  const [sortConfig, setSortConfig] = useState({ key: "finalScore", direction: "desc" });
+  const [sortConfig, setSortConfig] = useState({
+    key: "finalScore",
+    direction: "desc",
+  });
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [responses, setResponses] = useState({});
   const [whatsappAvailable, setWhatsappAvailable] = useState(true);
@@ -28,102 +29,93 @@ const ProfileTable = ({ data = [], index = 0, jdId = null }) => {
 
   const navigate = useNavigate();
 
-  /* ------------------- FETCH WHATSAPP RESPONSES ------------------- */
   useEffect(() => {
     let mounted = true;
     const fetchResponses = async () => {
       try {
-        const res = await fetch(`${API_BASE}/mcp/tools/match/whatsapp/responses`);
-        if (!res.ok) throw new Error("failed to fetch responses");
+        const res = await fetch(
+          `${API_BASE}/mcp/tools/match/whatsapp/responses`
+        );
+        if (!res.ok) throw new Error("failed");
         const data = await res.json();
         if (mounted) setResponses(data);
       } catch (err) {
-        if (mounted) setWhatsappAvailable(false);
+        setWhatsappAvailable(false);
       }
     };
 
     fetchResponses();
-    const interval = setInterval(fetchResponses, 20000);
+    const i = setInterval(fetchResponses, 20000);
     return () => {
       mounted = false;
-      clearInterval(interval);
+      clearInterval(i);
     };
   }, []);
 
-  /* ------------------- PREPROCESS MATCHES ------------------- */
-  // shallow copy to avoid mutating props unexpectedly
-  const prepared = (Array.isArray(data) ? data.slice() : []).map((item) => {
-    const finalScore = item?.scores?.final_score ?? item?.finalScore ?? 0;
-    return { ...item, finalScore };
-  });
+  const prepared = (Array.isArray(data) ? data.slice() : []).map((item) => ({
+    ...item,
+    finalScore: item?.scores?.final_score ?? item.finalScore ?? 0,
+  }));
 
-  /* ------------------- SORT & FILTER ------------------- */
   const sortAndFilterMatches = (matches) => {
     let filtered = matches.filter((m) => {
       if (m.finalScore < minScoreFilter) return false;
 
-      if (!filterQuery && !selectedCategory) return true;
-
-      // category filter (best/good/partial)
       if (selectedCategory) {
         if (selectedCategory === "best" && m.finalScore < 85) return false;
-        if (selectedCategory === "good" && (m.finalScore < 60 || m.finalScore >= 85)) return false;
-        // if (selectedCategory === "partial" && m.finalScore >= 60) return false;
+        if (
+          selectedCategory === "good" &&
+          (m.finalScore < 60 || m.finalScore >= 85)
+        )
+          return false;
       }
 
       if (!filterQuery) return true;
+
       const q = filterQuery.toLowerCase();
-      const nameOk = (m.name || "").toLowerCase().includes(q);
-      const skillsOk = (Array.isArray(m.skills) ? m.skills.join(", ") : m.skills || "").toLowerCase().includes(q);
+      const name = (m.name || "").toLowerCase();
+      const skills = (Array.isArray(m.skills)
+        ? m.skills.join(", ")
+        : m.skills || ""
+      ).toLowerCase();
 
-      return nameOk || skillsOk;
+      return name.includes(q) || skills.includes(q);
     });
 
-    filtered.sort((a, b) => {
-      if (sortConfig.direction === "asc") return a.finalScore - b.finalScore;
-      return b.finalScore - a.finalScore;
-    });
+    filtered.sort((a, b) =>
+      sortConfig.direction === "asc"
+        ? a.finalScore - b.finalScore
+        : b.finalScore - a.finalScore
+    );
 
     return filtered;
   };
 
   const displayedMatches = sortAndFilterMatches(prepared);
 
-  /* ------------------- Summary counts ------------------- */
   const summary = { best: 0, good: 0 };
-  prepared.forEach((item) => {
-    if (item.finalScore >= 85) summary.best++;
-    else if (item.finalScore >= 60) summary.good++;
+  prepared.forEach((p) => {
+    if (p.finalScore >= 85) summary.best++;
+    else if (p.finalScore >= 60) summary.good++;
   });
 
+  const _deriveCandidateId = (it) =>
+    it.candidate_id || it.email || it.phone || it._pine_id || it.name || "";
 
-  /* ------------------- Select All handler ------------------- */
   useEffect(() => {
-    if (selectAll) setSelectedRows(displayedMatches.map((d) => _deriveCandidateId(d)));
-    else setSelectedRows([]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectAll, jdId, filterQuery, minScoreFilter, selectedCategory]);
-
-  /* ------------------- Helper: robust candidate id ------------------- */
-  const _deriveCandidateId = (item) => {
-    // Candidate source key -> keep consistent with server search keys
-    return item.candidate_id || item.email || item.phone || item._pine_id || item.name || "";
-  };
-
-  /* ------------------- Bulk actions placeholder ------------------- */
-  const handleBulkEmail = () => alert("Bulk email coming soon!");
-  const handleBulkWhatsApp = () => alert("Bulk WhatsApp coming soon!");
+    setSelectedRows(selectAll ? displayedMatches.map(_deriveCandidateId) : []);
+  }, [selectAll, displayedMatches.length]);
 
   return (
-    <div key={index} className="profile-box">
-      {/* FILTER BAR */}
+    <div className="profile-box">
+      {/* FILTER */}
       <div className="filters-row">
         <h2 className="title">🎯 Profile Matches</h2>
 
         <div className="filter-inputs">
           <input
             type="text"
-            placeholder="Filter name or skill..."
+            placeholder="Filter by name or skill..."
             className="input-box"
             value={filterQuery}
             onChange={(e) => {
@@ -148,7 +140,10 @@ const ProfileTable = ({ data = [], index = 0, jdId = null }) => {
           <button
             className="sort-btn"
             onClick={() =>
-              setSortConfig((prev) => ({ key: prev.key, direction: prev.direction === "asc" ? "desc" : "asc" }))
+              setSortConfig((prev) => ({
+                key: prev.key,
+                direction: prev.direction === "asc" ? "desc" : "asc",
+              }))
             }
           >
             Sort: {sortConfig.direction === "asc" ? "▲" : "▼"}
@@ -156,38 +151,39 @@ const ProfileTable = ({ data = [], index = 0, jdId = null }) => {
         </div>
       </div>
 
-      {/* SEND + BADGES ROW */}
+      {/* SEND + BADGES */}
       <div className="send-review-container">
-        <div className="bulk-send-wrapper">
-          <button className="bulk-send-btn" onClick={() => setShowSendMenu((p) => !p)}>
-            Send ({selectedRows.length})
-          </button>
+        <button
+          className="bulk-send-btn"
+          onClick={() => setShowSendMenu(!showSendMenu)}
+        >
+          Send ({selectedRows.length})
+        </button>
 
-          {showSendMenu && (
-            <div className="send-dropdown">
-              <button className="send-option action-style" onClick={handleBulkEmail}>
-                <Mail size={16} /> Email
-              </button>
-
-              <button className="send-option action-style" onClick={handleBulkWhatsApp}>
-                <MessageSquare size={16} /> WhatsApp
-              </button>
-            </div>
-          )}
-        </div>
+        {showSendMenu && (
+          <div className="send-dropdown">
+            <button className="send-option">
+              <Mail size={16} /> Email
+            </button>
+            <button className="send-option">
+              <MessageSquare size={16} /> WhatsApp
+            </button>
+          </div>
+        )}
 
         <div className="review-badges">
-          <span className={`badge best ${selectedCategory === "best" ? "active" : ""}`} onClick={() => setSelectedCategory("best")}>
+          <span
+            className={`badge best ${selectedCategory === "best" && "active"}`}
+            onClick={() => setSelectedCategory("best")}
+          >
             🏆 Best ({summary.best})
           </span>
-
-          <span className={`badge good ${selectedCategory === "good" ? "active" : ""}`} onClick={() => setSelectedCategory("good")}>
+          <span
+            className={`badge good ${selectedCategory === "good" && "active"}`}
+            onClick={() => setSelectedCategory("good")}
+          >
             👍 Good ({summary.good})
           </span>
-
-          {/* <span className={`badge partial ${selectedCategory === "partial" ? "active" : ""}`} onClick={() => setSelectedCategory("partial")}>
-              ⚙ Partial ({summary.partial})
-            </span> */}
         </div>
       </div>
 
@@ -202,7 +198,7 @@ const ProfileTable = ({ data = [], index = 0, jdId = null }) => {
                 <input
                   type="checkbox"
                   checked={selectAll}
-                  onChange={() => setSelectAll((p) => !p)}
+                  onChange={() => setSelectAll((prev) => !prev)}
                 />
               </th>
               <th>Name</th>
@@ -219,43 +215,21 @@ const ProfileTable = ({ data = [], index = 0, jdId = null }) => {
           </thead>
 
           <tbody>
-            {displayedMatches.map((item, idx) => (
+            {displayedMatches.map((item, i) => (
               <ProfileTableRow
-                key={idx}
+                key={i}
                 item={item}
-                responses={responses}
                 jdId={jdId}
-                onSendMail={(it) => sendMailMessage(it, jdId)}
-                onSendWhatsApp={(it) => sendWhatsAppMessage(it, jdId)}
+                responses={responses}
                 whatsappAvailable={whatsappAvailable}
-                onRowSelect={(candidateId, checked) => {
-                  setSelectedRows((prev) => {
-                    if (checked) return Array.from(new Set([...prev, candidateId]));
-                    return prev.filter((c) => c !== candidateId);
-                  });
-                }}
                 isSelected={selectedRows.includes(_deriveCandidateId(item))}
-                onStartInterview={(it) => {
-                  if (!jdId) return alert("No JD ID found for this match!");
-                  // fetch jd text then navigate
-                  fetch(`${API_BASE}/mcp/tools/jd_history/jd/history/${jdId}`)
-                    .then((r) => r.json())
-                    .then((jdData) => {
-                      if (!jdData?.jd_text) return alert("JD not found!");
-                      navigate("/validation", {
-                        state: {
-                          candidateName: it.name,
-                          candidateId: it.phone,
-                          jd_id: jdId,
-                          jd_text: jdData.jd_text,
-                        },
-                      });
-                    })
-                    .catch((e) => {
-                      console.error("JD fetch error", e);
-                      alert("Failed to fetch JD text");
-                    });
-                }}
+                onRowSelect={(id, sel) =>
+                  setSelectedRows((prev) =>
+                    sel
+                      ? [...new Set([...prev, id])]
+                      : prev.filter((x) => x !== id)
+                  )
+                }
               />
             ))}
           </tbody>
@@ -265,50 +239,43 @@ const ProfileTable = ({ data = [], index = 0, jdId = null }) => {
   );
 };
 
-/* ===========================================================
-  Row Component (Option B style)
-  - handles Send to Client: minimal payload -> { client_email, candidate_id, jd_id }
-  =========================================================== */
 const ProfileTableRow = ({
   item,
   responses = {},
-  onSendMail,
-  onSendWhatsApp,
-  whatsappAvailable,
-  onRowSelect,
-  isSelected = false,
-  onStartInterview,
   jdId,
+  onRowSelect,
+  isSelected,
+  whatsappAvailable,
 }) => {
-  const [showClientBox, setShowClientBox] = useState(false);
+  const [showClient, setShowClient] = useState(false);
   const [clientEmail, setClientEmail] = useState("");
-  const [status, setStatus] = useState("Not Started");
-  const [round, setRound] = useState(null);
-  const [showStatus, setShowStatus] = useState(false);
 
-  const score = item.finalScore ?? 0;
+  const [mailLoading, setMailLoading] = useState(false);
+  const [waLoading, setWaLoading] = useState(false);
+  const [clientLoading, setClientLoading] = useState(false);
+  const [statusLoading, setStatusLoading] = useState(false);
 
+  const [statusInfo, setStatusInfo] = useState(null);
+
+  const score = item.finalScore;
   const matchLevel = score >= 85 ? "Best match" : "Good match";
-
   const barWidth = Math.min(Math.max(score, 5), 100) + "%";
 
-  const normalizedPhone = (item.phone || "").replace(/\D/g, "");
-  const whatsappResp = responses[normalizedPhone] || {};
+  const candidateId =
+    item.candidate_id || item.email || item.phone || item._pine_id || item.name;
 
-  /* Robust candidate id derivation (same as sendMail) */
-  const candidateId = item.candidate_id || item.email || item.phone || item._pine_id || item.name || "";
+  const sendClient = async () => {
+    if (!clientEmail.includes("@")) return alert("Enter valid email");
 
-  /* ------------------- SEND TO CLIENT ------------------- */
-  const sendToClient = async () => {
-    if (!clientEmail || !clientEmail.includes("@")) return alert("Enter valid client email!");
-
-    const payload = {
-      client_email: String(clientEmail).trim(),
-      candidate_id: String(candidateId),
-      jd_id: jdId,
-    };
+    setClientLoading(true);
 
     try {
+      const payload = {
+        client_email: clientEmail.trim(),
+        candidate_id: candidateId,
+        jd_id: jdId,
+      };
+
       const res = await fetch(`${API_BASE}/mcp/tools/match/send_to_client`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -316,53 +283,29 @@ const ProfileTableRow = ({
       });
 
       const data = await res.json();
+      setClientLoading(false);
+
       if (!res.ok) {
-        console.error("send_to_client failed:", data);
-        alert(data.detail || data.message || "Failed to send client mail");
+        alert(data.detail || "Failed Send");
         return;
       }
 
-      alert(data.message || "Client mail sent!");
-      setShowClientBox(false);
+      alert("Client mail sent!");
+      setShowClient(false);
+      setClientEmail("");
     } catch (err) {
-      console.error("send_to_client error:", err);
-      alert("Failed to send client mail. Check console.");
+      setClientLoading(false);
+      alert("Failed");
     }
-  };
-
-  /* ------------------- STATUS FETCH ------------------- */
-  const fetchStatus = async () => {
-    try {
-      const res = await fetch(`${API_BASE}/mcp/tools/jd_history/scheduler/latest_attempt/${item.phone}/${jdId}`);
-      if (!res.ok) {
-        setStatus("Not Started");
-        return;
-      }
-      const data = await res.json();
-      if (!data.ok) {
-        setStatus("Not Started");
-        return;
-      }
-      setStatus(data.progress || "Not Started");
-      setRound(data.interview_round || 1);
-    } catch (e) {
-      setStatus("Not Started");
-    }
-  };
-
-  const handleStatusClick = async () => {
-    await fetchStatus();
-    setShowStatus(true);
-    setTimeout(() => setShowStatus(false), 2500);
   };
 
   return (
-    <tr>
+    <tr className="row">
       <td>
         <input
           type="checkbox"
           checked={isSelected}
-          onChange={(e) => onRowSelect && onRowSelect(candidateId, e.target.checked)}
+          onChange={(e) => onRowSelect(candidateId, e.target.checked)}
         />
       </td>
 
@@ -371,7 +314,11 @@ const ProfileTableRow = ({
           <span className="name">{item.name}</span>
 
           <span
-            className={`match-label ${matchLevel === "Best match" ? "match-best" : matchLevel === "Good match" ? "match-good" : "match-partial"
+            className={`match-label ${matchLevel === "Best match"
+              ? "match-best"
+              : matchLevel === "Good match"
+                ? "match-good"
+                : "match-partial"
               }`}
           >
             {matchLevel}
@@ -386,72 +333,109 @@ const ProfileTableRow = ({
 
       <td>{item.designation}</td>
       <td>{item.location}</td>
-      <td>{item.phone || "—"}</td>
-      <td>{item.email || "—"}</td>
-      <td>{item.experience_years ?? "—"} yrs</td>
+      <td>{item.phone}</td>
+      <td>{item.email}</td>
+      <td>{item.experience_years} Y</td>
       <td>{(item.skills || []).join(", ")}</td>
 
+      {/* ACTIONS */}
       <td className="actions-cell">
         <div className="action-group">
-          <button className="action-btn mail" onClick={() => onSendMail && onSendMail(item)}>
-            <Mail size={16} /> Mail
-          </button>
-
+          {/* MAIL */}
           <button
-            className={`action-btn whatsapp ${!whatsappAvailable ? "disabled" : ""}`}
-            onClick={() => onSendWhatsApp && onSendWhatsApp(item)}
-            disabled={!whatsappAvailable}
+            className="action-btn mail"
+            disabled={mailLoading}
+            onClick={async () => {
+              setMailLoading(true);
+              await sendMailMessage(item, jdId);
+              setMailLoading(false);
+            }}
           >
-            <MessageSquare size={16} /> WhatsApp
+            {mailLoading ? <Loader2 className="spin" /> : <Mail size={16} />}
+            Mail
           </button>
 
-          <button className="action-btn status" onClick={handleStatusClick}>
-            <BsGraphUpArrow /> Status
+          {/* WHATSAPP */}
+          <button
+            className={`action-btn whatsapp ${!whatsappAvailable ? "disabled" : ""
+              }`}
+            disabled={waLoading || !whatsappAvailable}
+            onClick={async () => {
+              setWaLoading(true);
+              await sendWhatsAppMessage(item, jdId);
+              setWaLoading(false);
+            }}
+          >
+            {waLoading ? (
+              <Loader2 className="spin" />
+            ) : (
+              <MessageSquare size={16} />
+            )}
+            WhatsApp
           </button>
 
-          {showStatus && (
+          {/* STATUS */}
+          <button
+            className="action-btn status"
+            disabled={statusLoading}
+            onClick={async () => {
+              setStatusLoading(true);
+              const res = await fetch(
+                `${API_BASE}/mcp/tools/jd_history/scheduler/latest_attempt/${item.phone}/${jdId}`
+              );
+              const data = await res.json();
+              setStatusInfo(data);
+              setStatusLoading(false);
+            }}
+          >
+            {statusLoading ? (
+              <Loader2 className="spin" />
+            ) : (
+              <BsGraphUpArrow size={16} />
+            )}
+            Status
+          </button>
+
+          {statusInfo && (
             <div className="status-popup">
-              <div style={{ fontWeight: "bold" }}>{status}</div>
-              <div style={{ marginTop: "4px", fontSize: "13px" }}>
-                Round: <b>{round || 1}</b>
-              </div>
-              <div style={{ fontSize: "12px", opacity: 0.7 }}>Status: {status}</div>
+              <div>{statusInfo.progress || "Not Started"}</div>
+              <div>Round: {statusInfo.interview_round || 1}</div>
             </div>
           )}
-          <div className="action-btn-container">
-            <button
-              className="action-btn bot"
-              onClick={() => setShowClientBox(!showClientBox)}
-            >
-              <Send size={16} /> Send to Client
-            </button>
 
-            {showClientBox && (
-              <div className="client-inline-row">
-                <input
-                  type="email"
-                  placeholder="Enter client email"
-                  className="client-inline-input"
-                  value={clientEmail}
-                  onChange={(e) => setClientEmail(e.target.value)}
-                />
-                <button className="client-inline-send" onClick={sendToClient}>
-                  Send
-                </button>
-              </div>
-            )}
-          </div>
+          {/* SEND TO CLIENT INLINE */}
+          <button
+            className="action-btn bot"
+            onClick={() => setShowClient(!showClient)}
+          >
+            <Send size={16} />
+            Send to Client
+          </button>
 
-
-
-
-
+          {showClient && (
+            <div className="client-inline-row">
+              <input
+                type="email"
+                placeholder="Client email"
+                value={clientEmail}
+                className="client-inline-input"
+                onChange={(e) => setClientEmail(e.target.value)}
+              />
+              <button
+                className="client-inline-send"
+                disabled={clientLoading}
+                onClick={sendClient}
+              >
+                {clientLoading ? <Loader2 className="spin" /> : "Send"}
+              </button>
+            </div>
+          )}
         </div>
       </td>
 
       <td className="score">{score}/100</td>
 
-      <td>{whatsappResp?.type === "button" ? whatsappResp.payload : "—"}</td>
+      <td>—</td>
     </tr>
   );
 };

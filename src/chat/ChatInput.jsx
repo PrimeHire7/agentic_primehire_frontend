@@ -76,7 +76,7 @@ const ChatInput = ({
       {
         label: "🤖 AI Engineer @ Nirmata",
         text:
-          "Start JD Creator: Create a JD for an AI Engineer at Nirmata Neurotech — 3+ years experience, Python, LLMs, Vector DBs.",
+          "Start JD Creator: Create a JD for an AI Engineer at Nirmata Neurotech — 3+ years experience, Hyderabad, Python, LLMs, Vector DBs.",
       },
     ],
     "Profile Matcher": [
