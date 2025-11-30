@@ -46,3 +46,7 @@
     opacity: 1;
   }
 }
+
+.mc-chat-scroll {
+  padding-bottom: calc(var(--ci-safe-height, 140px) + 24px);
+}

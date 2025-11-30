@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Send, Paperclip, ChevronDown, Zap, ListTodo, Mic } from "lucide-react";
 import "./ChatInput.css";
+import "./ChatInput.responsive.css";
 
 const ChatInput = ({
   onSend,

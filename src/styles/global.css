@@ -410,3 +410,331 @@ body {
         transform: translateY(0);
     }
 }
+
+@media (max-width: 1200px) {
+    /* large tablets small laptops */
+}
+
+@media (max-width: 992px) {
+    /* tablets */
+}
+
+@media (max-width: 768px) {
+    /* large phones */
+}
+
+@media (max-width: 480px) {
+    /* small phones (iPhone SE) */
+}
+
+/* tablets */
+@media (max-width: 992px) {
+    .mc-hero {
+        padding: 60px 24px;
+        min-height: 70vh;
+    }
+
+    .mc-title {
+        font-size: 2.4rem;
+    }
+
+    .mc-subtitle {
+        font-size: 1.1rem;
+        max-width: 640px;
+    }
+}
+
+/* phones */
+@media (max-width: 768px) {
+    .mc-hero {
+        min-height: 82vh;
+        padding: 50px 20px;
+    }
+
+    .mc-title {
+        font-size: 2rem;
+    }
+
+    .mc-subtitle {
+        font-size: 1.05rem;
+        margin-bottom: 30px;
+    }
+}
+
+/* small phones */
+@media (max-width: 480px) {
+    .mc-title {
+        font-size: 1.75rem;
+    }
+
+    .mc-subtitle {
+        font-size: 0.95rem;
+    }
+}
+
+/* Tablets - 2 columns */
+@media (max-width: 992px) {
+    .mc-actions-grid {
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 20px;
+    }
+}
+
+/* Phones — SINGLE COLUMN */
+@media (max-width: 768px) {
+    .mc-actions-grid {
+        grid-template-columns: 1fr !important;
+        max-width: 480px;
+        margin: 20px auto 40px;
+    }
+
+    .mc-action-card {
+        padding: 20px 22px;
+    }
+}
+
+/* Small phones */
+@media (max-width: 480px) {
+    .mc-action-card h3 {
+        font-size: 1rem;
+    }
+
+    .mc-action-card p {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .mc-pills-row {
+        grid-template-columns: 1fr !important;
+        max-width: 480px;
+        gap: 14px;
+    }
+
+    .mc-pill {
+        padding: 16px 18px;
+    }
+}
+
+/* --------------------------------------------------
+   GLOBAL RESPONSIVE BREAKPOINTS
+--------------------------------------------------*/
+
+/* =======================
+   1200px — Large Tablets
+==========================*/
+@media (max-width: 1200px) {
+    .mc-hero {
+        padding: 60px 24px;
+        min-height: 70vh;
+    }
+
+    .mc-title {
+        font-size: 2.4rem;
+    }
+
+    .mc-subtitle {
+        font-size: 1.1rem;
+    }
+
+    .mc-actions-grid {
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+}
+
+/* =======================
+   992px — Tablets
+==========================*/
+@media (max-width: 992px) {
+    .mc-hero {
+        padding: 50px 22px;
+    }
+
+    .mc-actions-grid {
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 20px;
+    }
+
+    .ci-shell {
+        padding: 10px 14px !important;
+    }
+
+    .ci-textarea {
+        font-size: 14px !important;
+    }
+}
+
+/* =======================
+   768px — Phones
+==========================*/
+@media (max-width: 768px) {
+
+    /* HERO */
+    .mc-hero {
+        min-height: 82vh;
+        padding: 44px 18px;
+    }
+
+    .mc-title {
+        font-size: 2rem;
+    }
+
+    .mc-subtitle {
+        font-size: 1rem;
+        margin-bottom: 28px;
+    }
+
+    /* ACTION CARDS */
+    .mc-actions-grid {
+        grid-template-columns: 1fr !important;
+        max-width: 480px;
+        margin: 18px auto 36px;
+    }
+
+    .mc-action-card {
+        padding: 18px 20px;
+    }
+
+    /* PILLS */
+    .mc-pills-row {
+        grid-template-columns: 1fr !important;
+        gap: 14px;
+    }
+
+    /* CHAT */
+    .mc-chat-scroll {
+        padding-bottom: 170px !important;
+    }
+
+    /* CHAT INPUT */
+    .ci-shell {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        padding: 12px 14px !important;
+        border-radius: 16px;
+    }
+
+    .ci-top-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .ci-dropdown-trigger {
+        width: 100%;
+        justify-content: space-between;
+        font-size: 14px;
+    }
+
+    .ci-dropdown-menu {
+        width: 100%;
+    }
+
+    /* Chips scroll */
+    .ci-chip-row {
+        overflow-x: auto;
+        scrollbar-width: none;
+        padding-bottom: 6px;
+    }
+
+    .ci-chip-row::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Right side buttons */
+    .ci-right {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .ci-send-btn,
+    .ci-mic-btn,
+    .ci-icon-btn {
+        width: 44px;
+        height: 44px;
+    }
+
+    /* CHAT MESSAGES */
+    .chat-content {
+        font-size: 14px !important;
+        padding: 12px 14px !important;
+    }
+
+    .ph-msg {
+        padding: 16px !important;
+        font-size: 0.95rem !important;
+    }
+
+    /* HEADER */
+    .header-right {
+        gap: 8px;
+    }
+
+    .refresh-button,
+    .signin-button {
+        padding: 6px 10px !important;
+        font-size: 13px !important;
+    }
+}
+
+/* =======================
+   480px — Small Phones
+==========================*/
+@media (max-width: 480px) {
+
+    /* HERO */
+    .mc-title {
+        font-size: 1.75rem;
+    }
+
+    .mc-subtitle {
+        font-size: 0.9rem;
+    }
+
+    /* ACTION CARD TEXT */
+    .mc-action-card h3 {
+        font-size: 1rem;
+    }
+
+    .mc-action-card p {
+        font-size: 0.9rem;
+    }
+
+    /* CHAT SCROLL */
+    .mc-chat-scroll {
+        padding-bottom: 190px !important;
+    }
+
+    /* CHAT INPUT */
+    .ci-textarea {
+        min-height: 42px !important;
+        font-size: 13.5px !important;
+        padding: 10px 12px !important;
+    }
+
+    .ci-dropdown-trigger span,
+    .ci-dropdown-item {
+        font-size: 13px !important;
+    }
+
+    /* MESSAGES */
+    .ph-msg {
+        font-size: 0.9rem !important;
+        padding: 14px !important;
+    }
+
+    /* AVATAR */
+    .chat-avatar {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 13px !important;
+    }
+
+    /* HEADER */
+    .refresh-button,
+    .signin-button {
+        padding: 5px 8px !important;
+        font-size: 12px !important;
+    }
+}

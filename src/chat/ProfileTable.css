@@ -1,45 +1,50 @@
 /* =================================================
-   MAIN PROFILE BOX
+   MAIN PROFILE BOX — PrimeHire Theme (updated)
 ================================================= */
 .profile-box {
   background: linear-gradient(to bottom, #ffffff, #fafafa);
   padding: 24px;
+  padding-bottom: 100px;
+  /* extra breathing room for popups */
   border-radius: 16px;
   border: 2px solid #1a1a1a;
 
-  /* Your requested shadow */
   box-shadow:
-    0 12px 24px -10px rgba(0, 0, 0, 0.1),
+    0 12px 24px -10px rgba(0, 0, 0, 0.10),
     0 8px 16px -8px rgba(0, 0, 0, 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
 
   margin-bottom: 24px;
   position: relative;
   animation: luxury-entrance 0.6s ease-out backwards;
-  overflow: hidden;
+  overflow: visible !important;
+  z-index: 1;
 }
 
-/* Shine Animation */
+/* Shine Animation — behind content */
 .profile-box::before {
   content: '';
   position: absolute;
   top: 0;
   left: -150%;
   width: 150%;
-  height: 100%;
+  height: 150%;
+
   background: linear-gradient(110deg,
       transparent 0%,
       rgba(255, 255, 255, 0.25) 50%,
       transparent 100%);
+
   transform: skewX(-25deg);
   animation: box-shine 6s ease-in-out infinite;
-}
 
+  z-index: -1 !important;
+  pointer-events: none;
+}
 
 /* =================================================
       SEND BUTTON + BADGES CONTAINER
 ================================================= */
-
 .send-review-container {
   display: flex;
   justify-content: space-between;
@@ -61,7 +66,7 @@
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: 0.2s;
+  transition: transform .18s ease, box-shadow .18s ease;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -70,33 +75,27 @@
 /* Colors */
 .badge.best {
   background: #28a745;
-  /* Green */
   color: #fff;
 }
 
 .badge.good {
   background: #f1c40f;
-  /* Yellow */
   color: #000;
 }
 
 .badge.partial {
   background: #e74c3c;
-  /* Red */
   color: #fff;
 }
 
-/* Active animation */
 .badge.active {
-  transform: scale(1.12);
-  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.25);
+  transform: scale(1.06);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.12);
 }
-
 
 /* =================================================
       FILTERS
 ================================================= */
-
 .filters-row {
   display: flex;
   justify-content: space-between;
@@ -104,18 +103,20 @@
   margin-bottom: 20px;
   padding-bottom: 16px;
   border-bottom: 2px solid #e5e7eb;
+  gap: 16px;
 }
 
 .title {
   font-size: 20px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: #0f172a;
 }
 
 .filter-inputs {
   display: flex;
   gap: 12px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .input-box {
@@ -125,14 +126,14 @@
   border-radius: 10px;
   font-weight: 600;
   font-size: 14px;
-  transition: all 0.25s ease;
+  transition: all 0.18s ease;
 }
 
 .input-box:focus {
   outline: none;
   border-color: #38bdf8;
   background: #ffffff;
-  box-shadow: 0 4px 10px rgba(56, 189, 248, 0.25);
+  box-shadow: 0 8px 22px rgba(56, 189, 248, 0.12);
   transform: translateY(-2px);
 }
 
@@ -147,7 +148,7 @@
   border-radius: 10px;
   cursor: pointer;
   font-weight: 600;
-  transition: all 0.25s ease;
+  transition: all 0.18s ease;
   color: #1a1a1a;
   font-size: 14px;
 }
@@ -157,16 +158,12 @@
   background: linear-gradient(135deg, #38bdf8, #0ea5e9);
   color: #fff;
   transform: translateY(-3px);
-  box-shadow:
-    0 8px 16px rgba(56, 189, 248, 0.25),
-    0 4px 8px rgba(14, 165, 233, 0.2);
+  box-shadow: 0 12px 30px rgba(14, 165, 233, 0.12);
 }
-
 
 /* =================================================
       SELECT ALL + CHECKBOXES
 ================================================= */
-
 .profiles-table input[type="checkbox"] {
   width: 18px;
   height: 18px;
@@ -175,7 +172,7 @@
   border: 2px solid #cbd5e1;
   border-radius: 4px;
   position: relative;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.18s ease-in-out;
 }
 
 .profiles-table input[type="checkbox"]:checked {
@@ -203,11 +200,110 @@
   text-align: center;
 }
 
+/* =================================================
+      TABLE ROWS — breathing room + overflow visible
+================================================= */
+/* increased cell padding and vertical spacing */
+.profiles-table th,
+.profiles-table td {
+  padding: 18px 14px;
+  vertical-align: middle;
+}
+
+/* rows taller */
+.profiles-table tbody tr {
+  min-height: 64px;
+  height: auto;
+  transition: background .12s ease, transform .12s ease;
+}
+
+/* ensure popups can overflow and be visible */
+.profiles-table,
+.profiles-table tbody,
+.profiles-table tr,
+.profiles-table td {
+  overflow: visible !important;
+  position: relative;
+}
+
+/* wrapper around the send button */
+.client-box-wrapper {
+  position: relative;
+  display: inline-block;
+  overflow: visible !important;
+  z-index: 20;
+}
+
+.client-mail-box {
+  position: absolute;
+  top: calc(100% + 6px);
+  /* always right under the button */
+  left: 0;
+
+  width: 240px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 2px solid #38bdf8;
+  border-radius: 14px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(10px);
+
+  z-index: 9999 !important;
+}
+
+.client-mail-box::before {
+  content: "";
+  position: absolute;
+  top: -7px;
+  left: 18px;
+  width: 12px;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.96);
+  transform: rotate(45deg);
+  border-left: 2px solid #38bdf8;
+  border-top: 2px solid #38bdf8;
+}
+
+
+/* inputs & send inside popup */
+.client-mail-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 2px solid #1a1a1a;
+  background: linear-gradient(to bottom, #ffffff, #f9fafb);
+  font-size: 14px;
+  font-weight: 600;
+  transition: box-shadow .18s ease, transform .18s ease;
+}
+
+.client-mail-input:focus {
+  outline: none;
+  border-color: #38bdf8;
+  box-shadow: 0 10px 30px rgba(56, 189, 248, 0.12);
+  transform: translateY(-2px);
+}
+
+.client-mail-send-btn {
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #38bdf8, #0284c7);
+  color: #ffffff;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: transform .14s ease, box-shadow .14s ease;
+  font-size: 14px;
+}
+
+.client-mail-send-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px rgba(56, 189, 248, 0.18);
+}
 
 /* =================================================
       BULK SEND BUTTON + DROPDOWN
 ================================================= */
-
 .bulk-send-container {
   display: flex;
   justify-content: flex-end;
@@ -223,7 +319,7 @@
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  transition: 0.25s ease;
+  transition: transform .18s ease, box-shadow .18s ease;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -231,21 +327,21 @@
 
 .bulk-send-btn:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 16px rgba(56, 189, 248, 0.25);
+  box-shadow: 0 12px 26px rgba(14, 165, 233, 0.14);
 }
 
-/* Your updated dropdown */
+/* updated small dropdown */
 .send-dropdown {
   position: absolute;
-  top: 158px;
-  /* right: 0; */
+  top: 48px;
+  right: 0;
   background: white;
   border: 2px solid #38bdf8;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 30px rgba(2, 6, 23, 0.06);
   border-radius: 12px;
-  width: 160px;
+  width: 180px;
   padding: 6px 0;
-  z-index: 30;
+  z-index: 999;
 }
 
 .send-option {
@@ -258,24 +354,17 @@
   border: none;
   cursor: pointer;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   color: #0f172a;
-  transition: 0.2s ease;
 }
 
 .send-option:hover {
-  background: #e0f7ff;
+  background: #e6f9ff;
 }
-
-.send-option svg {
-  color: #0284c7;
-}
-
 
 /* =================================================
       TABLE STYLING
 ================================================= */
-
 .profiles-table {
   width: 100%;
   border-collapse: separate;
@@ -283,10 +372,10 @@
   margin-top: 12px;
   background: #ffffff;
   border-radius: 12px;
-  overflow: hidden;
+  overflow: visible;
   box-shadow:
-    0 4px 8px rgba(0, 0, 0, 0.05),
-    0 1px 3px rgba(0, 0, 0, 0.08);
+    0 6px 18px rgba(2, 6, 23, 0.04),
+    0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
 .profiles-table th {
@@ -302,21 +391,27 @@
 
 .profiles-table td {
   padding: 14px 12px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e6eef6;
   background: #ffffff;
-  transition: 0.2s ease;
+  transition: background .12s ease, transform .12s ease;
 }
 
 .profiles-table tbody tr:hover {
-  background: rgba(56, 189, 248, 0.06);
-  transform: translateX(5px);
+  background: rgba(56, 189, 248, 0.04);
+  transform: translateX(4px);
 }
 
+.profiles-table tr,
+.profiles-table td {
+  position: relative;
+  overflow: visible !important;
+  /* allow popup */
+  z-index: auto;
+}
 
 /* =================================================
       ACTION BUTTONS
 ================================================= */
-
 .actions-cell {
   min-width: 200px;
 }
@@ -340,7 +435,7 @@
   border: 2px solid #e5e7eb;
   background: #ffffff;
   cursor: pointer;
-  transition: 0.25s ease;
+  transition: transform .14s ease, box-shadow .14s ease;
 }
 
 .action-btn.mail {
@@ -349,7 +444,7 @@
 }
 
 .action-btn.mail:hover {
-  background: #e0f2fe;
+  background: #e6f4ff;
   transform: translateY(-2px);
 }
 
@@ -359,7 +454,7 @@
 }
 
 .action-btn.whatsapp:hover {
-  background: #dcfce7;
+  background: #ecfdf3;
   transform: translateY(-2px);
 }
 
@@ -369,7 +464,7 @@
 }
 
 .action-btn.bot:hover {
-  background: #ede9fe;
+  background: #f4f0ff;
   transform: translateY(-2px);
 }
 
@@ -378,20 +473,90 @@
   cursor: not-allowed;
 }
 
+/* Container inside the Actions cell */
+.action-btn-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+/* Inline expansion row */
+.client-inline-row {
+  margin-top: 8px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid #38bdf8;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  animation: fadeInline 0.25s ease-out;
+}
+
+/* Input field inside the expanded row */
+.client-inline-input {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 2px solid #1a1a1a;
+  background: linear-gradient(to bottom, #ffffff, #f9fafb);
+  font-weight: 600;
+  font-size: 14px;
+  transition: 0.25s ease;
+}
+
+.client-inline-input:focus {
+  outline: none;
+  border-color: #38bdf8;
+  background: #ffffff;
+  box-shadow: 0 4px 10px rgba(56, 189, 248, 0.25);
+}
+
+/* Send button inline */
+.client-inline-send {
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #38bdf8, #0284c7);
+  color: #fff;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.client-inline-send:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(56, 189, 248, 0.25);
+}
+
+/* Smooth fade animation */
+@keyframes fadeInline {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
 /* =================================================
       NAME + SCORE + LABEL
 ================================================= */
-
 .name {
   font-weight: 700;
   font-size: 15px;
+  color: #0b1220;
 }
 
 .score {
-  font-weight: 700;
+  font-weight: 800;
   text-align: center;
   color: #0284c7;
+  font-size: 15px;
 }
 
 .match-label {
@@ -421,57 +586,7 @@
   border: 1px solid #f87171;
 }
 
-
-/* =================================================
-      SUMMARY CARDS (OLD)
-================================================= */
-
-.review-cards {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-  margin-top: 20px;
-}
-
-.review-card {
-  background: linear-gradient(to bottom, #ffffff, #f8fafc);
-  padding: 18px 20px;
-  border-radius: 12px;
-  border: 2px solid #e2e8f0;
-  cursor: pointer;
-  transition: 0.25s ease;
-  min-width: 150px;
-  text-align: center;
-  font-weight: 600;
-}
-
-.review-card:hover {
-  background: #f0f9ff;
-  border-color: #38bdf8;
-  transform: translateY(-3px);
-}
-
-.review-card.active {
-  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
-  color: #ffffff;
-  border-color: #0284c7;
-  transform: translateY(-3px);
-}
-
-/* STATUS BUTTON (same style family as Mail/WhatsApp) */
-.action-btn.status {
-  border: 2px solid #f16464;
-  /* Purple stroke */
-  color: #f16464;
-  background: #fff;
-}
-
-.action-btn.status:hover {
-  background: #f3e8ff;
-  transform: translateY(-2px);
-}
-
-/* STATUS DROPDOWN STYLES - matching new design */
+/* STATUS DROPDOWN */
 .status-wrapper {
   position: relative;
   width: 100%;
@@ -485,80 +600,14 @@
   background: #ffffff;
   border: 2px solid #e5e7eb;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 30px rgba(2, 6, 23, 0.06);
   z-index: 999;
   overflow: hidden;
-  animation: fadeDown 0.22s ease-in-out;
 }
-
-.status-dropdown button {
-  width: 100%;
-  background: none;
-  border: none;
-  padding: 12px;
-  font-size: 13px;
-  text-align: left;
-  cursor: pointer;
-  transition: 0.25s ease;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  border-left: 6px solid transparent;
-  /* colored indicator */
-}
-
-.status-dropdown button:hover {
-  background: #f4f7ff;
-}
-
-.status-dropdown button.shortlisted {
-  border-left-color: #16a34a;
-  /* green */
-  color: #065f46;
-}
-
-.status-dropdown button.rejected {
-  border-left-color: #dc2626;
-  /* red */
-  color: #7f1d1d;
-}
-
-.status-dropdown button.on-hold {
-  border-left-color: #f59e0b;
-  /* yellow/orange */
-  color: #78350f;
-}
-
-.status-dropdown button.interview-scheduled {
-  border-left-color: #2563eb;
-  /* blue */
-  color: #1e40af;
-}
-
-/* Hover effect for all options */
-.status-dropdown button:hover {
-  background: #f0f9ff;
-}
-
-/* Smooth dropdown animation */
-@keyframes fadeDown {
-  from {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 
 /* =================================================
       ANIMATIONS
 ================================================= */
-
 @keyframes luxury-entrance {
   0% {
     opacity: 0;
@@ -583,10 +632,10 @@
   }
 }
 
-@keyframes fadeIn {
+@keyframes fadeDown {
   from {
     opacity: 0;
-    transform: translateY(5px);
+    transform: translateY(-6px);
   }
 
   to {
@@ -595,8 +644,9 @@
   }
 }
 
+/* small helpers */
 td.score {
-  color: #0284c7 !important;   /* Deep blue */
+  color: #0284c7 !important;
   font-weight: 800;
   font-size: 15px;
 }
@@ -605,104 +655,50 @@ td.score {
   padding: 4px 8px;
   border-radius: 6px;
   font-size: 12px;
-  font-weight: bold;
-}
-
-.badge.completed {
-  background: #1ecb58;
-  color: white;
-}
-
-.badge.in-progress {
-  background: #2196f3;
-  color: white;
-}
-
-.badge.scheduled {
-  background: #ffb400;
-  color: black;
-}
-
-.badge.not-started {
-  background: #777;
-  color: white;
-}
-
-.status-popup {
-  position: absolute;
-  background: white;
-  border: 1px solid #ddd;
-  padding: 10px 14px;
-  border-radius: 8px;
-  top: 40px;
-  right: 0;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-  z-index: 1000;
-}
-/* =================================================
-   SEND TO CLIENT — INPUT POPUP
-================================================= */
-
-.client-mail-box {
-  position: absolute;
-  top: 45px;
-  right: 0;
-  width: 220px;
-  background: #ffffff;
-  border: 2px solid #38bdf8;
-  border-radius: 12px;
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-  animation: fadeDown 0.22s ease-out;
-  z-index: 999;
-}
-
-.client-mail-input {
-  width: 100%;
-  padding: 10px 12px;
-  border-radius: 10px;
-  border: 2px solid #1a1a1a;
-  background: linear-gradient(to bottom, #ffffff, #f9fafb);
-  font-size: 14px;
-  font-weight: 600;
-  transition: 0.25s ease;
-}
-
-.client-mail-input:focus {
-  outline: none;
-  border-color: #38bdf8;
-  background: #ffffff;
-  box-shadow: 0 4px 10px rgba(56, 189, 248, 0.25);
-  transform: translateY(-2px);
-}
-
-.client-mail-send-btn {
-  padding: 10px 14px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #38bdf8, #0284c7);
-  color: #ffffff;
   font-weight: 700;
-  border: none;
-  cursor: pointer;
-  transition: 0.25s ease;
-  font-size: 14px;
 }
 
-.client-mail-send-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 16px rgba(56, 189, 248, 0.25);
-}
-
-@keyframes fadeDown {
-  from {
-    opacity: 0;
-    transform: translateY(-6px);
+/* =================================================
+   RESPONSIVE TWEAKS (mobile)
+================================================= */
+@media (max-width: 768px) {
+  .profile-box {
+    padding: 18px;
+    padding-bottom: 80px;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  .profiles-table th,
+  .profiles-table td {
+    padding: 12px 10px;
+  }
+
+  .client-mail-box {
+    width: 220px;
+    right: 4px;
+    top: calc(100% + 6px);
+  }
+
+  .profiles-table tbody tr {
+    min-height: 56px;
+  }
+}
+
+/* narrower phones (iPhone 14 Pro / OnePlus / Galaxy small) */
+@media (max-width: 420px) {
+  .profile-box {
+    padding: 14px;
+    padding-bottom: 80px;
+  }
+
+  .profiles-table th,
+  .profiles-table td {
+    padding: 10px 8px;
+    font-size: 13px;
+  }
+
+  .client-mail-box {
+    width: 200px;
+    right: 6px;
+    top: calc(100% + 6px);
   }
 }

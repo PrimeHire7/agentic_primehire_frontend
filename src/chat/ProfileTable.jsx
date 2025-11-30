@@ -10,10 +10,10 @@ import { BsGraphUpArrow } from "react-icons/bs";
 import "./ProfileTable.css";
 
 /* ===========================================================
-   ProfileTable.jsx
-   - Merged: sorting/filtering/badges + working send-to-client flow
-   - Option B: bar + label (Best/Good/Partial)
-   =========================================================== */
+  ProfileTable.jsx
+  - Merged: sorting/filtering/badges + working send-to-client flow
+  - Option B: bar + label (Best/Good/Partial)
+  =========================================================== */
 const ProfileTable = ({ data = [], index = 0, jdId = null }) => {
   const [filterQuery, setFilterQuery] = useState("");
   const [minScoreFilter, setMinScoreFilter] = useState(0);
@@ -186,8 +186,8 @@ const ProfileTable = ({ data = [], index = 0, jdId = null }) => {
           </span>
 
           {/* <span className={`badge partial ${selectedCategory === "partial" ? "active" : ""}`} onClick={() => setSelectedCategory("partial")}>
-            ⚙ Partial ({summary.partial})
-          </span> */}
+              ⚙ Partial ({summary.partial})
+            </span> */}
         </div>
       </div>
 
@@ -266,9 +266,9 @@ const ProfileTable = ({ data = [], index = 0, jdId = null }) => {
 };
 
 /* ===========================================================
-   Row Component (Option B style)
-   - handles Send to Client: minimal payload -> { client_email, candidate_id, jd_id }
-   =========================================================== */
+  Row Component (Option B style)
+  - handles Send to Client: minimal payload -> { client_email, candidate_id, jd_id }
+  =========================================================== */
 const ProfileTableRow = ({
   item,
   responses = {},
@@ -418,29 +418,34 @@ const ProfileTableRow = ({
               <div style={{ fontSize: "12px", opacity: 0.7 }}>Status: {status}</div>
             </div>
           )}
-
-          {/* CLIENT SEND */}
-          <div style={{ position: "relative", width: "100%" }}>
-            <button className="action-btn bot" onClick={() => setShowClientBox((p) => !p)}>
+          <div className="action-btn-container">
+            <button
+              className="action-btn bot"
+              onClick={() => setShowClientBox(!showClientBox)}
+            >
               <Send size={16} /> Send to Client
             </button>
 
             {showClientBox && (
-              <div className="client-mail-box">
+              <div className="client-inline-row">
                 <input
                   type="email"
                   placeholder="Enter client email"
-                  className="client-mail-input"
+                  className="client-inline-input"
                   value={clientEmail}
                   onChange={(e) => setClientEmail(e.target.value)}
                 />
-
-                <button className="client-mail-send-btn" onClick={sendToClient}>
+                <button className="client-inline-send" onClick={sendToClient}>
                   Send
                 </button>
               </div>
             )}
           </div>
+
+
+
+
+
         </div>
       </td>
 
