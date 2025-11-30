@@ -8,200 +8,83 @@ export const useWebSocket = (
   setSelectedTask,
   fetchProfileMatches,
   setMessages,
-  setIsLoading,
+  setIsLoading
 ) => {
   const wsRef = useRef(null);
   const reconnectRef = useRef(null);
-  const lastIntentRef = useRef({ name: null, ts: 0 });
+
+  const intentLockRef = useRef({
+    intent: null,
+    ts: 0,
+  });
+
   const lastUserMessageRef = useRef("");
 
-  /* ---------------------------------------------
-     STRICT TEXT INTENT DETECTOR (only for tasks)
-  --------------------------------------------- */
-  const detectIntentFromText = (text) => {
-    if (!text || typeof text !== "string") return null;
+  /* =======================================================
+     INTENT LOCK (prevents double-trigger)
+  ======================================================= */
+  const allowIntent = (intent) => {
+    const now = Date.now();
+    const lock = intentLockRef.current;
 
-    const raw = text.trim();
+    if (lock.intent === intent && now - lock.ts < 1200) {
+      console.warn("⛔ BLOCKED DUPLICATE INTENT:", intent);
+      return false;
+    }
 
-    // ignore backend routing text
-    const ignore = [
-      /detected feature/i,
-      /detected task/i,
-      /opening.*module/i,
-      /routing your request/i,
-      /processing your request/i,
-    ];
-    if (ignore.some((p) => p.test(raw))) return null;
-
-    // Start <task>
-    if (/^start\s+profile\s*matcher\b/i.test(raw)) return "Profile Matcher";
-    if (/^start\s+jd\s*creator\b/i.test(raw)) return "JD Creator";
-    if (/^start\s+upload\s+resumes\b/i.test(raw)) return "Upload Resumes";
-
-    // Use <feature>
-    if (/^use\s+zohobridge\b/i.test(raw)) return "ZohoBridge";
-    if (/^use\s+mailmind\b/i.test(raw)) return "MailMind";
-    if (/^use\s+primehire\s*brain\b/i.test(raw)) return "PrimeHireBrain";
-    if (/^use\s+interview\s*bot\b/i.test(raw)) return "InterviewBot";
-    if (/^use\s+linkedin\s*poster\b/i.test(raw)) return "LinkedInPoster";
-
-    // Short form
-    if (/^profile\s*matcher[:\s]/i.test(raw)) return "Profile Matcher";
-    if (/^jd\s*creator[:\s]/i.test(raw)) return "JD Creator";
-    if (/^upload\s+resumes[:\s]/i.test(raw)) return "Upload Resumes";
-
-    // 🚫 ABSOLUTELY DO NOT detect JDHistory / MatchHistory / CandidateStatus from text
-    // They ONLY trigger from WebSocket.
-
-    return null;
+    lock.intent = intent;
+    lock.ts = now;
+    return true;
   };
 
-  /* ---------------------------------------------
-     MAIN WS MESSAGE HANDLER
-  --------------------------------------------- */
-  const handleWebSocketMessage = useCallback(
-    async (msg) => {
-      console.log("📩 WS:", msg);
-
-      // structured intent from backend
-      if ((msg.type === "feature_detected" || msg.type === "task_detected") && msg.data) {
-        if (msg.user_message) {
-          lastUserMessageRef.current = msg.user_message;
-        }
-        await handleIntent(msg.data);
-        return;
-      }
-
-      // text messages
-      if (msg.type === "text" && typeof msg.data === "string") {
-        const text = msg.data;
-
-        if (window.__JD_MODE_ACTIVE__ || window.__PROFILE_MATCH_MODE_ACTIVE__) {
-          setMessages((prev) => [...prev, { role: "assistant", content: text }]);
-          return;
-        }
-
-        // only detect allowed tasks/features
-        const detected = detectIntentFromText(text);
-        if (detected) {
-          await handleIntent(detected);
-          return;
-        }
-
-        setMessages((prev) => [...prev, { role: "assistant", content: text }]);
-        return;
-      }
-
-      // profile match structured data
-      if ((msg.type === "structured" || msg.type === "profile") && msg.data?.candidates) {
-        setMessages((prev) => [
-          ...prev,
-          { role: "assistant", type: "profile_table", data: msg.data.candidates },
-        ]);
-        window.__PROFILE_MATCH_MODE_ACTIVE__ = false;
-        return;
-      }
-
-      // resume table
-      if (msg.type === "resume" && msg.data) {
-        setMessages((prev) => [
-          ...prev,
-          { role: "assistant", type: "resume_table", data: msg.data },
-        ]);
-        return;
-      }
-
-      // fallback
-      if (typeof msg === "string") {
-        setMessages((prev) => [...prev, { role: "assistant", content: msg }]);
-      }
-    },
-    [setMessages]
-  );
-
-  /* ---------------------------------------------
-     INTENT ROUTER
-  --------------------------------------------- */
+  /* =======================================================
+     CLEAN INTENT HANDLER (no duplicates)
+  ======================================================= */
   const handleIntent = async (intent) => {
-    console.log("🎯 Intent:", intent);
     if (!intent) return;
 
-    /* ---------------------------------------------
-       UI MODULE INTENTS (NO DETECTION — ONLY WS)
-    --------------------------------------------- */
+    if (!allowIntent(intent)) return;
 
-    if (intent === "JDHistory") {
-      setSelectedFeature("JDHistory");
-      setSelectedTask("");
+    console.log("🎯 Executing Intent:", intent);
 
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: "📘 Showing JD History..." },
-        { role: "assistant", type: "feature_ui", feature: "JDHistory" },
-      ]);
-      return;
-    }
+    /* ---------------------------
+       UI FEATURES (NO DUPLICATES)
+    ---------------------------- */
+    const featureUIs = {
+      JDHistory: "📘 Showing JD History…",
+      ProfileMatchHistory: "📊 Showing Profile Match History…",
+      CandidateStatus: "📌 Showing Candidate Status…",
+      InterviewBot: "🤖 InterviewBot activated!",
+      ZohoBridge: "🔗 Opening Zoho Recruit Bridge…",
+      MailMind: "📬 MailMind activated!",
+      LinkedInPoster: "🔗 Posting on LinkedIn…",
+      PrimeHireBrain: "🧠 Activating PrimeHire Brain…",
+    };
 
-    if (intent === "ProfileMatchHistory") {
-      setSelectedFeature("ProfileMatchHistory");
-      setSelectedTask("");
-
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: "📊 Showing Profile Match History..." },
-        { role: "assistant", type: "feature_ui", feature: "ProfileMatchHistory" },
-      ]);
-      return;
-    }
-
-    if (intent === "CandidateStatus") {
-      setSelectedFeature("CandidateStatus");
-      setSelectedTask("");
-
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: "📋 Showing Candidate Status..." },
-        { role: "assistant", type: "feature_ui", feature: "CandidateStatus" },
-      ]);
-      return;
-    }
-
-    if (intent === "InterviewBot") {
-      setSelectedFeature("InterviewBot");
-      setSelectedTask("");
-
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: "🤖 InterviewBot activated!" },
-        { role: "assistant", type: "feature_ui", feature: "InterviewBot" },
-      ]);
-      return;
-    }
-
-    /* ---------------------------------------------
-       FEATURE MODULES
-    --------------------------------------------- */
-    if (["ZohoBridge", "MailMind", "PrimeHireBrain", "LinkedInPoster"].includes(intent)) {
+    if (featureUIs[intent]) {
       setSelectedFeature(intent);
       setSelectedTask("");
 
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: `⚡ Activated feature: ${intent}` },
+        { role: "assistant", content: featureUIs[intent] },
         { role: "assistant", type: "feature_ui", feature: intent },
       ]);
+
       return;
     }
 
-    /* ---------------------------------------------
-       TASKS
-    --------------------------------------------- */
-
+    /* ---------------------------
+       JD CREATOR
+    ---------------------------- */
     if (intent === "JD Creator") {
-      setMessages((prev) => [...prev, { role: "assistant", content: "📝 Creating JD..." }]);
+      const prompt = lastUserMessageRef.current.trim();
+      if (!prompt) return;
 
-      const prompt = lastUserMessageRef.current;
-      if (!prompt.trim()) return;
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: "📝 Creating JD…" },
+      ]);
 
       try {
         setIsLoading(true);
@@ -214,13 +97,16 @@ export const useWebSocket = (
       return;
     }
 
+    /* ---------------------------
+       PROFILE MATCHER
+    ---------------------------- */
     if (intent === "Profile Matcher") {
-      window.__PROFILE_MATCH_MODE_ACTIVE__ = true;
-      const jd = lastUserMessageRef.current;
+      const jd = lastUserMessageRef.current.trim();
+      if (!jd) return;
 
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: "🎯 Matching candidates..." },
+        { role: "assistant", content: "🎯 Matching candidates…" },
       ]);
 
       try {
@@ -228,29 +114,98 @@ export const useWebSocket = (
         await fetchProfileMatches(jd);
       } finally {
         setIsLoading(false);
-        window.__PROFILE_MATCH_MODE_ACTIVE__ = false;
       }
+
       return;
     }
 
+    /* ---------------------------
+       Upload Resumes
+    ---------------------------- */
     if (intent === "Upload Resumes") {
       setSelectedFeature("Upload Resumes");
+
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", type: "upload_ui", content: "📎 Upload resumes…" },
+        { role: "assistant", type: "upload_ui", content: "📎 Upload your resumes…" },
       ]);
       return;
     }
   };
 
-  /* ---------------------------------------------
-     WS CONNECT
-  --------------------------------------------- */
+  /* =======================================================
+     MASTER WS MESSAGE HANDLER
+  ======================================================= */
+  const handleWebSocketMessage = useCallback(
+    async (msg) => {
+      console.log("📩 WS Received:", msg);
+
+      /* -------------------------------------------
+         1) INTENT from backend → ONLY trigger here
+      ------------------------------------------- */
+      if (msg.type === "feature_detected" && msg.data) {
+        lastUserMessageRef.current = msg.user_message || "";
+        await handleIntent(msg.data);
+        return;
+      }
+
+      /* -------------------------------------------
+         2) IGNORE backend "✨ Detected request" text
+      ------------------------------------------- */
+      if (
+        msg.type === "text" &&
+        typeof msg.data === "string" &&
+        msg.data.startsWith("✨ Detected request:")
+      ) {
+        return;
+      }
+
+      /* -------------------------------------------
+         3) NORMAL assistant text
+      ------------------------------------------- */
+      if (msg.type === "text") {
+        setMessages((prev) => [...prev, { role: "assistant", content: msg.data }]);
+        return;
+      }
+
+      /* -------------------------------------------
+         4) PROFILE MATCH TABLE
+      ------------------------------------------- */
+      if (msg.type === "profile" && msg.data?.candidates) {
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", type: "profile_table", data: msg.data.candidates },
+        ]);
+        return;
+      }
+
+      /* -------------------------------------------
+         5) RESUME TABLE
+      ------------------------------------------- */
+      if (msg.type === "resume" && msg.data) {
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", type: "resume_table", data: msg.data },
+        ]);
+        return;
+      }
+    },
+    [setMessages]
+  );
+
+  /* =======================================================
+     WS CONNECTION BOOT
+  ======================================================= */
   const connectWebSocket = useCallback(() => {
     const ws = new WebSocket(WS_URL);
     wsRef.current = ws;
 
-    ws.onopen = () => console.log("WS connected");
+    ws.onopen = () => console.log("🌐 WS connected");
+    ws.onclose = () => {
+      reconnectRef.current = setTimeout(connectWebSocket, 1500);
+    };
+    ws.onerror = () => ws.close();
+
     ws.onmessage = (event) => {
       try {
         const msg =
@@ -258,10 +213,6 @@ export const useWebSocket = (
         handleWebSocketMessage(msg);
       } catch { }
     };
-    ws.onclose = () => {
-      reconnectRef.current = setTimeout(connectWebSocket, 2000);
-    };
-    ws.onerror = () => ws.close();
   }, [handleWebSocketMessage]);
 
   useEffect(() => {
@@ -272,9 +223,9 @@ export const useWebSocket = (
     };
   }, [connectWebSocket]);
 
-  /* ---------------------------------------------
-     SEND MESSAGE
-  --------------------------------------------- */
+  /* =======================================================
+     SEND
+  ======================================================= */
   const sendMessage = useCallback(
     (msg) => {
       if (!msg.trim()) return;
