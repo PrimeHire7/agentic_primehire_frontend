@@ -13,28 +13,15 @@ export const useWebSocket = (
   const wsRef = useRef(null);
   const reconnectRef = useRef(null);
 
-  /* =======================================================
-       GLOBAL LOCKS
-  ======================================================= */
   const intentLockRef = useRef({ intent: null, ts: 0 });
-
-  // Prevent Upload Resumes from firing twice
   const uploadTriggeredRef = useRef(false);
-
-  // Store last user message for JD & Profile Matcher
   const lastUserMessageRef = useRef("");
 
-  /* =======================================================
-     INTENT LOCK — Prevents double WebSocket triggers
-  ======================================================= */
   const allowIntent = (intent) => {
     const now = Date.now();
     const lock = intentLockRef.current;
 
-    if (lock.intent === intent && now - lock.ts < 1200) {
-      console.warn("⛔ BLOCKED DUPLICATE INTENT:", intent);
-      return false;
-    }
+    if (lock.intent === intent && now - lock.ts < 1200) return false;
 
     lock.intent = intent;
     lock.ts = now;
@@ -42,53 +29,44 @@ export const useWebSocket = (
   };
 
   /* =======================================================
-     HANDLE INTENTS
+      HANDLE INTENTS
   ======================================================= */
   const handleIntent = async (intent) => {
-    if (!intent) return;
-    if (!allowIntent(intent)) return;
+    if (!intent || !allowIntent(intent)) return;
 
     console.log("🎯 Executing Intent:", intent);
 
-    const featureUIs = {
-      JDHistory: "📘 Showing JD History…",
-      ProfileMatchHistory: "📊 Showing Profile Match History…",
-      CandidateStatus: "📌 Showing Candidate Status…",
-      InterviewBot: "🤖 InterviewBot activated!",
-      ZohoBridge: "🔗 Opening Zoho Recruit Bridge…",
-      MailMind: "📬 MailMind activated!",
-      LinkedInPoster: "🔗 Posting on LinkedIn…",
-      PrimeHireBrain: "🧠 Activating PrimeHire Brain…",
-    };
-
-    // ✔ GENERIC FEATURE UI ROUTES
-    if (featureUIs[intent]) {
-      uploadTriggeredRef.current = false;
-      setSelectedFeature(intent);
-      setSelectedTask("");
-
-      setMessages(prev => [
-        ...prev,
-        { role: "assistant", content: featureUIs[intent] },
-        { role: "assistant", type: "feature_ui", feature: intent },
-      ]);
-
-      return;
-    }
-
-    // ✔ JD CREATOR
+    /* ---------- JD CREATOR ---------- */
     if (intent === "JD Creator") {
       uploadTriggeredRef.current = false;
+
       const prompt = lastUserMessageRef.current.trim();
       if (!prompt) return;
 
-      setMessages(prev => [...prev, { role: "assistant", content: "📝 Creating JD…" }]);
+      setMessages((p) => [...p, { role: "assistant", content: "📝 Creating JD…" }]);
 
       try {
         setIsLoading(true);
-        const result = await generateSingleJD(prompt);
-        const jdText = result?.result?.markdown_jd || "⚠️ No JD generated.";
-        setMessages(prev => [...prev, { role: "assistant", content: jdText }]);
+
+        const payload = await generateSingleJD(prompt);
+        const jdHtml =
+          payload.jd_html || payload.result?.html_jd || "<p>No JD generated</p>";
+
+        // JD HTML + confirmation
+        setMessages((p) => [
+          ...p,
+          {
+            role: "assistant",
+            type: "jd_output",
+            content: jdHtml,
+            meta: { ask_confirmation: true },
+          },
+        ]);
+
+        setMessages((p) => [
+          ...p,
+          { role: "assistant", content: "🎉 JD generated successfully!" },
+        ]);
       } finally {
         setIsLoading(false);
       }
@@ -96,17 +74,40 @@ export const useWebSocket = (
       return;
     }
 
-    // ✔ PROFILE MATCHER
+    /* ---------- PROFILE MATCHER ---------- */
     if (intent === "Profile Matcher") {
       uploadTriggeredRef.current = false;
+
       const jd = lastUserMessageRef.current.trim();
       if (!jd) return;
 
-      setMessages(prev => [...prev, { role: "assistant", content: "🎯 Matching candidates…" }]);
+      setMessages((p) => [...p, { role: "assistant", content: "🎯 Matching candidates…" }]);
 
       try {
         setIsLoading(true);
-        await fetchProfileMatches(jd);
+        const result = await fetchProfileMatches(jd);
+
+        // Show matched candidates
+        setMessages((p) => [
+          ...p,
+          {
+            role: "assistant",
+            type: "profile_table",
+            data: result.candidates || [],
+          },
+        ]);
+
+        // 🔥 Show Upload Resume Prompt
+        setMessages((p) => [
+          ...p,
+          {
+            role: "assistant",
+            type: "upload_prompt",
+            content: "📎 Would you like to upload more resumes for better matching?",
+            meta: { ask_upload_resumes: true },
+          },
+        ]);
+
       } finally {
         setIsLoading(false);
       }
@@ -114,64 +115,75 @@ export const useWebSocket = (
       return;
     }
 
-    // ✔ UPLOAD RESUMES (WS triggered)
+    /* ---------- DIRECT UPLOAD INTENT ---------- */
     if (intent === "Upload Resumes") {
       if (uploadTriggeredRef.current) return;
+
       uploadTriggeredRef.current = true;
 
       setSelectedFeature("Upload Resumes");
-      setMessages(prev => [
-        ...prev,
-        { role: "assistant", type: "upload_ui", content: "📎 Upload your resumes…" }
+      setMessages((p) => [
+        ...p,
+        {
+          role: "assistant",
+          type: "upload_ui",
+          content: "📎 Upload your resumes…",
+        },
       ]);
 
       return;
     }
   };
 
-
   /* =======================================================
-     MASTER WS MESSAGE HANDLER
+      WS MESSAGE HANDLER
   ======================================================= */
   const handleWebSocketMessage = useCallback(
     async (msg) => {
       console.log("📩 WS Received:", msg);
 
-      // 1) Backend detects intent
+      // AI intent detection
       if (msg.type === "feature_detected" && msg.data) {
         lastUserMessageRef.current = msg.user_message || "";
         await handleIntent(msg.data);
         return;
       }
 
-      // 2) Ignore AI detection logs
-      if (
-        msg.type === "text" &&
-        typeof msg.data === "string" &&
-        msg.data.startsWith("✨ Detected request:")
-      ) {
-        return;
-      }
-
-      // 3) Standard assistant messages
+      // Assistant messages
       if (msg.type === "text") {
-        setMessages((prev) => [...prev, { role: "assistant", content: msg.data }]);
+        setMessages((p) => [...p, { role: "assistant", content: msg.data }]);
         return;
       }
 
-      // 4) Profile Matcher table
+      // Profile match result
       if (msg.type === "profile" && msg.data?.candidates) {
-        setMessages((prev) => [
-          ...prev,
-          { role: "assistant", type: "profile_table", data: msg.data.candidates },
+        setMessages((p) => [
+          ...p,
+          {
+            role: "assistant",
+            type: "profile_table",
+            data: msg.data.candidates,
+          },
         ]);
+
+        // Add upload prompt
+        setMessages((p) => [
+          ...p,
+          {
+            role: "assistant",
+            type: "upload_prompt",
+            content: "📎 Would you like to upload more resumes for better matching?",
+            meta: { ask_upload_resumes: true },
+          },
+        ]);
+
         return;
       }
 
-      // 5) Resume table
+      // Resume table
       if (msg.type === "resume" && msg.data) {
-        setMessages((prev) => [
-          ...prev,
+        setMessages((p) => [
+          ...p,
           { role: "assistant", type: "resume_table", data: msg.data },
         ]);
         return;
@@ -181,7 +193,7 @@ export const useWebSocket = (
   );
 
   /* =======================================================
-     CONNECT WEBSOCKET
+      CONNECT WS
   ======================================================= */
   const connectWebSocket = useCallback(() => {
     const ws = new WebSocket(WS_URL);
@@ -195,24 +207,45 @@ export const useWebSocket = (
 
     ws.onmessage = (event) => {
       try {
-        const msg =
-          typeof event.data === "string" ? JSON.parse(event.data) : event.data;
+        const msg = JSON.parse(event.data);
         handleWebSocketMessage(msg);
-      } catch { }
+      } catch (err) {
+        console.error("WS Parse Error:", err);
+      }
     };
   }, [handleWebSocketMessage]);
 
   /* =======================================================
-     LISTEN FOR ProfileMatcher → No Candidates → trigger_upload_resumes
+      YES — MATCH PROFILES
   ======================================================= */
   useEffect(() => {
-    const openUpload = () => {
+    const onYes = async () => {
+      const jd = lastUserMessageRef.current.trim();
+      if (!jd) return;
+
+      setMessages((p) => [...p, { role: "assistant", content: "🔍 Matching profiles…" }]);
+
+      setIsLoading(true);
+      await fetchProfileMatches(jd);
+      setIsLoading(false);
+    };
+
+    window.addEventListener("confirm_match_profiles", onYes);
+    return () => window.removeEventListener("confirm_match_profiles", onYes);
+  }, []);
+
+  /* =======================================================
+      YES — UPLOAD MORE RESUMES
+  ======================================================= */
+  useEffect(() => {
+    const onUploadMore = () => {
       if (uploadTriggeredRef.current) return;
+
       uploadTriggeredRef.current = true;
 
       setSelectedFeature("Upload Resumes");
-      setMessages((prev) => [
-        ...prev,
+      setMessages((p) => [
+        ...p,
         {
           role: "assistant",
           type: "upload_ui",
@@ -221,13 +254,13 @@ export const useWebSocket = (
       ]);
     };
 
-    window.addEventListener("trigger_upload_resumes", openUpload);
+    window.addEventListener("trigger_upload_resumes", onUploadMore);
     return () =>
-      window.removeEventListener("trigger_upload_resumes", openUpload);
+      window.removeEventListener("trigger_upload_resumes", onUploadMore);
   }, [setMessages, setSelectedFeature]);
 
   /* =======================================================
-     INITIATE WS CONNECTION
+      INIT WS CONNECTION
   ======================================================= */
   useEffect(() => {
     connectWebSocket();
@@ -238,7 +271,7 @@ export const useWebSocket = (
   }, [connectWebSocket]);
 
   /* =======================================================
-     SEND MESSAGE
+      SEND MESSAGE
   ======================================================= */
   const sendMessage = useCallback(
     (msg) => {
@@ -248,7 +281,7 @@ export const useWebSocket = (
 
       if (wsRef.current?.readyState === WebSocket.OPEN) {
         wsRef.current.send(JSON.stringify({ message: msg }));
-        setMessages((prev) => [...prev, { role: "user", content: msg }]);
+        setMessages((p) => [...p, { role: "user", content: msg }]);
       }
     },
     [setMessages]

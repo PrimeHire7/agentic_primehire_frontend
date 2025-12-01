@@ -47,6 +47,30 @@
   pointer-events: none;
 }
 
+/* REMOVE SCROLLBAR COMPLETELY FOR PROFILE TABLE */
+.profile-box::-webkit-scrollbar,
+.profiles-table::-webkit-scrollbar {
+  display: none !important;
+}
+
+.profile-box,
+.profiles-table {
+  -ms-overflow-style: none !important;
+  /* IE/Edge */
+  scrollbar-width: none !important;
+  /* Firefox */
+}
+
+.message-block {
+  overflow: visible !important;
+}
+
+.message-block .profile-box {
+  overflow: visible !important;
+  max-height: none !important;
+}
+
+
 /* =================================================
       SEND BUTTON + BADGES CONTAINER
 ================================================= */

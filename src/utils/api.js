@@ -129,6 +129,11 @@ export const generateJd = async (inputs, setMessages, setIsLoading) => {
           type: "profile_table",
           data: matchData.candidates || [],
         },
+        {
+          role: "assistant",
+          content: "📎 Would you like to upload more resumes for better matching?",
+          meta: { ask_upload_resumes: true }
+        }
       ]);
 
       // Refresh JD history (notify JDHistory component)
@@ -406,22 +411,34 @@ export const checkWhatsAppStatus = async () => {
 // -----------------------------------------------------------
 export const generateSingleJD = async (prompt) => {
   try {
-    const response = await fetch(`${API_BASE}/mcp/tools/jd/generate/single`, {
+    const res = await fetch(`${API_BASE}/mcp/tools/jd/generate/single`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json; charset=utf-8" },
       body: JSON.stringify({ prompt }),
     });
 
-    if (!response.ok) {
-      const text = await response.text();
-      throw new Error(`JD single-prompt failed: ${response.status} - ${text}`);
+    console.log("generateSingleJD: status", res.status, res.statusText);
+    const text = await res.text();
+    console.log("generateSingleJD: raw response (first 2000 chars):", text.slice(0, 2000));
+
+    // Try to parse JSON; helpful error if server returned HTML or nothing
+    let payload;
+    try {
+      payload = JSON.parse(text);
+    } catch (e) {
+      console.error("generateSingleJD: invalid JSON from server", e);
+      throw new Error("Invalid JSON response from JD endpoint");
     }
 
-    const data = await response.json();
+    // Optional: handle debug error object your server returns in dev
+    if (!payload.ok) {
+      console.error("generateSingleJD: server returned error payload", payload);
+      throw new Error(payload.error || "JD generation failed");
+    }
 
-    return data;
+    return payload; // { ok, extracted, result }
   } catch (err) {
-    console.error("❌ generateSingleJD error:", err);
+    console.error("generateSingleJD network error:", err);
     throw err;
   }
 };

@@ -28,6 +28,30 @@ const MessageRenderer = React.memo(({ message, onTriggerFeature }) => {
   if (message.type === "resume_table") {
     return <ResumeTable data={message.data || {}} />;
   }
+  if (message.type === "upload_prompt") {
+    return (
+      <ChatMessage
+        role={message.role}
+        content={message.content}
+        meta={message.meta || {}}
+      />
+    );
+  }
+  /* ============================================================
+   UPLOAD PROMPT (YES/NO BOX)
+============================================================ */
+  if (message.type === "upload_prompt") {
+    return (
+      <div className="message-block">
+        <ChatMessage
+          role={message.role}
+          content={message.content}
+          meta={message.meta || {}}
+        />
+      </div>
+    );
+  }
+
 
   /* ============================================================
      JD UI (legacy)
@@ -68,7 +92,8 @@ const MessageRenderer = React.memo(({ message, onTriggerFeature }) => {
   if (message.type === "upload_ui") {
     return (
       <div className="message-block feature-block fade-highlight">
-        <ChatMessage role="assistant" content="📎 Upload Resumes" />
+        <ChatMessage role="assistant" content="📎 Upload Resumes" meta={{}} />
+
         <UploadUI />
       </div>
     );
@@ -81,7 +106,12 @@ const MessageRenderer = React.memo(({ message, onTriggerFeature }) => {
     return (
       <div className="message-block feature-block fade-highlight">
         {message.content && (
-          <ChatMessage role="assistant" content={message.content} />
+          <ChatMessage
+            role="assistant"
+            content={message.content}
+            meta={message.meta || {}}
+          />
+
         )}
 
         <div className="message-feature-ui mt-2">
@@ -124,7 +154,12 @@ const MessageRenderer = React.memo(({ message, onTriggerFeature }) => {
   if (detectedFeature) {
     return (
       <div ref={featureRef} className="message-block feature-block fade-highlight">
-        <ChatMessage role={message.role} content={message.content} />
+        {/* <ChatMessage role={message.role} content={message.content} /> */}
+        <ChatMessage
+          role={message.role}
+          content={message.content}
+          meta={message.meta || {}}
+        />
 
         <div className="message-feature-ui mt-2">
           {detectedFeature === "JDHistory" && <JDHistory />}
@@ -146,7 +181,12 @@ const MessageRenderer = React.memo(({ message, onTriggerFeature }) => {
   ============================================================ */
   return (
     <div className="message-block">
-      <ChatMessage role={message.role} content={message.content} />
+      <ChatMessage
+        role={message.role}
+        content={message.content}
+        meta={message.meta || {}}
+      />
+
     </div>
   );
 });

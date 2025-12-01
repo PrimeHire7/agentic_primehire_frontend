@@ -1,417 +1,64 @@
-// // 📁 src/hooks/useJDCreator.js
-// import { useState, useCallback, useEffect } from "react";
-// import { generateJd } from "@/utils/api";
-// import { generateSingleJD } from "@/utils/api";   // NEW
+// src/hooks/useJDCreator.js
+import { useState, useCallback } from "react";
+import { generateSingleJD } from "@/utils/api";
 
-// const jdSteps = [
-//   "role",
-//   "location",
-//   "experience",
-//   "jobType",
-//   "skillsMandatory",
-//   "skillsPreferred",
-//   "responsibilities",
-//   "company_name",
-//   "about",
-//   "perks",
-// ];
-
-// const stepPrompts = {
-//   role: "👉 What is the job title / role?",
-//   location: "📍 Where is the job located? (City or Remote)",
-//   experience: "💼 What is the experience required?",
-//   jobType: "📌 Job type (Full-time / Contract / Remote)?",
-//   skillsMandatory: "✍️ List the mandatory skills (comma separated).",
-//   skillsPreferred: "✨ List the preferred skills (comma separated).",
-//   responsibilities: "📝 Provide key responsibilities (optional, can skip).",
-//   company_name: "🏢 What is the company name?",
-//   about: "🏢 Provide a short description about the role/company (optional).",
-//   perks: "🎁 Any perks or benefits to highlight? (optional).",
-// };
-
-// export const useJDCreator = (setMessages, setIsLoading, setSelectedTask) => {
-//   const [jdAnswers, setJdAnswers] = useState([]);
-//   const [currentJdInput, setCurrentJdInput] = useState("");
-//   const [currentJdStep, setCurrentJdStep] = useState(jdSteps[0]);
-//   const [jdInProgress, setJdInProgress] = useState(false);
-
-//   // initialize once
-//   useEffect(() => {
-//     if (typeof window === "undefined") return;
-//     window.__JD_HISTORY__ = window.__JD_HISTORY__ || [];
-//     window.__CURRENT_JD_STEP__ = window.__CURRENT_JD_STEP__ || stepPrompts[currentJdStep];
-//     window.__HANDLE_JD_PROCESS__ = handleJdProcess; // will be hoisted
-//     window.__CURRENT_JD_INPUT__ = "";
-//     return () => delete window.__HANDLE_JD_PROCESS__;
-//     // eslint-disable-next-line react-hooks/exhaustive-deps
-//   }, []);
-
-//   const setWindowStep = (stepKey) => {
-//     if (typeof window === "undefined") return;
-//     window.__CURRENT_JD_STEP__ = stepPrompts[stepKey] || null;
-//     window.dispatchEvent(new CustomEvent("jd_step_update", { detail: { step: stepKey } }));
-//   };
-
-//   const handleJdProcess = useCallback(
-//     async (userMessage) => {
-//       if (!userMessage?.toString().trim()) return;
-
-//       // start JD mode
-//       if (!jdInProgress) {
-//         setJdInProgress(true);
-//         if (typeof window !== "undefined") window.__JD_HISTORY__ = [];
-//         setMessages((prev) => [
-//           ...prev,
-//           { role: "assistant", content: "🧠 JD Creator started — let's build your job description step by step!" },
-//         ]);
-//       }
-
-//       const stepIndex = jdAnswers.length;
-//       const stepKey = currentJdStep || jdSteps[stepIndex] || jdSteps[jdSteps.length - 1];
-
-//       let value = userMessage;
-//       if (["skillsMandatory", "skillsPreferred"].includes(stepKey)) {
-//         value = userMessage
-//           .split(",")
-//           .map((s) => s.trim())
-//           .filter(Boolean);
-//       }
-
-//       const newAnswers = [...jdAnswers, { step: stepKey, value }];
-//       setJdAnswers(newAnswers);
-
-//       if (typeof window !== "undefined") {
-//         window.__JD_HISTORY__ = [
-//           ...(window.__JD_HISTORY__ || []),
-//           { step: stepKey, value, by: "user" },
-//         ];
-//       }
-
-//       const nextIndex = newAnswers.length;
-//       if (nextIndex < jdSteps.length) {
-//         const nextStep = jdSteps[nextIndex];
-//         setCurrentJdStep(nextStep);
-//         setWindowStep(nextStep);
-
-//         if (typeof window !== "undefined") {
-//           window.__JD_HISTORY__ = [
-//             ...(window.__JD_HISTORY__ || []),
-//             { step: nextStep, value: stepPrompts[nextStep], by: "ai" },
-//           ];
-//         }
-
-//         setIsLoading(false);
-//         setCurrentJdInput("");
-//         return;
-//       }
-
-//       // All steps answered — build JD
-//       const jdInputObj = newAnswers.reduce((acc, { step, value }) => {
-//         acc[step] = value;
-//         return acc;
-//       }, {});
-
-//       setMessages((prev) => [
-//         ...prev,
-//         { role: "assistant", content: "✅ Generating LinkedIn-ready JD. Please wait..." },
-//       ]);
-//       setIsLoading(true);
-
-//       try {
-//         await generateJd(jdInputObj, setMessages, setIsLoading);
-//         setMessages((prev) => [
-//           ...prev,
-//           { role: "assistant", content: "🎉 JD generation complete! You can continue chatting below." },
-//         ]);
-//       } catch (err) {
-//         console.error("JD generation failed:", err);
-//         setMessages((prev) => [
-//           ...prev,
-//           { role: "assistant", content: "❌ JD generation failed. Please try again." },
-//         ]);
-//       } finally {
-//         // ✅ JD generation finished successfully
-//         setIsLoading(false);
-//         setJdInProgress(false);
-//         setCurrentJdStep(null); // stop further JD questions
-
-//         if (typeof window !== "undefined") {
-//           // ❌ Unlock chat
-//           window.__JD_MODE_ACTIVE__ = false;
-
-//           // ✅ Keep summary visible (so JD UI still shows)
-//           window.__JD_HISTORY__ = [...(window.__JD_HISTORY__ || []), {
-//             step: "JD Summary",
-//             value: "🎉 JD generated successfully. You can now continue chatting or start a new JD anytime.",
-//             by: "ai",
-//           }];
-
-//           // Keep last prompt descriptive
-//           window.__CURRENT_JD_STEP__ = "✅ JD Completed — Chat re-enabled!";
-//         }
-
-//         // append final assistant message for clarity
-//         setMessages((prev) => [
-//           ...prev,
-//           { role: "assistant", content: "💬 JD generated successfully — chat is now re-enabled!" },
-//         ]);
-//       }
-
-//     },
-//     [jdAnswers, currentJdStep, jdInProgress, setMessages, setIsLoading]
-//   );
-
-//   const handleJdSend = useCallback(
-//     (message) => {
-//       if (!message?.toString().trim()) return;
-//       if (typeof window !== "undefined") window.__CURRENT_JD_INPUT__ = "";
-//       setIsLoading(true);
-//       handleJdProcess(message);
-//     },
-//     [handleJdProcess]
-//   );
-
-//   return {
-//     jdAnswers,
-//     jdInProgress,
-//     currentJdInput,
-//     setCurrentJdInput,
-//     currentJdStep,
-//     setCurrentJdStep,
-//     handleJdProcess,
-//     handleJdSend,
-//   };
-// };
-
-
-import { useState, useCallback, useEffect } from "react";
-import { generateJd, generateSingleJD } from "@/utils/api";   // UPDATED
-
-const jdSteps = [
-  "role",
-  "location",
-  "experience",
-  "jobType",
-  "skillsMandatory",
-  "skillsPreferred",
-  "responsibilities",
-  "company_name",
-  "about",
-  "perks",
-];
-
-const stepPrompts = {
-  role: "👉 What is the job title / role?",
-  location: "📍 Where is the job located? (City or Remote)",
-  experience: "💼 What is the experience required?",
-  jobType: "📌 Job type (Full-time / Contract / Remote)?",
-  skillsMandatory: "✍️ List the mandatory skills (comma separated).",
-  skillsPreferred: "✨ List the preferred skills (comma separated).",
-  responsibilities: "📝 Provide key responsibilities (optional, can skip).",
-  company_name: "🏢 What is the company name?",
-  about: "🏢 Provide a short description about the role/company (optional).",
-  perks: "🎁 Any perks or benefits to highlight? (optional).",
-};
-
-export const useJDCreator = (setMessages, setIsLoading, setSelectedTask) => {
-  const [jdAnswers, setJdAnswers] = useState([]);
-  const [currentJdInput, setCurrentJdInput] = useState("");
-  const [currentJdStep, setCurrentJdStep] = useState(jdSteps[0]);
+export const useJDCreator = (setMessages, setIsLoading) => {
   const [jdInProgress, setJdInProgress] = useState(false);
 
-  // ===============================
-  // SETUP
-  // ===============================
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    window.__JD_HISTORY__ = window.__JD_HISTORY__ || [];
-    window.__CURRENT_JD_STEP__ = stepPrompts[currentJdStep];
-    window.__HANDLE_JD_PROCESS__ = handleJdProcess;
-    window.__CURRENT_JD_INPUT__ = "";
-    return () => delete window.__HANDLE_JD_PROCESS__;
-  }, []);
-
-  const setWindowStep = (stepKey) => {
-    if (typeof window === "undefined") return;
-    window.__CURRENT_JD_STEP__ = stepPrompts[stepKey];
-    window.dispatchEvent(
-      new CustomEvent("jd_step_update", { detail: { step: stepKey } })
-    );
-  };
-
-  // ===============================
-  // ✨ NEW SINGLE-LINE JD CREATION
-  // ===============================
-  const handleSinglePromptJD = async (message) => {
-    const prompt = message.replace("Start JD Creator:", "").trim();
-
-    setMessages((prev) => [
-      ...prev,
-      { role: "assistant", content: "📝 Generating JD from your prompt…" },
-    ]);
-
-    try {
-      const result = await generateSingleJD(prompt);
-
-      const jdText = result?.result?.markdown_jd || "";
-
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: jdText },
-        {
-          role: "assistant",
-          content: "🎉 JD generated successfully! You can continue chatting.",
-        },
-      ]);
-    } catch (err) {
-      console.error("❌ Single JD error:", err);
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: "❌ Failed to generate JD." },
-      ]);
-    } finally {
-      // unlock chat
-      if (typeof window !== "undefined") {
-        window.__JD_MODE_ACTIVE__ = false;
-      }
-      setIsLoading(false);
-      setJdInProgress(false);
-    }
-  };
-
-  // ===============================
-  // MULTI-STEP JD CREATION
-  // –===============================
+  // ---------------------------------------------
+  // ✨ Single Prompt JD → Just send natural text
+  // ---------------------------------------------
   const handleJdProcess = useCallback(
     async (userMessage) => {
-      if (!userMessage?.toString().trim()) return;
+      if (!userMessage?.trim()) return;
 
-      // -----------------------------------------------
-      // ✨ IF USER USES SINGLE PROMPT MODE → SKIP STEPS
-      // -----------------------------------------------
-      if (userMessage.startsWith("Start JD Creator:")) {
-        return handleSinglePromptJD(userMessage);
-      }
-
-      // START MULTI-STEP MODE
-      if (!jdInProgress) {
-        setJdInProgress(true);
-        if (typeof window !== "undefined") window.__JD_HISTORY__ = [];
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: "assistant",
-            content: "🧠 JD Creator started — let's build your JD step by step!",
-          },
-        ]);
-      }
-
-      const stepIndex = jdAnswers.length;
-      const stepKey = currentJdStep || jdSteps[stepIndex];
-
-      let value = userMessage;
-      if (["skillsMandatory", "skillsPreferred"].includes(stepKey)) {
-        value = userMessage
-          .split(",")
-          .map((s) => s.trim())
-          .filter(Boolean);
-      }
-
-      const updatedAnswers = [...jdAnswers, { step: stepKey, value }];
-      setJdAnswers(updatedAnswers);
-
-      if (typeof window !== "undefined") {
-        window.__JD_HISTORY__.push({ step: stepKey, value, by: "user" });
-      }
-
-      const nextIndex = updatedAnswers.length;
-
-      if (nextIndex < jdSteps.length) {
-        const nextStep = jdSteps[nextIndex];
-        setCurrentJdStep(nextStep);
-        setWindowStep(nextStep);
-
-        if (typeof window !== "undefined") {
-          window.__JD_HISTORY__.push({
-            step: nextStep,
-            value: stepPrompts[nextStep],
-            by: "ai",
-          });
-        }
-
-        setIsLoading(false);
-        setCurrentJdInput("");
-        return;
-      }
-
-      // ==========================
-      // 📌 BUILD FINAL JD OBJECT
-      // ==========================
-      const jdObj = updatedAnswers.reduce((acc, item) => {
-        acc[item.step] = item.value;
-        return acc;
-      }, {});
+      // JD mode ON
+      setJdInProgress(true);
+      setIsLoading(true);
 
       setMessages((prev) => [
         ...prev,
-        {
-          role: "assistant",
-          content: "⌛ Generating your JD. Please wait…",
-        },
+        { role: "assistant", content: "📝 Processing your job description request…" },
       ]);
-      setIsLoading(true);
 
       try {
-        await generateJd(jdObj, setMessages, setIsLoading);
+        const response = await generateSingleJD(userMessage);
+
+        const html = response?.result?.html_jd || "<p>No JD generated</p>";
+
+        // Render JD
         setMessages((prev) => [
           ...prev,
+          { role: "assistant", content: html },
           {
             role: "assistant",
-            content: "🎉 JD generation complete!",
+            content: "🎉 Your job description is ready!",
           },
         ]);
+
       } catch (err) {
-        console.error("JD generation failed:", err);
+        console.error("JD Creator Error:", err);
         setMessages((prev) => [
           ...prev,
-          { role: "assistant", content: "❌ JD generation failed." },
+          { role: "assistant", content: "❌ Failed to generate JD." },
         ]);
       } finally {
-        // cleanup
         setIsLoading(false);
         setJdInProgress(false);
-        setCurrentJdStep(null);
-
-        if (typeof window !== "undefined") {
-          window.__JD_MODE_ACTIVE__ = false;
-          window.__CURRENT_JD_STEP__ = "JD completed!";
-        }
       }
     },
-    [jdAnswers, currentJdStep, jdInProgress, setMessages, setIsLoading]
+    [setMessages, setIsLoading]
   );
 
-  // ===============================
-  // SEND WRAPPER
-  // ===============================
-  const handleJdSend = useCallback(
-    (message) => {
-      if (!message?.toString().trim()) return;
-      if (typeof window !== "undefined")
-        window.__CURRENT_JD_INPUT__ = "";
-      setIsLoading(true);
-      handleJdProcess(message);
-    },
-    [handleJdProcess]
-  );
+  // Wrapper for message send
+  const handleJdSend = (msg) => {
+    if (!msg?.trim()) return;
+    setIsLoading(true);
+    handleJdProcess(msg);
+  };
 
   return {
-    jdAnswers,
     jdInProgress,
-    currentJdInput,
-    setCurrentJdInput,
-    currentJdStep,
-    setCurrentJdStep,
     handleJdProcess,
     handleJdSend,
   };

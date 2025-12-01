@@ -8,9 +8,10 @@
 .chat-scroll-area {
   flex: 1;
   padding: 4px 12px;
-  /* super clean, minimal left padding */
-  overflow-y: auto;
+  overflow-y: visible !important;
+  overscroll-behavior: none;
 }
+
 
 
 
