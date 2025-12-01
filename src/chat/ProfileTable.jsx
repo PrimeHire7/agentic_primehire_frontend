@@ -51,8 +51,8 @@ const ProfileTable = ({ data = [], index = 0, jdId = null }) => {
       clearInterval(i);
     };
   }, []);
-
-  const prepared = (Array.isArray(data) ? data.slice() : []).map((item) => ({
+  const safeData = Array.isArray(data) ? data : [];
+  const prepared = safeData.map((item) => ({
     ...item,
     finalScore: item?.scores?.final_score ?? item.finalScore ?? 0,
   }));

@@ -22,7 +22,10 @@ const MessageRenderer = React.memo(({ message, onTriggerFeature }) => {
      STRUCTURED TABLES
   ============================================================ */
   if (message.type === "profile_table") {
-    return <ProfileTable data={message.data || {}} />;
+    const safeCandidates = Array.isArray(message.data) ? message.data : [];
+
+    return <ProfileTable data={safeCandidates} />;
+
   }
 
   if (message.type === "resume_table") {

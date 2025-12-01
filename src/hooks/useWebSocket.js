@@ -75,37 +75,51 @@ export const useWebSocket = (
     }
 
     /* ---------- PROFILE MATCHER ---------- */
+    /* =======================================================
+    PROFILE MATCHER (SAFE)
+======================================================= */
     if (intent === "Profile Matcher") {
       uploadTriggeredRef.current = false;
 
       const jd = lastUserMessageRef.current.trim();
       if (!jd) return;
 
-      setMessages((p) => [...p, { role: "assistant", content: "🎯 Matching candidates…" }]);
+      setMessages(prev => [...prev, {
+        role: "assistant",
+        content: "🎯 Matching candidates…"
+      }]);
 
       try {
         setIsLoading(true);
+
         const result = await fetchProfileMatches(jd);
 
-        // Show matched candidates
-        setMessages((p) => [
-          ...p,
-          {
-            role: "assistant",
-            type: "profile_table",
-            data: result.candidates || [],
-          },
+        const safeCandidates = Array.isArray(result?.candidates)
+          ? result.candidates
+          : [];
+
+        // Show profile table
+        setMessages(prev => [
+          ...prev,
+          { role: "assistant", type: "profile_table", data: safeCandidates }
         ]);
 
-        // 🔥 Show Upload Resume Prompt
-        setMessages((p) => [
-          ...p,
+        // Ask to upload resumes
+        setMessages(prev => [
+          ...prev,
           {
             role: "assistant",
-            type: "upload_prompt",
             content: "📎 Would you like to upload more resumes for better matching?",
-            meta: { ask_upload_resumes: true },
-          },
+            meta: { ask_upload_resumes: true }
+          }
+        ]);
+
+      } catch (err) {
+        console.error("Profile Matcher Error:", err);
+
+        setMessages(prev => [
+          ...prev,
+          { role: "assistant", content: "❌ Failed to match profiles." }
         ]);
 
       } finally {
@@ -114,6 +128,7 @@ export const useWebSocket = (
 
       return;
     }
+
 
     /* ---------- DIRECT UPLOAD INTENT ---------- */
     if (intent === "Upload Resumes") {
@@ -156,29 +171,31 @@ export const useWebSocket = (
       }
 
       // Profile match result
-      if (msg.type === "profile" && msg.data?.candidates) {
-        setMessages((p) => [
-          ...p,
-          {
-            role: "assistant",
-            type: "profile_table",
-            data: msg.data.candidates,
-          },
+      /* =======================================================
+    WS PROFILE TABLE (SAFE)
+======================================================= */
+      if (msg.type === "profile") {
+        const safeCandidates = Array.isArray(msg.data?.candidates)
+          ? msg.data.candidates
+          : [];
+
+        setMessages(prev => [
+          ...prev,
+          { role: "assistant", type: "profile_table", data: safeCandidates }
         ]);
 
-        // Add upload prompt
-        setMessages((p) => [
-          ...p,
+        setMessages(prev => [
+          ...prev,
           {
             role: "assistant",
-            type: "upload_prompt",
             content: "📎 Would you like to upload more resumes for better matching?",
-            meta: { ask_upload_resumes: true },
-          },
+            meta: { ask_upload_resumes: true }
+          }
         ]);
 
         return;
       }
+
 
       // Resume table
       if (msg.type === "resume" && msg.data) {
