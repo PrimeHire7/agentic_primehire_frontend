@@ -179,13 +179,12 @@ export default function MainContent({
               ))}
             </div>
 
-            <div className="mc-console">
-              <ChatInput
-                onSend={handleSend}
-                activeTask={pendingTask}
-                forceShowChips={true}
-              />
-            </div>
+            <ChatInput
+              onSend={handleSend}
+              activeTask={pendingTask}
+              forceShowChips={true}
+            />
+
           </div>
         </section>
 

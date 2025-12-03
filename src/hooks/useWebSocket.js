@@ -9,9 +9,8 @@ export const useWebSocket = (
   fetchProfileMatches,
   setMessages,
   setIsLoading,
-  handleJdProcess   // ⭐ NOW CORRECT
+  handleJdProcess
 ) => {
-
   const wsRef = useRef(null);
   const reconnectRef = useRef(null);
 
@@ -53,14 +52,14 @@ export const useWebSocket = (
     };
 
     /* =======================================================
-        FEATURE UI HANDLER (ALL FIXES APPLIED)
+        FEATURE UI
     ======================================================= */
     if (featureUIs[intent]) {
       uploadTriggeredRef.current = false;
       setSelectedFeature(intent);
       setSelectedTask("");
 
-      const content = featureUIs[intent] || `Showing ${intent} UI`;
+      const content = featureUIs[intent];
 
       setMessages((prev) => [
         ...prev,
@@ -136,7 +135,7 @@ export const useWebSocket = (
     }
 
     /* =======================================================
-        PROFILE MATCHER FLOW (SAFE & CLEAN)
+        PROFILE MATCHER (MAIN FLOW)
     ======================================================= */
     if (intent === "Profile Matcher") {
       uploadTriggeredRef.current = false;
@@ -149,56 +148,42 @@ export const useWebSocket = (
         { role: "assistant", content: "🎯 Matching candidates…" },
       ]);
 
-      try {
-        setIsLoading(true);
-        const result = await fetchProfileMatches(jd);
+      setIsLoading(true);
 
-        const candidates = result?.candidates || [];
+      const result = await fetchProfileMatches(jd);
+      const candidates = result?.candidates || [];
 
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: "assistant",
-            type: "profile_table",
-            data: candidates,
-          },
-        ]);
-
-        // Ask to upload resumes
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: "assistant",
-            content: "📎 Would you like to upload more resumes for better matching?",
-            meta: { ask_upload_resumes: true },
-          },
-        ]);
-      } finally {
-        setIsLoading(false);
+      if (candidates.length === 0) {
+        console.log("📎 No candidates — triggering Upload UI via WebSocket");
+        window.dispatchEvent(new CustomEvent("trigger_upload_resumes"));
       }
 
+      setIsLoading(false);
       return;
     }
 
+    /* =======================================================
+        PROFILE MATCH HISTORY
+    ======================================================= */
     if (intent === "ProfileMatchHistory") {
       setSelectedFeature("ProfileMatchHistory");
       setSelectedTask("");
 
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
           type: "feature_ui",
           feature: "ProfileMatchHistory",
-          content: "📊 Showing previous profile match results…"
-        }
+          content: "📊 Showing previous profile match results…",
+        },
       ]);
 
       return;
     }
 
     /* =======================================================
-        UPLOAD RESUMES TRIGGER
+        UPLOAD RESUMES INTENT
     ======================================================= */
     if (intent === "Upload Resumes") {
       if (uploadTriggeredRef.current) return;
@@ -218,21 +203,17 @@ export const useWebSocket = (
 
       return;
     }
-    // =======================================================
-    // INTERVIEW BOT
-    // =======================================================    
-    // =======================================================
-    // INTERVIEW BOT (FULL FLOW)
-    // =======================================================
+
+    /* =======================================================
+        INTERVIEW BOT
+    ======================================================= */
     if (intent === "InterviewBot") {
       console.log("🚀 [INTENT] InterviewBot triggered!");
-      console.log("➡️ Setting selectedFeature = InterviewBot");
-      console.log("➡️ Setting selectedTask = validation");
 
       setSelectedFeature("InterviewBot");
       setSelectedTask("validation");
 
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
@@ -242,19 +223,8 @@ export const useWebSocket = (
         },
       ]);
 
-      // VERIFY AFTER REACT UPDATE
-      setTimeout(() => {
-        console.log("🔎 [POST] selectedFeature =", window.__LATEST_FEATURE__);
-        console.log("🔎 [POST] selectedTask =", window.__LATEST_TASK__);
-      }, 200);
-
       return;
     }
-
-
-
-
-
   };
 
   /* =======================================================
@@ -270,35 +240,11 @@ export const useWebSocket = (
         return;
       }
 
-      // Regular text stream
       if (msg.type === "text") {
         setMessages((prev) => [
           ...prev,
           { role: "assistant", content: msg.data },
         ]);
-        return;
-      }
-
-      // Profile table from backend
-      if (msg.type === "profile" && msg.data?.candidates) {
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: "assistant",
-            type: "profile_table",
-            data: msg.data.candidates,
-          },
-        ]);
-
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: "assistant",
-            content: "📎 Would you like to upload more resumes for better matching?",
-            meta: { ask_upload_resumes: true },
-          },
-        ]);
-
         return;
       }
 
@@ -311,7 +257,8 @@ export const useWebSocket = (
         return;
       }
 
-
+      // NOTE: we do NOT handle msg.type === "profile" here anymore
+      // Profile table rendering is handled ONLY by useProfileMatcher.
     },
     [setMessages]
   );
@@ -344,7 +291,7 @@ export const useWebSocket = (
   }, [handleWebSocketMessage]);
 
   /* =======================================================
-        YES — MATCH PROFILES
+        YES — MATCH PROFILES (from JD confirmation)
   ======================================================= */
   useEffect(() => {
     const runMatch = async () => {
@@ -357,7 +304,14 @@ export const useWebSocket = (
       ]);
 
       setIsLoading(true);
-      await fetchProfileMatches(jd);
+      const result = await fetchProfileMatches(jd);
+      const candidates = result?.candidates || [];
+
+      if (candidates.length === 0) {
+        console.log("📎 No candidates from confirm — triggering Upload UI");
+        window.dispatchEvent(new CustomEvent("trigger_upload_resumes"));
+      }
+
       setIsLoading(false);
     };
 
@@ -367,7 +321,7 @@ export const useWebSocket = (
   }, []);
 
   /* =======================================================
-        YES — UPLOAD MORE RESUMES
+        YES — UPLOAD MORE RESUMES (handled via window event)
   ======================================================= */
   useEffect(() => {
     const openUpload = () => {
