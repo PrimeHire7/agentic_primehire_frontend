@@ -1,205 +1,92 @@
-// // 📁 src/hooks/useProfileMatcher.js
-// import { useCallback } from "react";
-// import { API_BASE } from "@/utils/constants";
-
-// export const useProfileMatcher = (setMessages, setIsLoading, setSelectedTask) => {
-//   const fetchProfileMatches = useCallback(
-//     async (promptMessage) => {
-//       console.log("🧩 [ProfileMatcher] fetchProfileMatches() called");
-
-//       if (!promptMessage || !promptMessage.trim()) {
-//         console.warn("⚠️ [ProfileMatcher] Empty JD text received!");
-//         setMessages((prev) => [
-//           ...prev,
-//           {
-//             role: "assistant",
-//             content:
-//               "⚠️ No JD text provided for matching. Please type a job description first.",
-//           },
-//         ]);
-//         return;
-//       }
-
-//       // 🔒 Lock routing mode
-//       window.__PROFILE_MATCH_MODE_ACTIVE__ = true;
-//       window.dispatchEvent(new Event("profile_match_start"));
-//       console.log("🔒 [ProfileMatcher] Locking routing — fetching candidates...");
-
-//       setIsLoading(true);
-//       console.log(`📤 [ProfileMatcher] Sending JD text to backend:`, promptMessage);
-
-//       try {
-//         const response = await fetch(`${API_BASE}/mcp/tools/match/profile/match`, {
-//           method: "POST",
-//           headers: { "Content-Type": "application/json" },
-//           body: JSON.stringify({ jd_text: promptMessage }),
-//         });
-
-//         console.log(`📡 [ProfileMatcher] API response status: ${response.status}`);
-
-//         if (!response.ok) {
-//           const text = await response.text();
-//           console.error(`❌ [ProfileMatcher] Bad response - Status ${response.status}:`, text);
-//           throw new Error(`Status ${response.status} - ${text}`);
-//         }
-
-//         const data = await response.json();
-//         console.log("✅ [ProfileMatcher] Response JSON received:", data);
-
-//         const candidates = data.candidates || [];
-//         if (candidates.length > 0) {
-//           console.log(`🎯 [ProfileMatcher] ${candidates.length} candidates matched.`);
-//           setMessages(prev => [
-//             ...prev,
-//             { role: "assistant", type: "profile_table", data: candidates },
-//           ]);
-//         }
-//         else {
-//           console.warn("⚠️ [ProfileMatcher] No candidates returned.");
-
-//           // Show only one message
-//           setMessages(prev => [
-//             ...prev,
-//             { role: "assistant", content: "⚠️ No matching candidates found." }
-//           ]);
-
-//           // Trigger Upload UI (WebSocket listener handles it)
-//           window.dispatchEvent(new CustomEvent("trigger_upload_resumes"));
-//         }
-
-
-//         // ✅ Unlock routing + notify UI
-//         setTimeout(() => {
-//           window.__PROFILE_MATCH_MODE_ACTIVE__ = false;
-//           window.__PROFILE_MATCH_RECENTLY_DONE__ = Date.now();
-//           window.dispatchEvent(new Event("profile_match_done"));
-//           if (typeof setSelectedTask === "function") setSelectedTask("");
-//           console.log("🔓 [ProfileMatcher] Routing unlocked — back to WebSocket mode.");
-//         }, 300);
-//       } catch (err) {
-//         console.error("🔥 [ProfileMatcher] Failed to fetch profile matches:", err);
-//         setMessages((prev) => [
-//           ...prev,
-//           {
-//             role: "assistant",
-//             content: "❌ Failed to fetch profile matches. Please try again later.",
-//           },
-//         ]);
-
-//         // 🔓 Unlock even on error
-//         window.__PROFILE_MATCH_MODE_ACTIVE__ = false;
-//         window.dispatchEvent(new Event("profile_match_done"));
-//       } finally {
-//         console.log("🧹 [ProfileMatcher] Done fetching matches.");
-//         setIsLoading(false);
-//       }
-//     },
-//     [setMessages, setIsLoading, setSelectedTask]
-//   );
-
-//   return { fetchProfileMatches };
-// };
 // 📁 src/hooks/useProfileMatcher.js
-import { useCallback } from "react";
-import { API_BASE } from "@/utils/constants";
+import { useState } from "react";
+import { matchProfiles } from "@/utils/api";
 
+/**
+ * Hook that wraps the profile matcher pipeline.
+ * It is used by:
+ *  - useMainContent (manual "Profile Matcher" task)
+ *  - useWebSocket (WS intent: "Profile Matcher")
+ */
 export const useProfileMatcher = (setMessages, setIsLoading, setSelectedTask) => {
-  const fetchProfileMatches = useCallback(
-    async (promptMessage) => {
-      console.log("🧩 [ProfileMatcher] fetchProfileMatches() called");
+  const [isMatching, setIsMatching] = useState(false);
 
-      if (!promptMessage || !promptMessage.trim()) {
-        console.warn("⚠️ [ProfileMatcher] Empty JD text received!");
+  // Strip "Start Profile Matcher:" prefix etc. before sending to backend
+  const cleanJDText = (t = "") =>
+    t.replace(/^start profile matcher[:\-\s]*/i, "").trim();
+
+  const fetchProfileMatches = async (jdText) => {
+    const cleaned = cleanJDText(jdText || "");
+    console.log("🧹 [Matcher] Cleaned JD text:", cleaned);
+
+    if (!cleaned) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: "⚠️ Please describe the role or paste a JD to match.",
+        },
+      ]);
+      return { candidates: [] };
+    }
+
+    try {
+      setIsMatching(true);
+      if (setIsLoading) setIsLoading(true);
+
+      console.log("📤 [Matcher] Calling matchProfiles() with JD:", cleaned);
+      const response = await matchProfiles(cleaned);
+      console.log("📥 [Matcher] Raw response:", response);
+
+      const candidates = response?.candidates || [];
+      const count = candidates.length;
+
+      console.log("🟦 [Matcher] Candidates found:", count);
+
+      if (count > 0) {
+        // Show results in profile table
         setMessages((prev) => [
           ...prev,
           {
             role: "assistant",
-            content:
-              "⚠️ No JD text provided for matching. Please type a job description first.",
+            type: "profile_table",
+            data: candidates,
           },
         ]);
-        return { candidates: [] };
-      }
+      } else {
+        console.log("⚠️ [Matcher] No candidates → Auto-trigger upload resumes");
 
-      // 🔒 Lock routing mode
-      window.__PROFILE_MATCH_MODE_ACTIVE__ = true;
-      window.dispatchEvent(new Event("profile_match_start"));
-      console.log("🔒 [ProfileMatcher] Locking routing — fetching candidates...");
-
-      setIsLoading(true);
-      console.log(`📤 [ProfileMatcher] Sending JD text to backend:`, promptMessage);
-
-      let candidates = [];
-
-      try {
-        const response = await fetch(`${API_BASE}/mcp/tools/match/profile/match`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ jd_text: promptMessage }),
-        });
-
-        console.log(`📡 [ProfileMatcher] API response status: ${response.status}`);
-
-        if (!response.ok) {
-          const text = await response.text();
-          console.error(
-            `❌ [ProfileMatcher] Bad response - Status ${response.status}:`,
-            text
-          );
-          throw new Error(`Status ${response.status} - ${text}`);
-        }
-
-        const data = await response.json();
-        console.log("✅ [ProfileMatcher] Response JSON received:", data);
-
-        candidates = data.candidates || [];
-
-        if (candidates.length > 0) {
-          console.log(`🎯 [ProfileMatcher] ${candidates.length} candidates matched.`);
-          setMessages((prev) => [
-            ...prev,
-            { role: "assistant", type: "profile_table", data: candidates },
-          ]);
-        } else {
-          console.warn("⚠️ [ProfileMatcher] No candidates returned.");
-
-          setMessages((prev) => [
-            ...prev,
-            { role: "assistant", content: "⚠️ No matching candidates found." },
-          ]);
-        }
-
-        // ✅ Unlock routing + notify UI
-        setTimeout(() => {
-          window.__PROFILE_MATCH_MODE_ACTIVE__ = false;
-          window.__PROFILE_MATCH_RECENTLY_DONE__ = Date.now();
-          window.dispatchEvent(new Event("profile_match_done"));
-          if (typeof setSelectedTask === "function") setSelectedTask("");
-          console.log("🔓 [ProfileMatcher] Routing unlocked — back to WebSocket mode.");
-        }, 300);
-      } catch (err) {
-        console.error("🔥 [ProfileMatcher] Failed to fetch profile matches:", err);
         setMessages((prev) => [
           ...prev,
-          {
-            role: "assistant",
-            content: "❌ Failed to fetch profile matches. Please try again later.",
-          },
+          { role: "assistant", content: "⚠️ No matching candidates found." },
         ]);
 
-        // 🔓 Unlock even on error
-        window.__PROFILE_MATCH_MODE_ACTIVE__ = false;
-        window.dispatchEvent(new Event("profile_match_done"));
-      } finally {
-        console.log("🧹 [ProfileMatcher] Done fetching matches.");
-        setIsLoading(false);
+        // 🔥 Let global listener open Upload Resumes UI
+        window.dispatchEvent(new CustomEvent("trigger_upload_resumes"));
       }
 
-      // 👇 Let WebSocket know what happened
+      if (setSelectedTask) {
+        setSelectedTask("Profile Matcher");
+      }
+
       return { candidates };
-    },
-    [setMessages, setIsLoading, setSelectedTask]
-  );
+    } catch (err) {
+      console.error("❌ [Matcher] Profile match failed:", err);
 
-  return { fetchProfileMatches };
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: "❌ Error matching profiles." },
+      ]);
+
+      // Optionally prompt upload resumes here too
+      window.dispatchEvent(new CustomEvent("trigger_upload_resumes"));
+
+      return { candidates: [] };
+    } finally {
+      setIsMatching(false);
+      if (setIsLoading) setIsLoading(false);
+    }
+  };
+
+  return { fetchProfileMatches, isMatching };
 };

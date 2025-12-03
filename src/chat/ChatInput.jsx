@@ -44,19 +44,19 @@ const ChatInput = ({
     "JD Creator",
     "Profile Matcher",
     "Upload Resumes",
-    "Interview Bot",
-    "JD History",
-    "Match History",
-    "Candidate Status",
+    // "Interview Bot",
+    // "JD History",
+    // "Match History",
+    // "Candidate Status",
   ];
 
-  const features = [
-    "ZohoBridge",
-    "MailMind",
-    "LinkedInPoster",
-    "PrimeHireBrain",
-    "Interview Bot",
-  ];
+  // const features = [
+  //   "ZohoBridge",
+  //   "MailMind",
+  //   "LinkedInPoster",
+  //   "PrimeHireBrain",
+  //   "Interview Bot",
+  // ];
 
   /* ============================================================
      FIXED FULL PROMPT CHIPS OBJECT
@@ -139,11 +139,11 @@ const ChatInput = ({
       "JD Creator": "Start JD Creator: ",
       "Profile Matcher": "Start Profile Matcher: ",
       "Upload Resumes": "Start Upload Resumes: ",
-      InterviewBot: "Start InterviewBot: ",
-      ZohoBridge: "Start ZohoBridge: ",
-      MailMind: "Start MailMind: ",
-      LinkedInPoster: "Start LinkedInPoster: ",
-      PrimeHireBrain: "Start PrimeHireBrain: ",
+      // InterviewBot: "Start InterviewBot: ",
+      // ZohoBridge: "Start ZohoBridge: ",
+      // MailMind: "Start MailMind: ",
+      // LinkedInPoster: "Start LinkedInPoster: ",
+      // PrimeHireBrain: "Start PrimeHireBrain: ",
     };
     return map[task] || "";
   };
@@ -251,11 +251,11 @@ const ChatInput = ({
         <div className="ci-top-row">
 
           {/* FEATURE DROPDOWN */}
-          <div className="ci-dropdown-wrapper">
+          {/* <div className="ci-dropdown-wrapper">
             <button
               className="ci-dropdown-trigger"
               onClick={() => {
-                setShowFeaturesDropdown((s) => !s);
+                // setShowFeaturesDropdown((s) => !s);
                 setShowTasksDropdown(false);
               }}
             >
@@ -282,7 +282,7 @@ const ChatInput = ({
                 ))}
               </div>
             )}
-          </div>
+          </div> */}
 
           {/* TASKS DROPDOWN */}
           <div className="ci-dropdown-wrapper">

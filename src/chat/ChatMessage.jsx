@@ -51,13 +51,14 @@ const ChatMessage = ({ role, content, meta = {}, onFeedback }) => {
   }, [content]);
 
   const handleCopy = async () => {
-    const text = typeof content === "string"
-      ? content.replace(/<[^>]+>/g, "")
-      : "";
-    await navigator.clipboard.writeText(text);
+    const html = typeof content === "string" ? content : "";
+    const plain = html.replace(/<[^>]+>/g, " "); // strip tags for clipboard view
+
+    await navigator.clipboard.writeText(plain.trim());
     setCopied(true);
     setTimeout(() => setCopied(false), 1000);
   };
+
 
   const askConfirmation = meta?.ask_confirmation === true;
 

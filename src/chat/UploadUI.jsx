@@ -169,9 +169,9 @@ export default function UploadUI() {
                             : "Start Upload"}
             </button>
 
-            {uploadedData.length > 0 && !uploading && !isProcessing && (
-                <ResumeTable data={uploadedData} />
-            )}
+            {/* {uploadedData.length > 0 && !uploading && !isProcessing && (
+                // <ResumeTable data={uploadedData} />
+            )} */}
 
         </div>
     );

@@ -6,6 +6,7 @@ import ChatInput from "@/chat/ChatInput";
 import ValidationPanel from "@/interview/ValidationPanel";
 import InstructionsPanel from "@/interview/InstructionsPanel";
 import InterviewMode from "@/interview/InterviewMode";
+import { useProfileMatcher } from "@/hooks/useProfileMatcher";
 
 import "./MainContent.css";
 

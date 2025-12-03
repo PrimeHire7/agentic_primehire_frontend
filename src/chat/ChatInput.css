@@ -40,24 +40,19 @@
   align-items: flex-start;
   gap: 14px;
 
-  width: 100%;
-  max-width: 1200px;
-  /* or 1200px if you want wider */
-  min-width: 1200px;
-  /* width: clamp(350px, 82vw, 1280px); */
-  max-width: 1280px;
+  /* CENTER & RESPONSIVE WIDTH */
+  width: clamp(350px, 82vw, 1200px);
+  margin: 0 auto;
 
   padding: 18px 22px;
   border-radius: 22px;
 
-  /* Always bright focused glass */
   background: rgba(255, 255, 255, 0.92);
   border: 1px solid rgba(255, 255, 255, 0.55);
 
   backdrop-filter: blur(22px) saturate(150%);
   -webkit-backdrop-filter: blur(22px) saturate(150%);
 
-  /* Always strong shadow */
   box-shadow:
     0 18px 46px rgba(0, 0, 0, 0.18),
     0 0 130px rgba(124, 138, 255, 0.40),
@@ -72,6 +67,12 @@
     background 0.25s ease,
     box-shadow 0.25s ease,
     transform 0.25s ease;
+}
+
+/* Optional vertical adjustment */
+.ci-shell {
+  margin-top: 12px;
+  margin-bottom: 12px;
 }
 
 /* ⚡ Slight motion when typing (optional) */

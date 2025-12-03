@@ -15,17 +15,27 @@ export const useWebSocket = (
   const reconnectRef = useRef(null);
 
   /* =======================================================
-        GLOBAL LOCKS
+      GLOBAL LOCKS
   ======================================================= */
   const intentLockRef = useRef({ intent: null, ts: 0 });
   const uploadTriggeredRef = useRef(false);
   const lastUserMessageRef = useRef("");
 
+  // ✅ FIXED: prevent crash when lock becomes a string
   const allowIntent = (intent) => {
     const now = Date.now();
+
+    // Ensure lock is ALWAYS an object
+    if (typeof intentLockRef.current !== "object") {
+      intentLockRef.current = { intent: null, ts: 0 };
+    }
+
     const lock = intentLockRef.current;
 
-    if (lock.intent === intent && now - lock.ts < 1200) return false;
+    if (lock.intent === intent && now - lock.ts < 1200) {
+      console.log(`⛔ Intent "${intent}" blocked`);
+      return false;
+    }
 
     lock.intent = intent;
     lock.ts = now;
@@ -33,7 +43,7 @@ export const useWebSocket = (
   };
 
   /* =======================================================
-        INTENT EXECUTION
+      INTENT EXECUTION
   ======================================================= */
   const handleIntent = async (intent) => {
     if (!intent) return;
@@ -52,7 +62,7 @@ export const useWebSocket = (
     };
 
     /* =======================================================
-        FEATURE UI
+          FEATURE UI
     ======================================================= */
     if (featureUIs[intent]) {
       uploadTriggeredRef.current = false;
@@ -77,7 +87,7 @@ export const useWebSocket = (
     }
 
     /* =======================================================
-        JD CREATOR
+          JD CREATOR
     ======================================================= */
     if (intent === "JD Creator") {
       uploadTriggeredRef.current = false;
@@ -117,10 +127,7 @@ export const useWebSocket = (
             content: jdHtml,
             meta: { ask_confirmation: payload.ask_confirmation === true },
           },
-          {
-            role: "assistant",
-            content: "🎉 JD generated successfully!",
-          },
+          { role: "assistant", content: "🎉 JD generated successfully!" },
         ]);
       } catch (err) {
         setMessages((prev) => [
@@ -135,7 +142,7 @@ export const useWebSocket = (
     }
 
     /* =======================================================
-        PROFILE MATCHER (MAIN FLOW)
+          PROFILE MATCHER
     ======================================================= */
     if (intent === "Profile Matcher") {
       uploadTriggeredRef.current = false;
@@ -154,7 +161,7 @@ export const useWebSocket = (
       const candidates = result?.candidates || [];
 
       if (candidates.length === 0) {
-        console.log("📎 No candidates — triggering Upload UI via WebSocket");
+        console.log("📎 No candidates — trigger Upload UI");
         window.dispatchEvent(new CustomEvent("trigger_upload_resumes"));
       }
 
@@ -163,7 +170,7 @@ export const useWebSocket = (
     }
 
     /* =======================================================
-        PROFILE MATCH HISTORY
+          MATCH HISTORY
     ======================================================= */
     if (intent === "ProfileMatchHistory") {
       setSelectedFeature("ProfileMatchHistory");
@@ -183,7 +190,7 @@ export const useWebSocket = (
     }
 
     /* =======================================================
-        UPLOAD RESUMES INTENT
+          UPLOAD RESUMES
     ======================================================= */
     if (intent === "Upload Resumes") {
       if (uploadTriggeredRef.current) return;
@@ -205,7 +212,7 @@ export const useWebSocket = (
     }
 
     /* =======================================================
-        INTERVIEW BOT
+          INTERVIEW BOT
     ======================================================= */
     if (intent === "InterviewBot") {
       console.log("🚀 [INTENT] InterviewBot triggered!");
@@ -248,7 +255,6 @@ export const useWebSocket = (
         return;
       }
 
-      // Resume table
       if (msg.type === "resume" && msg.data) {
         setMessages((prev) => [
           ...prev,
@@ -256,9 +262,6 @@ export const useWebSocket = (
         ]);
         return;
       }
-
-      // NOTE: we do NOT handle msg.type === "profile" here anymore
-      // Profile table rendering is handled ONLY by useProfileMatcher.
     },
     [setMessages]
   );
@@ -291,7 +294,7 @@ export const useWebSocket = (
   }, [handleWebSocketMessage]);
 
   /* =======================================================
-        YES — MATCH PROFILES (from JD confirmation)
+        MATCH CONFIRM (JD → Match Flow)
   ======================================================= */
   useEffect(() => {
     const runMatch = async () => {
@@ -308,7 +311,6 @@ export const useWebSocket = (
       const candidates = result?.candidates || [];
 
       if (candidates.length === 0) {
-        console.log("📎 No candidates from confirm — triggering Upload UI");
         window.dispatchEvent(new CustomEvent("trigger_upload_resumes"));
       }
 
@@ -321,7 +323,7 @@ export const useWebSocket = (
   }, []);
 
   /* =======================================================
-        YES — UPLOAD MORE RESUMES (handled via window event)
+        UPLOAD MORE RESUMES
   ======================================================= */
   useEffect(() => {
     const openUpload = () => {
@@ -330,6 +332,7 @@ export const useWebSocket = (
       uploadTriggeredRef.current = true;
 
       setSelectedFeature("Upload Resumes");
+
       setMessages((prev) => [
         ...prev,
         {
@@ -346,7 +349,7 @@ export const useWebSocket = (
   }, []);
 
   /* =======================================================
-        INIT WS CONNECTION
+        INIT WS
   ======================================================= */
   useEffect(() => {
     connectWebSocket();
@@ -367,7 +370,10 @@ export const useWebSocket = (
 
       if (wsRef.current?.readyState === WebSocket.OPEN) {
         wsRef.current.send(JSON.stringify({ message: msg }));
-        setMessages((prev) => [...prev, { role: "user", content: msg }]);
+        setMessages((prev) => [
+          ...prev,
+          { role: "user", content: msg },
+        ]);
       }
     },
     [setMessages]

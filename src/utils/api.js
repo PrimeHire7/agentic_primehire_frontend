@@ -1,3 +1,4 @@
+// 📁 src/utils/api.js
 import { API_BASE } from "./constants";
 
 // Utility function (make sure it's available to all functions)
@@ -21,12 +22,12 @@ export const generateJd = async (inputs, setMessages, setIsLoading) => {
     job_type: inputs.jobType || "Full-time",
     skills: [
       ...(inputs.skillsMandatory || []),
-      ...(inputs.skillsPreferred || [])
+      ...(inputs.skillsPreferred || []),
     ],
     responsibilities: normalizeArray(inputs.responsibilities),
     about_company: inputs.about || "",
     qualifications: normalizeArray(inputs.perks || []),
-    perks: normalizeArray(inputs.perks || [])
+    perks: normalizeArray(inputs.perks || []),
   };
 
   try {
@@ -77,7 +78,7 @@ export const generateJd = async (inputs, setMessages, setIsLoading) => {
     if (saveRes.ok) {
       console.log("💾 JD saved to DB successfully!");
     } else {
-      console.warn("⚠️ JD saved returned non-200:", await saveRes.text());
+      console.warn("⚠️ JD save returned non-200:", await saveRes.text());
     }
 
     // -----------------------------------------
@@ -88,7 +89,10 @@ export const generateJd = async (inputs, setMessages, setIsLoading) => {
       { role: "assistant", content: "🔎 Matching candidates..." },
     ]);
 
-    console.log("🔎 Triggering /profile/match endpoint...", jdText.slice(0, 120));
+    console.log(
+      "🔎 Triggering /profile/match endpoint...",
+      jdText.slice(0, 120)
+    );
 
     const matchRes = await fetch(
       `${API_BASE}/mcp/tools/match/profile/match`,
@@ -110,7 +114,6 @@ export const generateJd = async (inputs, setMessages, setIsLoading) => {
           content: "⚠️ Unable to match profiles. Please try manually.",
         },
       ]);
-
     } else {
       const matchData = await matchRes.json();
 
@@ -131,15 +134,15 @@ export const generateJd = async (inputs, setMessages, setIsLoading) => {
         },
         {
           role: "assistant",
-          content: "📎 Would you like to upload more resumes for better matching?",
-          meta: { ask_upload_resumes: true }
-        }
+          content:
+            "📎 Would you like to upload more resumes for better matching?",
+          meta: { ask_upload_resumes: true },
+        },
       ]);
 
       // Refresh JD history (notify JDHistory component)
       window.dispatchEvent(new CustomEvent("jd_history_refreshed"));
     }
-
   } catch (err) {
     console.error("❌ generateJd error:", err);
 
@@ -154,10 +157,6 @@ export const generateJd = async (inputs, setMessages, setIsLoading) => {
     setIsLoading(false);
   }
 };
-
-
-
-
 
 export const uploadResumes = async (files) => {
   const formData = new FormData();
@@ -176,69 +175,9 @@ export const uploadResumes = async (files) => {
   return await response.json();
 };
 
-// export const sendMailMessage = async (item, jdId) => {
-//   try {
-//     const email = item.email?.trim();
-//     if (!email) {
-//       alert("⚠️ No email address available for this candidate");
-//       return;
-//     }
-
-//     // item MUST contain candidate_id from database
-//     const candidateId = item.candidate_id;
-//     if (!candidateId) {
-//       alert("❌ Missing candidate_id for this candidate!");
-//       console.error("Item:", item);
-//       return;
-//     }
-
-//     const candidateName = item.full_name || item.name || "Candidate";
-
-//     // Fetch JD text
-//     const jdRes = await fetch(`${API_BASE}/mcp/tools/jd_history/jd/history/${jdId}`);
-//     const jdData = await jdRes.json();
-//     const jdText = jdData.jd_text || "Job description unavailable";
-
-//     // ✔️ Correct link
-//     const interviewLink = `https://primehire-beta-ui.vercel.app/validation_panel?candidateId=${encodeURIComponent(
-//       candidateId
-//     )}&candidateName=${encodeURIComponent(candidateName)}&jd_id=${jdId}`;
-
-//     const messageText = `
-// Hi ${candidateName},
-
-// Below is your job description for the interview:
-// -----------------------------------------
-// ${jdText}
-// -----------------------------------------
-
-// Please click the link below to begin your interview:
-// ${interviewLink}
-
-// Thanks,
-// PrimeHire Team
-// `;
-
-//     const payload = {
-//       email,
-//       candidate_name: candidateName,
-//       message: messageText,
-//     };
-
-//     const res = await fetch(`${API_BASE}/mcp/tools/match/send_mail`, {
-//       method: "POST",
-//       headers: { "Content-Type": "application/json" },
-//       body: JSON.stringify(payload),
-//     });
-
-//     if (!res.ok) throw new Error("Email failed");
-
-//     alert(`📧 Email sent to ${candidateName}`);
-//   } catch (err) {
-//     console.error("Email send error:", err);
-//     alert("Failed to send email. See console.");
-//   }
-// };
+/* ------------------------------------------------------------------
+   EMAIL + WHATSAPP HELPERS
+------------------------------------------------------------------ */
 
 export const sendMailMessage = async (item, jdId) => {
   try {
@@ -248,7 +187,7 @@ export const sendMailMessage = async (item, jdId) => {
       return;
     }
 
-    const candidateId = item.candidate_id;   // MUST be from DB
+    const candidateId = item.candidate_id; // MUST be from DB
     if (!candidateId) {
       alert("❌ Missing candidate_id!");
       return;
@@ -257,14 +196,18 @@ export const sendMailMessage = async (item, jdId) => {
     const candidateName = item.full_name || item.name || "Candidate";
 
     // Fetch JD text
-    const jdRes = await fetch(`${API_BASE}/mcp/tools/jd_history/jd/history/${jdId}`);
+    const jdRes = await fetch(
+      `${API_BASE}/mcp/tools/jd_history/jd/history/${jdId}`
+    );
     const jdData = await jdRes.json();
     const jdText = jdData.jd_text || "Job description unavailable";
 
     // 👉 NEW: Scheduler link
     const schedulerLink = `https://primehire-beta-ui.vercel.app/scheduler?candidateId=${encodeURIComponent(
       candidateId
-    )}&candidateName=${encodeURIComponent(candidateName)}&jd_id=${jdId}`;
+    )}&candidateName=${encodeURIComponent(
+      candidateName
+    )}&jd_id=${jdId}`;
 
     const messageText = `
 Hi ${candidateName},
@@ -314,14 +257,17 @@ export const sendWhatsAppMessage = async (candidate) => {
       phone
     );
 
-    const response = await fetch(`${API_BASE}/mcp/tools/match/send_whatsapp/`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        phone: phone, // Using the cleaned phone number
-        candidate_name: candidate.name,
-      }),
-    });
+    const response = await fetch(
+      `${API_BASE}/mcp/tools/match/send_whatsapp/`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phone: phone,
+          candidate_name: candidate.name,
+        }),
+      }
+    );
 
     if (!response.ok) {
       const errorData = await response
@@ -329,7 +275,6 @@ export const sendWhatsAppMessage = async (candidate) => {
         .catch(() => ({ detail: "Unknown error" }));
       console.error("❌ WhatsApp API Error:", errorData);
 
-      // Handle specific error cases
       if (response.status === 400) {
         if (
           errorData.detail?.includes("API access blocked") ||
@@ -354,7 +299,6 @@ export const sendWhatsAppMessage = async (candidate) => {
   } catch (err) {
     console.error("❌ Failed to send WhatsApp message:", err);
 
-    // User-friendly error messages
     if (err.message.includes("unavailable")) {
       alert(`❌ ${err.message}`);
     } else if (
@@ -368,13 +312,21 @@ export const sendWhatsAppMessage = async (candidate) => {
       alert(`❌ Failed to send WhatsApp: ${err.message}`);
     }
 
-    // Re-throw to allow calling code to handle it
     throw err;
   }
 };
 
+/* ------------------------------------------------------------------
+   PROFILE MATCHER API (for both WS + manual)
+------------------------------------------------------------------ */
+
 export const fetchProfileMatches = async (promptMessage) => {
   try {
+    console.log(
+      "📤 fetchProfileMatches → /mcp/tools/match/profile/match with:",
+      promptMessage
+    );
+
     const response = await fetch(`${API_BASE}/mcp/tools/match/profile/match`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -386,18 +338,26 @@ export const fetchProfileMatches = async (promptMessage) => {
       throw new Error(`Status ${response.status} - ${text}`);
     }
 
-    return await response.json();
+    const data = await response.json();
+    console.log("📥 fetchProfileMatches response:", data);
+    return data;
   } catch (err) {
     console.error("❌ Failed to fetch profile matches:", err);
     throw err;
   }
 };
 
+// Simple wrapper used by useProfileMatcher
+export const matchProfiles = async (jdText) => {
+  return await fetchProfileMatches(jdText);
+};
+
 // ✅ ADDITIONAL UTILITY FUNCTION - WhatsApp status check
 export const checkWhatsAppStatus = async () => {
   try {
-    // You might want to create a simple status endpoint in your backend
-    const response = await fetch(`${API_BASE}/mcp/tools/match/whatsapp/status`);
+    const response = await fetch(
+      `${API_BASE}/mcp/tools/match/whatsapp/status`
+    );
     return response.ok;
   } catch (error) {
     console.warn("❌ WhatsApp status check failed:", error);
@@ -405,10 +365,10 @@ export const checkWhatsAppStatus = async () => {
   }
 };
 
+/* ------------------------------------------------------------------
+   SINGLE-PROMPT JD GENERATOR (chatbot style)
+------------------------------------------------------------------ */
 
-// -----------------------------------------------------------
-// ⭐ NEW — Single Prompt JD Generator (Chatbot Style)
-// -----------------------------------------------------------
 export const generateSingleJD = async (prompt) => {
   try {
     const res = await fetch(`${API_BASE}/mcp/tools/jd/generate/single`, {
@@ -419,9 +379,11 @@ export const generateSingleJD = async (prompt) => {
 
     console.log("generateSingleJD: status", res.status, res.statusText);
     const text = await res.text();
-    console.log("generateSingleJD: raw response (first 2000 chars):", text.slice(0, 2000));
+    console.log(
+      "generateSingleJD: raw response (first 2000 chars):",
+      text.slice(0, 2000)
+    );
 
-    // Try to parse JSON; helpful error if server returned HTML or nothing
     let payload;
     try {
       payload = JSON.parse(text);
@@ -430,13 +392,15 @@ export const generateSingleJD = async (prompt) => {
       throw new Error("Invalid JSON response from JD endpoint");
     }
 
-    // Optional: handle debug error object your server returns in dev
     if (!payload.ok) {
-      console.error("generateSingleJD: server returned error payload", payload);
+      console.error(
+        "generateSingleJD: server returned error payload",
+        payload
+      );
       throw new Error(payload.error || "JD generation failed");
     }
 
-    return payload; // { ok, extracted, result }
+    return payload; // { ok, jd_html, jd_id, ... }
   } catch (err) {
     console.error("generateSingleJD network error:", err);
     throw err;
