@@ -41,13 +41,17 @@ export default function Index() {
           </div>
 
           {/* FIXED CHAT INPUT */}
-          <div className="ph-chatinput-fixed">
-            <ChatInput
-              onSend={main.handleSend}
-              activeTask={main.selectedTask}
-              forceShowChips={true}
-            />
-          </div>
+          {/* FIXED CHAT INPUT */}
+          {main.showChatInput && (
+            <div className="ph-chatinput-fixed">
+              <ChatInput
+                onSend={main.handleSend}
+                activeTask={main.selectedTask}
+                forceShowChips={true}
+              />
+            </div>
+          )}
+
 
         </div>
       </div>

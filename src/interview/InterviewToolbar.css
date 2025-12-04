@@ -1,5 +1,5 @@
 /* ----------------------------------------------------
-   TOOLBAR — FULLY FIXED, CLEAN, NON-CONFLICTING CSS
+   TOOLBAR — FIXED, CLEAN, UPDATED (WITH WAVE ICON)
 ----------------------------------------------------- */
 
 .interview-toolbar {
@@ -38,17 +38,16 @@
     color: #666;
 }
 
-
 /* RIGHT SIDE BUTTON GROUP */
 .toolbar-right {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
 }
+
 
 /* BUTTONS */
 .primary-btn,
-.ghost-btn,
 .danger-btn,
 .icon-btn {
     padding: 8px 16px;
@@ -62,14 +61,8 @@
 
 /* Start */
 .primary-btn {
-    background: #4b6bff;
+    background: #ff4d4f;
     color: #fff;
-}
-
-/* Pause / Resume */
-.ghost-btn {
-    background: #f4f4f7;
-    color: #333;
 }
 
 /* End */
@@ -78,15 +71,97 @@
     color: #fff;
 }
 
-/* Icons (INSIGHTS / AI / SNAPSHOT) */
+/* Icon Buttons */
 .icon-btn {
     background: #f2f2f5;
     color: #333;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
-/* Small vertical divider */
+/* Divider */
 .toolbar-divider {
     width: 1px;
     height: 26px;
     background: #dcdcdc;
+}
+
+
+/* ----------------------------------------------------
+   WAVEFORM ICON (ACTIVE DURING RECORDING)
+----------------------------------------------------- */
+
+.wave-icon {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 28px;
+    margin-right: 4px;
+}
+
+.wave-icon div {
+    width: 4px;
+    height: 8px;
+    background: #a58bff;
+    border-radius: 4px;
+    animation: wave 1s infinite ease-in-out;
+}
+
+/* Wave heights + animation delays */
+.wave-icon div:nth-child(1) {
+    height: 8px;
+    animation-delay: 0s;
+}
+
+.wave-icon div:nth-child(2) {
+    height: 14px;
+    animation-delay: 0.1s;
+}
+
+.wave-icon div:nth-child(3) {
+    height: 22px;
+    animation-delay: 0.2s;
+}
+
+.wave-icon div:nth-child(4) {
+    height: 30px;
+    animation-delay: 0.3s;
+}
+
+.wave-icon div:nth-child(5) {
+    height: 22px;
+    animation-delay: 0.4s;
+}
+
+.wave-icon div:nth-child(6) {
+    height: 14px;
+    animation-delay: 0.5s;
+}
+
+.wave-icon div:nth-child(7) {
+    height: 10px;
+    animation-delay: 0.6s;
+}
+
+.wave-icon div:nth-child(8) {
+    height: 6px;
+    animation-delay: 0.7s;
+}
+
+@keyframes wave {
+    0% {
+        transform: scaleY(1);
+        opacity: 0.4;
+    }
+
+    50% {
+        transform: scaleY(1.9);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scaleY(1);
+        opacity: 0.4;
+    }
 }

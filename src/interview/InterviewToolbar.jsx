@@ -1,25 +1,25 @@
-// /src/interview/InterviewToolbar.jsx
 import React, { useEffect, useRef, useState } from "react";
-import "./InterviewMode.css";
+import { Mic, SendHorizonal } from "lucide-react"; // icons
+
+import "./InterviewToolbar.css";
 
 export default function InterviewToolbar({
     candidateName = "Anonymous",
     interviewRunning = false,
-    onToggleInsights,
-    onToggleAI,
-    onStop,
     onStart,
-    onPause,
-    onResume,
+    onStop,
 }) {
     const [seconds, setSeconds] = useState(0);
+    const [showSend, setShowSend] = useState(false);
     const timerRef = useRef(null);
 
     useEffect(() => {
         if (interviewRunning) {
             timerRef.current = setInterval(() => setSeconds((s) => s + 1), 1000);
+            setShowSend(true); // activate Send button
         } else {
             clearInterval(timerRef.current);
+            setShowSend(false); // hide send button
         }
         return () => clearInterval(timerRef.current);
     }, [interviewRunning]);
@@ -30,36 +30,45 @@ export default function InterviewToolbar({
         return `${m}:${sec}`;
     };
 
+    const handleSend = () => {
+        onStop();       // stop interview
+        setShowSend(false);
+    };
+
     return (
         <div className="interview-toolbar">
 
-            {/* LEFT SIDE — TITLE + TIMER */}
+            {/* LEFT — title + timer */}
             <div className="toolbar-left">
                 <div className="toolbar-title">Interview — {candidateName}</div>
                 <div className="toolbar-timer">{format(seconds)}</div>
             </div>
 
-            {/* RIGHT SIDE — ACTIONS */}
+            {/* RIGHT — waveform + buttons */}
             <div className="toolbar-right">
 
+                {/* WAVEFORM ICON (ACTIVE DURING RECORDING) */}
+                {interviewRunning && (
+                    <div className="wave-icon">
+                        <div></div><div></div><div></div><div></div>
+                        <div></div><div></div><div></div><div></div>
+                    </div>
+                )}
+
+                {/* BUTTONS */}
                 {!interviewRunning ? (
                     <button className="primary-btn" onClick={onStart}>
-                        Start
+                        <Mic size={16} /> Record
                     </button>
                 ) : (
                     <>
-                        <button className="ghost-btn" onClick={onPause}>Pause</button>
-                        <button className="ghost-btn" onClick={onResume}>Resume</button>
-                        <button className="danger-btn" onClick={onStop}>End</button>
+                        {showSend && (
+                            <button className="primary-btn" onClick={handleSend}>
+                                <SendHorizonal size={16} /> Send
+                            </button>
+                        )}
                     </>
                 )}
-
-                <div className="toolbar-divider" />
-
-                <button className="icon-btn" onClick={onToggleInsights}>Insights</button>
-                <button className="icon-btn" onClick={onToggleAI}>AI</button>
-                <button className="icon-btn">Snapshot</button>
-
             </div>
         </div>
     );
