@@ -14,7 +14,6 @@ export default function Index() {
 
   return (
     <SidebarProvider>
-      {/* Entire page shifted under header */}
       <div className="ph-layout">
 
         {/* LEFT SIDEBAR */}
@@ -30,17 +29,14 @@ export default function Index() {
         {/* RIGHT SIDE PANEL */}
         <div className="ph-main">
 
-          {/* FIXED HEADER */}
-          <div className="ph-header">
-            <Header onRefresh={main.handleRefresh} />
-          </div>
+          {/* FIXED HEADER — DO NOT WRAP IN A DIV */}
+          <Header onRefresh={main.handleRefresh} />
 
-          {/* SCROLLABLE CONTENT */}
+          {/* SCROLL AREA */}
           <div className="ph-main-scroll">
             <MainContent {...main} />
           </div>
 
-          {/* FIXED CHAT INPUT */}
           {/* FIXED CHAT INPUT */}
           {main.showChatInput && (
             <div className="ph-chatinput-fixed">
@@ -51,7 +47,6 @@ export default function Index() {
               />
             </div>
           )}
-
 
         </div>
       </div>

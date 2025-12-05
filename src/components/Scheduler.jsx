@@ -4,13 +4,15 @@ import { API_BASE } from "@/utils/constants";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./Scheduler.css";
 
-function isoUTC(date, timeStr) {
-    // date: YYYY-MM-DD, timeStr: HH:MM (24h). returns ISO string in UTC
-    const [h, m] = timeStr.split(":").map((x) => parseInt(x, 10));
-    const dt = new Date(date + "T00:00:00Z");
-    dt.setUTCHours(h, m, 0, 0);
-    return dt.toISOString();
+function isoIST(dateStr, timeStr) {
+    const [h, m] = timeStr.split(":").map(Number);
+
+    // Create Date in IST local time
+    const dt = new Date(`${dateStr}T${timeStr}:00+05:30`);
+
+    return dt.toISOString(); // backend receives ISO but representing IST time
 }
+
 
 export default function Scheduler() {
     const location = useLocation();
@@ -47,24 +49,50 @@ export default function Scheduler() {
 
     const handleConfirm = async () => {
         if (!selectedTime) return alert("Select a time slot.");
-        if (!candidateId || !jdId) return alert("Missing candidate or JD.");
+        // if (!candidateId || !jdId) return alert("Missing candidate or JD.");
+        if (!candidateId) return alert("Missing candidate.");
+
 
         setLoading(true);
-        const start_iso_utc = isoUTC(date, selectedTime);
+        const start_iso = isoIST(date, selectedTime);
+        const startDt = new Date(start_iso);
 
-        // Add 24 hours
-        const startDt = new Date(new Date(start_iso_utc).getTime() + 24 * 60 * 60 * 1000);
-
-        // End time after 20 minutes
+        // Add 20 minutes for end time
         const endDt = new Date(startDt.getTime() + 20 * 60 * 1000);
-        
+
+
+        const finalJdId = (jdId === "null" || jdId === null) ? null : parseInt(jdId, 10);
+
+
+        // ------------------------------
+        // BUILD PAYLOAD
+        // ------------------------------
         const payload = {
             candidate_id: candidateId,
-            jd_id: parseInt(jdId, 10),
-            start_iso: startDt.toISOString(),
-            end_iso: endDt.toISOString(),
+            candidate_email: candidateId,
+            candidate_name: candidateName,
+
+            jd_id: finalJdId,
+
+            start_iso: startDt.toISOString(),  // represents IST time
+            end_iso: endDt.toISOString(),      // represents IST time
+
             slot_minutes: 20,
         };
+
+
+        // Debug logs
+        console.log("📨 SCHEDULER — FINAL PAYLOAD ↓↓↓");
+        console.log("candidateId:", candidateId);
+        console.log("candidateName:", candidateName);
+        console.log("candidateEmail:", candidateId);
+        console.log("jdId(raw):", jdId, "→ parsed:", (jdId === "null" ? null : parseInt(jdId, 10)));
+        console.log("Start ISO:", payload.start_iso);
+        console.log("End ISO:", payload.end_iso);
+        console.log("FULL PAYLOAD:", payload);
+        console.log("🟦 RAW jdId:", jdId);
+        console.log("🟩 FINAL jdId sent:", finalJdId);
+
         console.log("JD PARAMS >>>", jdId, typeof jdId);
         console.log("PAYLOAD >>>", payload);
         try {
@@ -134,9 +162,9 @@ export default function Scheduler() {
             </div>
 
             <div className="actions-section">
-                <button 
-                    className="confirm-button" 
-                    onClick={handleConfirm} 
+                <button
+                    className="confirm-button"
+                    onClick={handleConfirm}
                     disabled={loading}
                 >
                     {loading ? "Scheduling..." : "Confirm Slot"}

@@ -1,7 +1,7 @@
 // src/components/WebcamRecorder.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import TranscriptPanel from "../InterviewBot/TranscriptPanel";
+import TranscriptPanel from "./TranscriptPanelInterview";
 import { useLocation, useNavigate } from "react-router-dom";
 import { API_BASE } from "@/utils/constants";
 import logo from "../assets/primehire_logo.png";
@@ -251,7 +251,7 @@ export default function WebcamRecorder() {
         </div>
 
         <div className="webcam-right-panel">
-          <TranscriptPanel
+          <TranscriptPanelInterview
             candidateName={candidateName}
             candidateId={candidateId}
             jobDescription={jobDescription}

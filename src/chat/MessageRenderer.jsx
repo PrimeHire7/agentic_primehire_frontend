@@ -6,7 +6,7 @@ import JDTaskUI from "@/pages/JDTaskUI";
 import UploadUI from "./UploadUI";
 import ProfileMatchHistory from "@/components/ProfileMatcher/ProfileMatchHistory";
 import PrimeHireBrain from "../PrimeHireBrain/PrimeHireBrain";
-import InterviewBot from "../InterviewBot/InterviewBot";
+// import InterviewBot from "../InterviewBot/InterviewBot";
 import LinkedInPosterButton from "../LinkedInPoster/LinkedInPosterButton";
 import ZohoLoginButton from "../ZohoBridge/ZohoLoginButton";
 import MailMindButton from "../MailMind/MailMindButton";
@@ -26,9 +26,16 @@ const MessageRenderer = React.memo(({ message, onTriggerFeature }) => {
   if (message.type === "profile_table") {
     const safeCandidates = Array.isArray(message.data) ? message.data : [];
 
-    return <ProfileTable data={safeCandidates} />;
-
+    return (
+      <ProfileTable
+        data={safeCandidates}
+        jdId={message.jdId ?? null}      // ⭐ from WebSocket
+        jdText={message.jdText || ""}     // ⭐ user’s JD prompt
+        jdMeta={message.jdMeta || {}}
+      />
+    );
   }
+
 
   if (message.type === "resume_table") {
     return <ResumeTable data={message.data || {}} />;
@@ -124,7 +131,15 @@ const MessageRenderer = React.memo(({ message, onTriggerFeature }) => {
           {message.feature === "ProfileMatchHistory" && <ProfileMatchHistory />}
           {message.feature === "CandidateStatus" && <Designation />}
 
-          {/* {message.feature === "InterviewBot" && <InterviewMode />} */}
+          {/* {message.feature === "InterviewBot" && <ValidationPanel />} */}
+          {/* {message.feature === "InterviewBot" && (
+            <ChatMessage
+              role="assistant"
+              content="Launching Interview Bot..."
+              meta={message.meta || {}}
+            />
+          )} */}
+
 
           {message.feature === "ZohoBridge" && <ZohoLoginButton />}
           {message.feature === "MailMind" && <MailMindButton />}
@@ -172,7 +187,7 @@ const MessageRenderer = React.memo(({ message, onTriggerFeature }) => {
           {detectedFeature === "ProfileMatchHistory" && <ProfileMatchHistory />}
           {detectedFeature === "CandidateStatus" && <Designation />}
 
-          {/* {detectedFeature === "InterviewBot" && <InterviewBot />} */}
+          {/* {detectedFeature === "InterviewBot" && <ValidationPanel />} */}
           {detectedFeature === "ZohoBridge" && <ZohoLoginButton />}
           {detectedFeature === "MailMind" && <MailMindButton />}
           {detectedFeature === "PrimeHireBrain" && <PrimeHireBrain />}

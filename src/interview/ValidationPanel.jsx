@@ -1,5 +1,5 @@
 // 📁 src/interview/ValidationPanel.jsx
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { API_BASE } from "@/utils/constants";
 import "./ValidationPanel.css";
@@ -17,7 +17,7 @@ export default function ValidationPanel({ onNext }) {
     const canvasRef = useRef(null);
 
     /* --------------------------------------------------
-       LOAD CAMERA
+         1. START CAMERA
     -------------------------------------------------- */
     const startCamera = async () => {
         try {
@@ -29,34 +29,46 @@ export default function ValidationPanel({ onNext }) {
         }
     };
 
+    /* --------------------------------------------------
+         2. CAPTURE FACE
+    -------------------------------------------------- */
     const captureFace = () => {
         const video = videoRef.current;
         const canvas = canvasRef.current;
+
         if (!video || !canvas) return;
 
         canvas.width = video.videoWidth || 320;
         canvas.height = video.videoHeight || 240;
-        const ctx = canvas.getContext("2d");
 
+        const ctx = canvas.getContext("2d");
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
         setCapturedImage(canvas.toDataURL("image/png"));
         setIsSaved(false);
     };
 
+    /* --------------------------------------------------
+         3. SAVE FACE TO BACKEND
+    -------------------------------------------------- */
     const saveFaceToBackend = async () => {
         if (!capturedImage) return alert("Capture first.");
 
         const blob = await (await fetch(capturedImage)).blob();
         const fd = new FormData();
+
         fd.append("candidate_name", candidateName);
         fd.append("candidate_id", candidateId);
         fd.append("face_image", blob, "face.png");
 
         try {
-            const res = await fetch(`${API_BASE}/mcp/tools/candidate_validation/save_face_image`, {
-                method: "POST",
-                body: fd,
-            });
+            const res = await fetch(
+                `${API_BASE}/mcp/tools/candidate_validation/save_face_image`,
+                {
+                    method: "POST",
+                    body: fd,
+                }
+            );
 
             if (!res.ok) throw new Error("Save failed.");
 
@@ -66,9 +78,13 @@ export default function ValidationPanel({ onNext }) {
         }
     };
 
+    /* --------------------------------------------------
+       4. CONTINUE → SEND DATA BACK TO MAINCONTENT
+    -------------------------------------------------- */
     const handleContinue = () => {
         if (!isSaved) return alert("Save face first.");
 
+        // 🚀 This is the KEY for switching to instructions!
         onNext({
             candidateName,
             candidateId,
@@ -78,11 +94,9 @@ export default function ValidationPanel({ onNext }) {
     };
 
     return (
-
         <div className="vp-page">
             <div className="vp-center">
                 <div className="vp-glass-wrapper">
-                    {/* --- existing content stays same --- */}
 
                     <h2 className="vp-title">Candidate Validation</h2>
 
@@ -121,7 +135,11 @@ export default function ValidationPanel({ onNext }) {
                             <canvas ref={canvasRef} style={{ display: "none" }} />
 
                             {capturedImage && (
-                                <img src={capturedImage} alt="Captured" className="vp-captured-img" />
+                                <img
+                                    src={capturedImage}
+                                    alt="Captured"
+                                    className="vp-captured-img"
+                                />
                             )}
                         </div>
 
@@ -145,6 +163,7 @@ export default function ValidationPanel({ onNext }) {
 
                     </div>
 
+                    {/* JD TEXT BLOCK */}
                     <div className="vp-jd-block">
                         <label>Job Description Preview</label>
                         <textarea
@@ -154,6 +173,7 @@ export default function ValidationPanel({ onNext }) {
                             placeholder="Paste or load JD text"
                         />
                     </div>
+
                 </div>
             </div>
         </div>

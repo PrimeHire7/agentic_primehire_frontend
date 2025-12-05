@@ -46,7 +46,10 @@
 }
 
 
-/* BUTTONS */
+/* ----------------------------------------------------
+   BUTTONS
+----------------------------------------------------- */
+
 .primary-btn,
 .danger-btn,
 .icon-btn {
@@ -59,13 +62,13 @@
     white-space: nowrap;
 }
 
-/* Start */
+/* Start/Next buttons */
 .primary-btn {
     background: #ff4d4f;
     color: #fff;
 }
 
-/* End */
+/* End button (not used now but available) */
 .danger-btn {
     background: #ff4d4f;
     color: #fff;
@@ -80,7 +83,7 @@
     gap: 6px;
 }
 
-/* Divider */
+/* Divider line */
 .toolbar-divider {
     width: 1px;
     height: 26px;
@@ -89,79 +92,129 @@
 
 
 /* ----------------------------------------------------
-   WAVEFORM ICON (ACTIVE DURING RECORDING)
------------------------------------------------------ */
+   WAVEFORM (VISIBLE ONLY DURING RECORDING)
+---------------------------------------------------- */
 
-.wave-icon {
+.recording-wave {
     display: flex;
-    align-items: flex-end;
-    gap: 3px;
-    height: 28px;
-    margin-right: 4px;
+    align-items: center;
+    gap: 6px;
+    padding: 0 4px;
 }
 
-.wave-icon div {
+.recording-wave div {
     width: 4px;
     height: 8px;
-    background: #a58bff;
     border-radius: 4px;
-    animation: wave 1s infinite ease-in-out;
+
+    /* Gradient color bars */
+    background: linear-gradient(180deg, #ff3b30, #ff7b72);
+
+    animation: waveBounce 0.9s ease-in-out infinite;
 }
 
-/* Wave heights + animation delays */
-.wave-icon div:nth-child(1) {
-    height: 8px;
+/* Make 8 bars with staggered delays */
+.recording-wave div:nth-child(1) {
     animation-delay: 0s;
 }
 
-.wave-icon div:nth-child(2) {
-    height: 14px;
+.recording-wave div:nth-child(2) {
     animation-delay: 0.1s;
 }
 
-.wave-icon div:nth-child(3) {
-    height: 22px;
+.recording-wave div:nth-child(3) {
     animation-delay: 0.2s;
 }
 
-.wave-icon div:nth-child(4) {
-    height: 30px;
+.recording-wave div:nth-child(4) {
     animation-delay: 0.3s;
 }
 
-.wave-icon div:nth-child(5) {
-    height: 22px;
+.recording-wave div:nth-child(5) {
     animation-delay: 0.4s;
 }
 
-.wave-icon div:nth-child(6) {
-    height: 14px;
+.recording-wave div:nth-child(6) {
     animation-delay: 0.5s;
 }
 
-.wave-icon div:nth-child(7) {
-    height: 10px;
+.recording-wave div:nth-child(7) {
     animation-delay: 0.6s;
 }
 
-.wave-icon div:nth-child(8) {
-    height: 6px;
+.recording-wave div:nth-child(8) {
     animation-delay: 0.7s;
 }
 
-@keyframes wave {
+@keyframes waveBounce {
     0% {
-        transform: scaleY(1);
+        height: 8px;
         opacity: 0.4;
     }
 
     50% {
-        transform: scaleY(1.9);
+        height: 28px;
         opacity: 1;
     }
 
     100% {
-        transform: scaleY(1);
+        height: 8px;
         opacity: 0.4;
     }
+}
+
+/* Label beside waveform */
+.recording-label {
+    font-size: 14px;
+    color: #ff3b30;
+    margin-left: 8px;
+    font-weight: 600;
+}
+
+/* ----------------------------------------------------
+   START / STOP BUTTONS — Modern UI
+---------------------------------------------------- */
+
+/* Shared button base */
+.start-speaking-btn,
+.stop-speaking-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 18px;
+    border-radius: 10px;
+    border: none;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.25s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* START BUTTON — Red / Gradient */
+.start-speaking-btn {
+    background: linear-gradient(135deg, #ff3b30, #ff6a6a);
+    color: #fff;
+}
+
+.start-speaking-btn:hover {
+    background: linear-gradient(135deg, #ff5248, #ff7b7b);
+    transform: translateY(-1px);
+}
+
+/* STOP BUTTON — Dark, Bold */
+.stop-speaking-btn {
+    background: linear-gradient(135deg, #222, #3a3a3a);
+    color: #fff;
+}
+
+.stop-speaking-btn:hover {
+    background: linear-gradient(135deg, #333, #4a4a4a);
+    transform: translateY(-1px);
+}
+
+/* Focus state for accessibility */
+.start-speaking-btn:active,
+.stop-speaking-btn:active {
+    transform: scale(0.97);
 }

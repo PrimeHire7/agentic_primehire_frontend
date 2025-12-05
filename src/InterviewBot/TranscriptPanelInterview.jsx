@@ -62,7 +62,7 @@ export default function TranscriptPanel({
     fd.append("init", "true");
     fd.append("candidate_name", candidateName);
     fd.append("job_description", jobDescription);
-    
+
     if (candidateId) fd.append("candidate_id", candidateId);
 
     try {

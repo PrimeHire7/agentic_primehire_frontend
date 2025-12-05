@@ -51,8 +51,12 @@ export const useProfileMatcher = (setMessages, setIsLoading, setSelectedTask) =>
             role: "assistant",
             type: "profile_table",
             data: candidates,
+            jdText: cleaned,                   // ⭐ user’s JD prompt
+            jdMeta: response?.jd_meta || {},  // optional
+            jdId: null                         // JD-less mode
           },
         ]);
+
       } else {
         console.log("⚠️ [Matcher] No candidates → Auto-trigger upload resumes");
 

@@ -179,7 +179,11 @@ export const uploadResumes = async (files) => {
    EMAIL + WHATSAPP HELPERS
 ------------------------------------------------------------------ */
 
-export const sendMailMessage = async (item, jdId) => {
+/* ------------------------------------------------------------------
+   EMAIL + WHATSAPP HELPERS (JD & JD-LESS MODE SUPPORTED)
+------------------------------------------------------------------ */
+
+export const sendMailMessage = async (item, jdId, jdTextFromMatcher = null) => {
   try {
     const email = item.email?.trim();
     if (!email) {
@@ -187,7 +191,7 @@ export const sendMailMessage = async (item, jdId) => {
       return;
     }
 
-    const candidateId = item.candidate_id; // MUST be from DB
+    const candidateId = item.candidate_id;
     if (!candidateId) {
       alert("❌ Missing candidate_id!");
       return;
@@ -195,19 +199,36 @@ export const sendMailMessage = async (item, jdId) => {
 
     const candidateName = item.full_name || item.name || "Candidate";
 
-    // Fetch JD text
-    const jdRes = await fetch(
-      `${API_BASE}/mcp/tools/jd_history/jd/history/${jdId}`
-    );
-    const jdData = await jdRes.json();
-    const jdText = jdData.jd_text || "Job description unavailable";
+    let jdText = "";
+    let finalJdId = jdId;
 
-    // 👉 NEW: Scheduler link
-    const schedulerLink = `https://primehire-beta-ui.vercel.app/scheduler?candidateId=${encodeURIComponent(
-      candidateId
-    )}&candidateName=${encodeURIComponent(
-      candidateName
-    )}&jd_id=${jdId}`;
+    /* ==========================================================
+       CASE 1 — JD MODE (jdId exists → fetch from JDHistory)
+    ========================================================== */
+    if (jdId) {
+      const jdRes = await fetch(
+        `${API_BASE}/mcp/tools/jd_history/jd/history/${jdId}`
+      );
+      const jdData = await jdRes.json();
+      jdText = jdData.jd_text || "Job description unavailable";
+    }
+
+    /* ==========================================================
+       CASE 2 — JD-LESS MODE (MATCHER HISTORY)
+       We use the JD text passed from ProfileTable
+    ========================================================== */
+    else {
+      jdText = jdTextFromMatcher || "Job description unavailable";
+      finalJdId = "null";
+    }
+
+    /* ==========================================================
+       Scheduler Link (JD or JD-less)
+    ========================================================== */
+    const schedulerLink =
+      `https://primehire-beta-ui.vercel.app/scheduler?candidateId=` +
+      `${encodeURIComponent(candidateId)}&candidateName=` +
+      `${encodeURIComponent(candidateName)}&jd_id=${finalJdId}`;
 
     const messageText = `
 Hi ${candidateName},
@@ -240,6 +261,68 @@ PrimeHire Team
     alert("Failed to send email. See console.");
   }
 };
+
+// export const sendMailMessage = async (item, jdId) => {
+//   try {
+//     const email = item.email?.trim();
+//     if (!email) {
+//       alert("⚠️ No email address available for this candidate");
+//       return;
+//     }
+
+//     const candidateId = item.candidate_id; // MUST be from DB
+//     if (!candidateId) {
+//       alert("❌ Missing candidate_id!");
+//       return;
+//     }
+
+//     const candidateName = item.full_name || item.name || "Candidate";
+
+//     // Fetch JD text
+//     const jdRes = await fetch(
+//       `${API_BASE}/mcp/tools/jd_history/jd/history/${jdId}`
+//     );
+//     const jdData = await jdRes.json();
+//     const jdText = jdData.jd_text || "Job description unavailable";
+
+//     // 👉 NEW: Scheduler link
+//     const schedulerLink = `https://primehire-beta-ui.vercel.app/scheduler?candidateId=${encodeURIComponent(
+//       candidateId
+//     )}&candidateName=${encodeURIComponent(
+//       candidateName
+//     )}&jd_id=${jdId}`;
+
+//     const messageText = `
+// Hi ${candidateName},
+
+// Below is your job description for the interview:
+// -----------------------------------------
+// ${jdText}
+// -----------------------------------------
+
+// Please click the link below to schedule your interview:
+// ${schedulerLink}
+
+// Thanks,
+// PrimeHire Team
+// `;
+
+//     const payload = { email, candidate_name: candidateName, message: messageText };
+
+//     const res = await fetch(`${API_BASE}/mcp/tools/match/send_mail`, {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify(payload),
+//     });
+
+//     if (!res.ok) throw new Error("Email failed");
+
+//     alert(`📧 Email sent to ${candidateName}`);
+//   } catch (err) {
+//     console.error("Email send error:", err);
+//     alert("Failed to send email. See console.");
+//   }
+// };
 
 // ✅ IMPROVED WhatsApp function with better error handling
 export const sendWhatsAppMessage = async (candidate) => {

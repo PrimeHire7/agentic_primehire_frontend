@@ -740,21 +740,23 @@ export const useMainContent = () => {
     setShowChatInput(true);
   };
 
-  /* ------------------------------------------------------------
-     FEATURE CLICK
-     → Hide chat input
-  ------------------------------------------------------------ */
   const handleFeatureClick = (feature) => {
     console.log("🧭 Feature clicked:", feature);
 
     window.dispatchEvent(new Event("feature_change"));
 
-    setSelectedTask("");
     setSelectedFeature(feature);
 
-    // ⭐ Hide ChatInput when feature is selected
-    setShowChatInput(false);
+    // ⭐ Correct InterviewBot behavior
+    if (feature === "InterviewBot") {
+      setSelectedTask("interview");     // <-- START INTERVIEW BOT FLOW
+      setShowChatInput(false);           // optional: hide chat input
+    } else {
+      setSelectedTask("");
+      setShowChatInput(false);
+    }
 
+    // Assistant message in chat
     setMessages([
       {
         role: "assistant",
@@ -762,6 +764,29 @@ export const useMainContent = () => {
       },
     ]);
   };
+
+  /* ------------------------------------------------------------
+     FEATURE CLICK
+     → Hide chat input
+  ------------------------------------------------------------ */
+  // const handleFeatureClick = (feature) => {
+  //   console.log("🧭 Feature clicked:", feature);
+
+  //   window.dispatchEvent(new Event("feature_change"));
+
+  //   setSelectedTask("");
+  //   setSelectedFeature(feature);
+
+  //   // ⭐ Hide ChatInput when feature is selected
+  //   setShowChatInput(false);
+
+  //   setMessages([
+  //     {
+  //       role: "assistant",
+  //       content: `✨ Detected feature: **${feature}** — Opening ${feature} module...`,
+  //     },
+  //   ]);
+  // };
 
   /* ------------------------------------------------------------
      TASK SELECTOR

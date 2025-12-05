@@ -34,12 +34,20 @@ export default function MainContent({
 
   /* INTERVIEW BOT MODES */
   if (selectedFeature === "InterviewBot") {
+
+    // 1 — VALIDATION
     if (selectedTask === "validation") {
       return (
         <div className="vp-page">
           <ValidationPanel
             onNext={(data) => {
-              setCandidateState(data);
+              setCandidateState({
+                candidateName: data.candidateName,
+                candidateId: data.candidateId,
+                jdId: data.jdId,
+                jdText: data.jdText,
+              });
+
               setSelectedTask("instructions");
             }}
           />
@@ -47,6 +55,7 @@ export default function MainContent({
       );
     }
 
+    // 2 — INSTRUCTIONS
     if (selectedTask === "instructions") {
       return (
         <div className="mc-interview-wrapper">
@@ -59,6 +68,7 @@ export default function MainContent({
       );
     }
 
+    // 3 — INTERVIEW MODE
     if (selectedTask === "interview") {
       return (
         <div className="mc-interview-wrapper">
@@ -72,6 +82,7 @@ export default function MainContent({
       );
     }
   }
+
 
   /* HERO MODE CHECK */
   const showHero =
