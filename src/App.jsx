@@ -7,16 +7,14 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import CertificateData from "./pages/CertificateData";
-// import WebcamRecorder from "./InterviewBot/WebcamRecorder";
-// import InstructionsPrompt from "./InterviewBot/InstructionsPrompt";
+
 import WebcamRecorder from "@/interview/WebcamRecorder";
-import InstructionsPrompt from "@/interview/InstructionsPanel";
+import InstructionsPanel from "@/interview/InstructionsPanel";   // ✅ FIXED IMPORT
 import CandidateOverview from "./CandidateStatus/CandidateOverview";
 import CandidateStatus from "./CandidateStatus/CandidateStatus";
 import ValidationPanel from "@/interview/ValidationPanel";
 import Scheduler from "@/components/Scheduler";
-import { InspectionPanel } from "lucide-react";
-
+import InterviewMode from "@/Interview/InterviewMode";
 const queryClient = new QueryClient();
 
 export default function App() {
@@ -31,13 +29,16 @@ export default function App() {
                 <BrowserRouter>
                     <Routes>
                         <Route path="/" element={<Index />} />
+
                         <Route path="/webcam-recorder" element={<WebcamRecorder />} />
                         <Route path="/certificatedata" element={<CertificateData />} />
-                        <Route path="/instructions" element={<InspectionPanel />} />
+
+                        {/* ✅ Correct Instructions Route */}
+                        <Route path="/instructions" element={<InstructionsPanel />} />
 
                         <Route path="/candidate-status/:jd_id" element={<CandidateStatus />} />
                         <Route path="/candidate/:id" element={<CandidateOverview />} />
-
+                        <Route path="/interview" element={<InterviewMode />} />
                         <Route path="/validation_panel" element={<ValidationPanel />} />
                         <Route path="/scheduler" element={<Scheduler />} />
 

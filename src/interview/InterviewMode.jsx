@@ -65,7 +65,12 @@ export default function InterviewMode() {
 
                 {/* RIGHT SIDE */}
                 <div className="right-panel">
-                    <TranscriptPanel transcript={transcript} />
+                    <TranscriptPanel
+                        transcript={transcript}
+                        jdId={location.state?.jd_id || null}
+                        jdText={jdText}
+                    />
+
                 </div>
 
             </div>

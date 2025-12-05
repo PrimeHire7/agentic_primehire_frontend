@@ -187,23 +187,19 @@ export const sendMailMessage = async (item, jdId, jdTextFromMatcher = null) => {
   try {
     const email = item.email?.trim();
     if (!email) {
-      alert("⚠️ No email address available for this candidate");
+      alert("⚠️ Candidate has no email");
       return;
     }
 
     const candidateId = item.candidate_id;
-    if (!candidateId) {
-      alert("❌ Missing candidate_id!");
-      return;
-    }
-
     const candidateName = item.full_name || item.name || "Candidate";
 
     let jdText = "";
     let finalJdId = jdId;
+    let jdToken = null;
 
     /* ==========================================================
-       CASE 1 — JD MODE (jdId exists → fetch from JDHistory)
+       CASE 1 — JD MODE (jdId available)
     ========================================================== */
     if (jdId) {
       const jdRes = await fetch(
@@ -214,22 +210,41 @@ export const sendMailMessage = async (item, jdId, jdTextFromMatcher = null) => {
     }
 
     /* ==========================================================
-       CASE 2 — JD-LESS MODE (MATCHER HISTORY)
-       We use the JD text passed from ProfileTable
+       CASE 2 — JD-LESS MODE (generate token + store JD)
     ========================================================== */
     else {
       jdText = jdTextFromMatcher || "Job description unavailable";
       finalJdId = "null";
+
+      // ⭐ CREATE JDTOKEN
+      const saveRes = await fetch(`${API_BASE}/mcp/tools/jd_cache/save`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jd_text: jdText }),
+      });
+
+      const saveData = await saveRes.json();
+      jdToken = saveData.jd_token; // ⭐ IMPORTANT
     }
 
     /* ==========================================================
-       Scheduler Link (JD or JD-less)
+       Build validation URL (JD or JD-less)
     ========================================================== */
-    const schedulerLink =
-      `https://primehire-beta-ui.vercel.app/scheduler?candidateId=` +
-      `${encodeURIComponent(candidateId)}&candidateName=` +
-      `${encodeURIComponent(candidateName)}&jd_id=${finalJdId}`;
+    const url = new URL("https://primehire-beta-ui.vercel.app/validation_panel");
 
+    url.searchParams.set("candidateId", candidateId);
+    url.searchParams.set("candidateName", candidateName);
+    url.searchParams.set("jd_id", finalJdId);
+
+    if (jdToken) {
+      url.searchParams.set("jd_token", jdToken);
+    }
+
+    const validationLink = url.toString();
+
+    /* ==========================================================
+       Email Body
+    ========================================================== */
     const messageText = `
 Hi ${candidateName},
 
@@ -239,28 +254,200 @@ ${jdText}
 -----------------------------------------
 
 Please click the link below to schedule your interview:
-${schedulerLink}
+${validationLink}
 
 Thanks,
 PrimeHire Team
 `;
 
-    const payload = { email, candidate_name: candidateName, message: messageText };
-
-    const res = await fetch(`${API_BASE}/mcp/tools/match/send_mail`, {
+    await fetch(`${API_BASE}/mcp/tools/match/send_mail`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        email,
+        candidate_name: candidateName,
+        message: messageText,
+      }),
     });
 
-    if (!res.ok) throw new Error("Email failed");
-
     alert(`📧 Email sent to ${candidateName}`);
+
   } catch (err) {
     console.error("Email send error:", err);
-    alert("Failed to send email. See console.");
+    alert("Failed to send email.");
   }
 };
+
+
+// export const sendMailMessage = async (item, jdId, jdTextFromMatcher = null) => {
+//   try {
+//     const email = item.email?.trim();
+//     if (!email) {
+//       alert("⚠️ No email found!");
+//       return;
+//     }
+
+//     const candidateId = item.candidate_id;
+//     const candidateName = item.full_name || item.name || "Candidate";
+
+//     let jdText = "";
+//     let finalJdId = jdId;
+//     let jdToken = null;
+
+//     /* ==========================================================
+//        CASE 1 — JD mode → fetch from JD History
+//     ========================================================== */
+//     if (jdId) {
+//       const res = await fetch(`${API_BASE}/mcp/tools/jd_history/jd/history/${jdId}`);
+//       const data = await res.json();
+//       jdText = data.jd_text || "Job description unavailable";
+//     }
+
+//     /* ==========================================================
+//        CASE 2 — JD-LESS MODE (Profile Match)
+//     ========================================================== */
+//     else {
+//       jdText = jdTextFromMatcher || "Job description unavailable";
+//       finalJdId = "null";
+//     }
+
+//     /* ==========================================================
+//        Store JD text → get token
+//     ========================================================== */
+//     const saveRes = await fetch(`${API_BASE}/mcp/tools/jd_cache/save`, {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify({ jd_text: jdText }),
+//     });
+
+//     const saveData = await saveRes.json();
+//     jdToken = saveData.jd_token;
+
+//     if (!jdToken) {
+//       alert("Failed to generate JD token");
+//       return;
+//     }
+
+//     /* ==========================================================
+//        Build scheduler link using token instead of text
+//     ========================================================== */
+//     const schedulerLink =
+//       `https://primehire-beta-ui.vercel.app/scheduler?candidateId=` +
+//       `${encodeURIComponent(candidateId)}&candidateName=` +
+//       `${encodeURIComponent(candidateName)}&jd_token=${jdToken}&jd_id=${finalJdId}`;
+
+//     const messageText = `
+// Hi ${candidateName},
+
+// Below is your job description for the interview:
+// -----------------------------------------
+// ${jdText}
+// -----------------------------------------
+
+// Please click the link below to schedule your interview:
+// ${schedulerLink}
+
+// Thanks,
+// PrimeHire Team
+// `;
+
+//     /* SEND EMAIL */
+//     await fetch(`${API_BASE}/mcp/tools/match/send_mail`, {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify({
+//         email,
+//         candidate_name: candidateName,
+//         message: messageText,
+//       }),
+//     });
+
+//     alert(`📧 Email sent to ${candidateName}`);
+//   } catch (err) {
+//     console.error("Email error:", err);
+//     alert("Email send failed.");
+//   }
+// };
+
+
+// export const sendMailMessage = async (item, jdId, jdTextFromMatcher = null) => {
+//   try {
+//     const email = item.email?.trim();
+//     if (!email) {
+//       alert("⚠️ No email address available for this candidate");
+//       return;
+//     }
+
+//     const candidateId = item.candidate_id;
+//     if (!candidateId) {
+//       alert("❌ Missing candidate_id!");
+//       return;
+//     }
+
+//     const candidateName = item.full_name || item.name || "Candidate";
+
+//     let jdText = "";
+//     let finalJdId = jdId;
+
+//     /* ==========================================================
+//        CASE 1 — JD MODE (jdId exists → fetch from JDHistory)
+//     ========================================================== */
+//     if (jdId) {
+//       const jdRes = await fetch(
+//         `${API_BASE}/mcp/tools/jd_history/jd/history/${jdId}`
+//       );
+//       const jdData = await jdRes.json();
+//       jdText = jdData.jd_text || "Job description unavailable";
+//     }
+
+//     /* ==========================================================
+//        CASE 2 — JD-LESS MODE (MATCHER HISTORY)
+//        We use the JD text passed from ProfileTable
+//     ========================================================== */
+//     else {
+//       jdText = jdTextFromMatcher || "Job description unavailable";
+//       finalJdId = "null";
+//     }
+
+//     /* ==========================================================
+//        Scheduler Link (JD or JD-less)
+//     ========================================================== */
+//     const schedulerLink =
+//       `https://primehire-beta-ui.vercel.app/scheduler?candidateId=` +
+//       `${encodeURIComponent(candidateId)}&candidateName=` +
+//       `${encodeURIComponent(candidateName)}&jd_id=${finalJdId}`;
+
+//     const messageText = `
+// Hi ${candidateName},
+
+// Below is your job description for the interview:
+// -----------------------------------------
+// ${jdText}
+// -----------------------------------------
+
+// Please click the link below to schedule your interview:
+// ${schedulerLink}
+
+// Thanks,
+// PrimeHire Team
+// `;
+
+//     const payload = { email, candidate_name: candidateName, message: messageText };
+
+//     const res = await fetch(`${API_BASE}/mcp/tools/match/send_mail`, {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify(payload),
+//     });
+
+//     if (!res.ok) throw new Error("Email failed");
+
+//     alert(`📧 Email sent to ${candidateName}`);
+//   } catch (err) {
+//     console.error("Email send error:", err);
+//     alert("Failed to send email. See console.");
+//   }
+// };
 
 // export const sendMailMessage = async (item, jdId) => {
 //   try {

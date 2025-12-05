@@ -1,89 +1,24 @@
-/* ============================================================
-   PAGE BACKGROUND — Premium White/Blue Gradient
-============================================================ */
 .ip-page {
-    width: 100%;
-    height: 100vh;
-
     display: flex;
     justify-content: center;
-    align-items: flex-start;
-
-    padding-top: 70px;
-    background: linear-gradient(135deg,
-            #eef3ff 0%,
-            #f3f7ff 30%,
-            #ffffff 70%);
-
-    position: relative;
-    overflow-y: auto;
+    padding-top: 4rem;
 }
 
-/* Ambient premium glow blobs (same as ValidationPanel) */
-.ip-page::before,
-.ip-page::after {
-    content: "";
-    position: absolute;
-    pointer-events: none;
-
-    width: 500px;
-    height: 500px;
-    border-radius: 50%;
-    filter: blur(120px);
-    opacity: 0.55;
-    animation: ipFloat 14s infinite ease-in-out alternate;
-}
-
-.ip-page::before {
-    top: -120px;
-    left: -140px;
-    background: rgba(99, 102, 241, 0.35);
-}
-
-.ip-page::after {
-    bottom: -160px;
-    right: -180px;
-    background: rgba(59, 130, 246, 0.30);
-}
-
-@keyframes ipFloat {
-    from {
-        transform: translateY(0);
-    }
-
-    to {
-        transform: translateY(40px);
-    }
-}
-
-/* ============================================================
-   GLASS CARD WRAPPER
-============================================================ */
 .ip-glass-wrapper {
-    width: clamp(420px, 56vw, 780px);
-
-    padding: 40px;
-    border-radius: 22px;
-
-    background: rgba(255, 255, 255, 0.72);
-    backdrop-filter: blur(22px) saturate(150%);
-    -webkit-backdrop-filter: blur(22px) saturate(150%);
-
-    border: 1px solid rgba(255, 255, 255, 0.55);
-
+    width: 90%;
+    max-width: 700px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    padding: 2.2rem;
+    border: 3px solid #38bdf8;
+    backdrop-filter: blur(10px);
     box-shadow:
-        0 18px 42px rgba(0, 0, 0, 0.18),
-        0 0 130px rgba(124, 138, 255, 0.35),
-        inset 0 2px 0 rgba(255, 255, 255, 0.75),
-        inset 0 -12px 22px rgba(255, 255, 255, 0.24);
-
-    position: relative;
-    z-index: 3;
-
-    animation: ipFadeIn 0.35s ease-out;
+        0 12px 32px rgba(56, 189, 248, 0.2),
+        0 8px 18px rgba(0, 0, 0, 0.08);
+    animation: fadeUp 0.45s ease;
 }
 
-@keyframes ipFadeIn {
+@keyframes fadeUp {
     from {
         opacity: 0;
         transform: translateY(20px);
@@ -95,81 +30,99 @@
     }
 }
 
-/* ============================================================
-   TEXT STYLING — Premium Fonts (Dark, Crisp)
-============================================================ */
+/****************** TITLE ******************/
 .ip-title {
     font-size: 2rem;
-    font-weight: 800;
-    margin-bottom: 14px;
-    color: #0f172a;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #1e3a8a, #0ea5e9);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .ip-subtitle {
-    font-size: 1.05rem;
-    color: #334155;
-    margin-bottom: 28px;
-    line-height: 1.55;
+    font-size: 1.1rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #475569;
 }
 
-/* ============================================================
-   CARD LIST AREA
-============================================================ */
+/****************** CARD ******************/
 .ip-card {
-    padding: 24px 28px;
-    border-radius: 18px;
-
-    background: rgba(255, 255, 255, 0.82);
-    border: 1px solid rgba(0, 0, 0, 0.06);
-
-    backdrop-filter: blur(16px);
-    box-shadow:
-        0 12px 26px rgba(0, 0, 0, 0.08),
-        inset 0 1px 0 rgba(255, 255, 255, 0.5);
-
-    margin-bottom: 30px;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border: 2px solid #bae6fd;
+    border-radius: 16px;
+    margin-bottom: 2rem;
 }
 
 .ip-list {
+    list-style: none;
+    padding: 0;
     margin: 0;
-    padding-left: 20px;
-    color: #1e293b;
-    font-size: 0.98rem;
-    line-height: 1.65;
 }
 
 .ip-list li {
-    margin-bottom: 10px;
+    margin: 0.6rem 0;
+    font-size: 1rem;
+    color: #0f172a;
+    padding-left: 1rem;
+    position: relative;
 }
 
-/* ============================================================
-   ACTION BUTTONS — Premium Glass + Glow
-============================================================ */
+.ip-list li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    top: 2px;
+    color: #0284c7;
+    font-size: 1.3rem;
+}
+
+/****************** CHECKBOX ROW ******************/
+.ip-checkbox-row {
+    margin-top: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.ip-checkbox-label {
+    font-size: 1rem;
+    color: #0f172a;
+}
+
+/****************** START BUTTON ******************/
 .ip-actions {
-    margin-top: 20px;
     text-align: center;
+    margin-top: 1rem;
 }
 
 .ip-btn-start {
-    padding: 12px 26px !important;
-    border-radius: 14px !important;
-
-    font-size: 1.05rem;
-    font-weight: 600;
-
-    background: linear-gradient(135deg, #4f46e5, #6366f1);
+    padding: 0.9rem 2.2rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #94a3b8, #64748b);
     color: white;
-
-    box-shadow:
-        0 8px 18px rgba(99, 102, 241, 0.30),
-        0 0 16px rgba(124, 138, 255, 0.45);
-
-    transition: 0.25s ease;
+    transition: 0.3s ease;
 }
 
-.ip-btn-start:hover {
-    transform: translateY(-3px) scale(1.03);
-    box-shadow:
-        0 8px 22px rgba(99, 102, 241, 0.35),
-        0 0 22px rgba(124, 138, 255, 0.7);
+.ip-btn-start.ready {
+    background: linear-gradient(135deg, #10b981, #059669);
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+}
+
+.ip-btn-start.ready:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(16, 185, 129, 0.45);
+}
+
+/****************** DEBUG ******************/
+.ip-debug {
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    text-align: center;
+    color: #6b7280;
 }

@@ -340,3 +340,82 @@
         0 0 12px rgba(124, 138, 255, 0.35),
         inset 0 0 6px rgba(255, 255, 255, 0.4);
 }
+
+/* Wrap entire camera section */
+.vp-camera-section {
+    display: flex;
+    gap: 2rem;
+    margin-top: 2.5rem;
+    align-items: flex-start;
+}
+
+/* Left camera box */
+.vp-video-box {
+    width: 360px;
+    height: 260px;
+    position: relative;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 3px solid #38bdf8;
+    background: #e0f2fe;
+    box-shadow: 0 8px 20px rgba(56, 189, 248, 0.25);
+}
+
+/* Right side container */
+.vp-right-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+/* Preview box */
+.vp-preview-box {
+    width: 360px;
+    height: 260px;
+    border: 3px solid #a3e635;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #ffffff;
+    box-shadow: 0 8px 20px rgba(163, 230, 53, 0.25);
+}
+
+/* Buttons container below preview */
+.vp-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    width: 360px;
+}
+
+.vp-btn {
+    width: 100%;
+    padding: 0.75rem;
+    background: linear-gradient(135deg, #38bdf8, #0284c7);
+    border-radius: 10px;
+    color: white;
+    font-weight: 600;
+}
+
+.vp-btn-next.ready {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.vp-status {
+    margin-top: 0.5rem;
+    font-weight: 600;
+    color: #0f172a;
+    text-align: center;
+}
+
+.hidden-video {
+    display: none !important;
+}
+
+.vp-preview-img {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    border: 2px solid #38bdf8;
+    margin-top: 10px;
+    box-shadow: 0 4px 12px rgba(0, 150, 255, 0.3);
+}
