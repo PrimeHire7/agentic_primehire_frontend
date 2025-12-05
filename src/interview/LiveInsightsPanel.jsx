@@ -22,7 +22,8 @@ export default function LiveInsightsPanel() {
         return () => window.removeEventListener("liveInsightsUpdate", handler);
     }, []);
 
-    const counts = live.counts || {};
+    const counts = live.counts ? live.counts : {};
+
 
     return (
         <div className="live-insight-box">

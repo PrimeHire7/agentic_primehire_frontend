@@ -34,7 +34,12 @@ export default function InterviewMode() {
         <div className="interview-root">
 
             <div className="interview-toolbar-container">
-                <InterviewToolbar />
+                <InterviewToolbar
+                    candidateId={candidateId}
+                    candidateName={candidateName}
+                    jdText={jdText}
+                />
+
             </div>
 
             <div className="interview-layout">
