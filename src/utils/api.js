@@ -1,6 +1,42 @@
 // 📁 src/utils/api.js
 import { API_BASE } from "./constants";
 
+function stripHtml(html) {
+  if (!html) return "";
+
+  // Remove the Copy JD button completely
+  html = html.replace(/📋\s*Copy JD/gi, "");
+
+  // Remove the whole <button>...</button> block
+  html = html.replace(/<button[\s\S]*?<\/button>/gi, "");
+
+  // Remove "How to Apply" section entirely
+  html = html.replace(/<h2>How to Apply[\s\S]*?<\/p>/gi, "");
+
+  // Remove script & style tags
+  html = html.replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "");
+  html = html.replace(/<style[\s\S]*?>[\s\S]*?<\/style>/gi, "");
+
+  // Replace <li> with "- "
+  html = html.replace(/<li>/gi, "- ");
+
+  // Replace breaks & paragraph endings with newlines
+  html = html.replace(/<br\s*\/?>/gi, "\n");
+  html = html.replace(/<\/p>/gi, "\n");
+
+  // Add newline after section headings
+  html = html.replace(/<\/h[1-6]>/gi, "\n");
+
+  // Strip all remaining HTML
+  html = html.replace(/<[^>]+>/g, "");
+
+  // Cleanup multiple newlines
+  html = html.replace(/\n\s*\n\s*\n+/g, "\n\n");
+
+  return html.trim();
+}
+
+
 // Utility function (make sure it's available to all functions)
 const normalizeArray = (val) => {
   if (!val) return [];
@@ -206,7 +242,12 @@ export const sendMailMessage = async (item, jdId, jdTextFromMatcher = null) => {
         `${API_BASE}/mcp/tools/jd_history/jd/history/${jdId}`
       );
       const jdData = await jdRes.json();
-      jdText = jdData.jd_text || "Job description unavailable";
+      // jdText = jdData.jd_text || "Job description unavailable";
+      let jdHtml = jdData.jd_text || "Job description unavailable";
+
+      // CLEAN HTML → convert to readable text
+      jdText = stripHtml(jdHtml);
+
     }
 
     /* ==========================================================
