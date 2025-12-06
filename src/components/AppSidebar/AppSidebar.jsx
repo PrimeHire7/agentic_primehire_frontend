@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 
 import "./AppSidebar.css";
+import { FaUserCheck } from "react-icons/fa";
 
 const features = [
     { id: "ZohoBridge", label: "ZohoBridge", icon: <LinkIcon size={18} /> },
@@ -31,6 +32,7 @@ const features = [
     // { id: "LinkedInPoster", label: "LinkedIn Poster", icon: <Share2 size={18} /> },
     { id: "ProfileMatchHistory", label: "Match History", icon: <History size={18} /> },
     { id: "JDHistory", label: "JD History", icon: <FileText size={18} /> },
+    { id: "CandidateStatus", label: "Candidates Status", icon: <FaUserCheck /> },
 ];
 
 export default function AppSidebar({ selectedFeature, onFeatureSelect }) {
