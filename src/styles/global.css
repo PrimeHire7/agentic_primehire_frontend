@@ -265,12 +265,18 @@ body {
     }
 }
 
+li.group\/menu-item.relative button:hover {
+    background: #059fd1 !important;
+    border-color: #059fd1 !important;
+    color: #0a0a0a !important;
+}
 li.group\/menu-item.relative button {
     padding: 5px 14px !important;
     height: auto !important;
     margin-bottom: 7px !important;
     border-radius: 10px !important;
     font-size: 15.5px;
+    transition: .6s;
 }
 
 .ph-icon {
@@ -296,4 +302,8 @@ li.group\/menu-item.relative button {
 
 .ph-header{
     z-index: 0 !important;
+}
+
+.chat-message {
+    margin-top: 13px;
 }
