@@ -307,3 +307,16 @@ li.group\/menu-item.relative button {
 .chat-message {
     margin-top: 13px;
 }
+
+.interview-layout {
+    overflow: unset ;
+}
+
+.chat-avatar {
+    width: 30px;
+    height: 30px;
+    position: relative;
+    flex-shrink: 0;
+    top: 15px;
+    left: -5px;
+}

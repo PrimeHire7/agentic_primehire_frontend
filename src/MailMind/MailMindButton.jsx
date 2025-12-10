@@ -82,13 +82,16 @@ const MailMindButton = () => {
 </p>
       {!connected && (
         <>
+        <div className="columns-3 mt-5">
+          <div className="col-md-4">
           <Input
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="mailmind-input"
           />
-
+</div>
+<div className="col-md-4">
           <Input
             type="password"
             placeholder="Password / App Password"
@@ -96,7 +99,8 @@ const MailMindButton = () => {
             onChange={(e) => setPassword(e.target.value)}
             className="mailmind-input"
           />
-
+</div>
+<div className="col-md-4">
           <Select onValueChange={setPlatform} defaultValue={platform}>
             <SelectTrigger className="mailmind-select">
               <SelectValue placeholder="Select Platform" />
@@ -105,7 +109,8 @@ const MailMindButton = () => {
               <SelectItem value="outlook">Outlook</SelectItem>
             </SelectContent>
           </Select>
-
+          </div>
+</div>
           <Button
             onClick={handleConnect}
             className="mailmind-btn"

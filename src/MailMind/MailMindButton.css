@@ -211,3 +211,22 @@
     transform: rotate(360deg);
   }
 }
+
+.col-md-4{
+  width: 33.3%;
+  float: left;
+  padding:0px 10px;
+}
+
+.col-md-4 input,.col-md-4 button{
+  border-radius:10px ;
+  border: 1px solid #ced4da;
+    box-shadow: 0 2px 6px 0 rgba(114, 124, 245, 0.23) !important;
+    border-radius: 10px !important;
+}
+.col-md-4 input::placeholder{
+  color: #9da1ba;
+}
+.mt-5{
+  margin-top: 20px;
+}
