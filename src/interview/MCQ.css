@@ -1,0 +1,66 @@
+/* MCQ Container */
+.mcq-box {
+    width: 90%;
+    background: #f3f3f3;
+    padding: 20px;
+    margin: 15px auto;
+    border-radius: 8px;
+    border-left: 4px solid #0078ff;
+    font-family: Arial, sans-serif;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Question headings */
+.mcq-box h3 {
+    color: #d50000;
+    margin-bottom: 8px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Options text */
+.mcq-box p {
+    font-size: 16px;
+    margin: 6px 0;
+}
+
+/* Code block styling */
+.mcq-box pre {
+    background: #e9e9e9;
+    padding: 12px;
+    border-radius: 5px;
+    font-size: 15px;
+    overflow-x: auto;
+    margin-bottom: 10px;
+    border-left: 3px solid #444;
+}
+
+/* Submit button */
+.mcq-submit {
+    background: #0078ff;
+    color: white;
+    padding: 10px 18px;
+    font-size: 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: 0.2s ease-in-out;
+}
+
+.mcq-submit:hover {
+    background: #005fcc;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

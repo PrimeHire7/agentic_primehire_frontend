@@ -6,12 +6,21 @@ import { Mic, Square } from "lucide-react"; // icons
 export default function InterviewToolbar({
     candidateId,
     candidateName,
-    jdText
+    jdText,
+    interviewTime  // ⬅ new prop
 }) {
     const [recording, setRecording] = useState(false);
     const mediaRecorderRef = useRef(null);
     const audioChunksRef = useRef([]);
 
+    /* ---------------------------------------------------
+       FORMAT TIME DISPLAY
+    --------------------------------------------------- */
+    function formatTime(sec) {
+        const m = String(Math.floor(sec / 60)).padStart(2, "0");
+        const s = String(sec % 60).padStart(2, "0");
+        return `${m}:${s}`;
+    }
     /* ---------------------------------------------------
        START AUDIO RECORDING
     --------------------------------------------------- */
@@ -32,12 +41,21 @@ export default function InterviewToolbar({
 
         mediaRecorderRef.current.start();
         setRecording(true);
+
+        // 🔵 Candidate started speaking
+        window.dispatchEvent(
+            new CustomEvent("candidateSpeaking", { detail: true })
+        );
     }
 
     /* ---------------------------------------------------
        STOP RECORDING
     --------------------------------------------------- */
     function stopAudio() {
+        // 🔴 Candidate stopped speaking
+        window.dispatchEvent(
+            new CustomEvent("candidateSpeaking", { detail: false })
+        );
         if (mediaRecorderRef.current) {
             mediaRecorderRef.current.stop();
         }
@@ -114,15 +132,18 @@ export default function InterviewToolbar({
     return (
         <div className="interview-toolbar">
 
-            {/* Recording pulse animation */}
-            {/* Recording Waveform Animation */}
+            {/* TIMER */}
+            <div className="interview-timer">
+                ⏱ {formatTime(interviewTime)}
+            </div>
+
+            {/* Recording visualization */}
             {recording && (
                 <div className="recording-wave">
                     <div /><div /><div /><div /><div /><div /><div /><div />
                     <span className="recording-label">Listening…</span>
                 </div>
             )}
-
 
             {!recording ? (
                 <button className="start-speaking-btn" onClick={startAudio}>

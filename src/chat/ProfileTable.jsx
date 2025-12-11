@@ -480,6 +480,8 @@ export default function ProfileTable({
 
   const navigate = useNavigate();
 
+
+
   /* -------------------------------------------------------------
      FETCH WHATSAPP RESPONSES (Polling)
   ------------------------------------------------------------- */
@@ -748,19 +750,51 @@ function ProfileTableRow({
   };
 
   /* -------------------------------------------------------------
+     HELPER: STRIP HTML FROM JD TEXT
+  ------------------------------------------------------------- */
+  function stripHtml(html) {
+    if (!html) return "";
+
+    html = html.replace(/📋\s*Copy JD/gi, "");
+    html = html.replace(/<button[\s\S]*?<\/button>/gi, "");
+    html = html.replace(/<h2>How to Apply[\s\S]*?<\/p>/gi, "");
+    html = html.replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "");
+    html = html.replace(/<style[\s\S]*?>[\s\S]*?<\/style>/gi, "");
+    html = html.replace(/<li>/gi, "- ");
+    html = html.replace(/<br\s*\/?>/gi, "\n");
+    html = html.replace(/<\/p>/gi, "\n");
+    html = html.replace(/<\/h[1-6]>/gi, "\n");
+    html = html.replace(/<[^>]+>/g, "");
+    html = html.replace(/\n\s*\n\s*\n+/g, "\n\n");
+
+    return html.trim();
+  }
+  /* -------------------------------------------------------------
        SEND TO CLIENT
   ------------------------------------------------------------- */
   const sendClientMail = async () => {
-    if (!clientEmail.includes("@")) return alert("Enter a valid email");
+    if (!clientEmail.includes("@")) return alert("Enter valid email");
 
     setClientLoading(true);
-    try {
-      const payload = {
-        client_email: clientEmail.trim(),
-        candidate_id: candidateId,
-        jd_id: jdId ?? null,
-      };
 
+    // Fetch JD text from server (always returns HTML)
+    const jdRes = await fetch(`${API_BASE}/mcp/tools/jd_history/jd/history/${jdId}`);
+    const jdData = await jdRes.json();
+    const rawJD = jdData.jd_text || "";
+
+    // CLEAN IT using your stripHtml()
+    const cleanedJD = stripHtml(rawJD);
+
+    // Send cleaned JD to backend under this KEY
+    // Backend will NOT reject it and WILL include it in the email body
+    const payload = {
+      client_email: clientEmail.trim(),
+      candidate_id: candidateId,
+      jd_id: jdId,
+      cleaned_jd_summary: cleanedJD   // ★ THIS IS THE MAGIC FIELD
+    };
+
+    try {
       const res = await fetch(`${API_BASE}/mcp/tools/match/send_to_client`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -768,16 +802,20 @@ function ProfileTableRow({
       });
 
       const data = await res.json();
-      if (!res.ok) alert(data.detail || "Failed to send");
-
-      alert("Client mail sent!");
-      setShowClient(false);
-      setClientEmail("");
-    } catch (e) {
-      alert("Failed to send");
+      if (!res.ok) {
+        alert(data.detail || "Failed to send");
+      } else {
+        alert("Client mail sent!");
+      }
+    } catch (error) {
+      alert("Failed to send email");
     }
+
     setClientLoading(false);
   };
+
+
+
 
   return (
     <tr className="row">

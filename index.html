@@ -19,18 +19,21 @@
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@primehire_ai" />
-  <meta name="twitter:image" content="https://prime-hire.vercel.app/assets/primehire_no_bg-BAl476rv.png" />
+  <meta name="twitter:image" content="https://primehire.vercel.app/assets/primehire_no_bg-BAl476rv.png" />
 
-  <!-- Favicon (correct) -->
+  <!-- Favicon -->
   <link rel="icon" type="image/png"
     href="https://primehire.ai/user-uploads/global-favicon/51ec56a15d32d0008f41d3b868898d03.png" />
 </head>
 
 <body>
   <div id="root"></div>
-  <!-- <script type="module" src="/src/main.tsx"></script> -->
-  <script type="module" src="/src/main.jsx"></script>
 
+  <!-- 🟦 ADD THIS FOR PYTHON EXECUTION IN BROWSER -->
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
+
+  <!-- Your app entry file -->
+  <script type="module" src="/src/main.jsx"></script>
 </body>
 
 </html>

@@ -1,0 +1,58 @@
+.coding-panel {
+    background: #111;
+    padding: 18px;
+    border-radius: 10px;
+    color: #fff;
+    border: 1px solid #333;
+}
+
+.coding-title {
+    margin-bottom: 10px;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.coding-question {
+    margin-bottom: 12px;
+    padding: 10px;
+    background: #1e1e1e;
+    border-radius: 6px;
+    border: 1px solid #444;
+    color: #ccc;
+}
+
+.coding-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.run-btn,
+.submit-btn {
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.run-btn {
+    background: #2d7dff;
+    color: white;
+}
+
+.submit-btn {
+    background: #00c06d;
+    color: white;
+}
+
+.coding-output {
+    margin-top: 14px;
+    padding: 10px;
+    background: #0c0c0c;
+    border-radius: 6px;
+    border: 1px solid #333;
+    min-height: 80px;
+    color: #0f0;
+    white-space: pre-wrap;
+}

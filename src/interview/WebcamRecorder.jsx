@@ -18,11 +18,50 @@ export default function WebcamRecorder({
     // IMPORTANT: Mirror candidateId (because props DO NOT update inside interval)
     const [localCandidateId, setLocalCandidateId] = useState(candidateId);
 
+    const [tabWarning, setTabWarning] = useState(false);
+
     useEffect(() => {
         if (candidateId) {
             setLocalCandidateId(candidateId);
         }
     }, [candidateId]);
+
+    // ----------------------------------------------
+    // TAB SWITCH DETECTION (same behavior as old system)
+    // ----------------------------------------------
+    useEffect(() => {
+        function handleTab() {
+            if (!localCandidateId) return;
+
+            if (document.hidden) {
+                setTabWarning(true);
+
+                // Add transcript alert
+                window.dispatchEvent(
+                    new CustomEvent("transcriptAdd", {
+                        detail: { role: "system", text: "⚠ Tab switch detected — stay in the interview window." }
+                    })
+                );
+
+                // Send anomaly to backend
+                const fd = new FormData();
+                fd.append("candidate_name", candidateName);
+                fd.append("candidate_id", localCandidateId);
+                fd.append("event_type", "tab_switch");
+                fd.append("event_msg", "Tab switch detected");
+
+                fetch(`${API_BASE}/mcp/interview/face-monitor`, {
+                    method: "POST",
+                    body: fd
+                });
+            } else {
+                setTabWarning(false);
+            }
+        }
+
+        document.addEventListener("visibilitychange", handleTab);
+        return () => document.removeEventListener("visibilitychange", handleTab);
+    }, [localCandidateId]);
 
     /** ---------------------------
         INIT CAMERA
@@ -43,13 +82,28 @@ export default function WebcamRecorder({
         return () =>
             streamRef.current?.getTracks().forEach((t) => t.stop());
     }, []);
+    /** ---------------------------
+        START FACE MONITOR LOOP
+    ---------------------------- **/
+    function startFaceLoop() {
+        clearInterval(faceLoopRef.current);
+
+        faceLoopRef.current = setInterval(() => {
+            if (videoRef.current?.videoWidth > 0) {
+                sendFaceFrame();
+            } else {
+                console.log("⏳ Waiting for video to stabilize...");
+            }
+        }, 300);
+    }
 
     /** ---------------------------
         START INTERVIEW
     ---------------------------- **/
     async function startInterview() {
         setRecording(true);
-
+        // 🔵 START THE TIMER
+        window.dispatchEvent(new Event("startInterviewTimer"));
         const fd = new FormData();
         fd.append("init", "true");
         fd.append("candidate_name", candidateName);
@@ -86,36 +140,55 @@ export default function WebcamRecorder({
     function stopInterview() {
         setRecording(false);
         clearInterval(faceLoopRef.current);
+        // 🔴 STOP THE TIMER
+        window.dispatchEvent(new Event("stopInterviewTimer"));
+
         window.dispatchEvent(new Event("stopInterview"));
     }
 
-    /** ---------------------------
-        START FACE MONITOR LOOP
-    ---------------------------- **/
-    function startFaceLoop() {
-        clearInterval(faceLoopRef.current);
 
-        faceLoopRef.current = setInterval(() => {
-            sendFaceFrame();
-        }, 1000); // Fixed to 1 second
-    }
 
     /** ---------------------------
         SEND FRAME → FACE MONITOR
     ---------------------------- **/
     async function sendFaceFrame() {
-        if (!videoRef.current || !localCandidateId) return;
+        if (!videoRef.current || !localCandidateId) {
+            console.log("❌ sendFaceFrame: videoRef or candidateId missing");
+            return;
+        }
+
+        const video = videoRef.current;
+
+        // 🔥 Debug: log video size each frame
+        console.log(`🎥 Video frame size: ${video.videoWidth} x ${video.videoHeight}`);
+
+        // Prevent sending if video isn't ready
+        if (video.videoWidth === 0 || video.videoHeight === 0) {
+            console.log("⏳ Video not ready yet — skipping frame");
+            return;
+        }
 
         const canvas = document.createElement("canvas");
-        canvas.width = videoRef.current.videoWidth;
-        canvas.height = videoRef.current.videoHeight;
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
 
         const ctx = canvas.getContext("2d");
-        ctx.drawImage(videoRef.current, 0, 0);
+        ctx.drawImage(video, 0, 0);
 
+        // 🔥 Debug: check if canvas rendered correctly
+        console.log("🖼 Canvas frame rendered");
+
+        // Convert to Blob
         const blob = await new Promise((resolve) =>
             canvas.toBlob(resolve, "image/jpeg", 0.85)
         );
+
+        if (!blob) {
+            console.log("❌ Blob conversion failed");
+            return;
+        }
+
+        console.log(`📤 Sending frame → size: ${blob.size} bytes`);
 
         const fd = new FormData();
         fd.append("candidate_name", candidateName);
@@ -129,7 +202,8 @@ export default function WebcamRecorder({
 
         const data = await r.json();
 
-        // Update LiveInsightsPanel
+        console.log("📥 Backend response:", data);
+
         window.dispatchEvent(
             new CustomEvent("liveInsightsUpdate", {
                 detail: {
@@ -137,14 +211,11 @@ export default function WebcamRecorder({
                     boxes: data.boxes,
                     frame: data.frame_base64,
                     faces: data.faces,
-                    // Pass anomaly counts if backend includes it
                     counts: data.anomaly_counts || {},
                 }
             })
         );
 
-
-        // Add anomalies to transcript
         if (data.anomalies?.length) {
             data.anomalies.forEach((a) => {
                 window.dispatchEvent(
@@ -156,9 +227,16 @@ export default function WebcamRecorder({
         }
     }
 
+
     return (
         <div className="webcam-glass-shell">
+
             <video ref={videoRef} className="webcam-video" autoPlay muted playsInline />
+
+            {/* TAB SWITCH WARNING BANNER */}
+            {tabWarning && (
+                <div className="warning-banner">⚠ Tab switching detected</div>
+            )}
 
             {!recording ? (
                 <button className="webcam-start-btn" onClick={startInterview}>
@@ -171,4 +249,5 @@ export default function WebcamRecorder({
             )}
         </div>
     );
+
 }

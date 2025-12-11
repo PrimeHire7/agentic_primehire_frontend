@@ -225,6 +225,8 @@ import AIChartPanel from "./AIChartPanel";
 import InterviewToolbar from "./InterviewToolbar";
 
 import "./InterviewMode.css";
+import MCQ from "./MCQ";
+import CodingTestPanel from "./CodingTestPanel";
 
 export default function InterviewMode() {
     const location = useLocation();
@@ -241,6 +243,62 @@ export default function InterviewMode() {
     const [insights, setInsights] = useState({});
     const [anomalyCounts, setAnomalyCounts] = useState({});
     const [perQuestion, setPerQuestion] = useState([]);
+
+    const [interviewTime, setInterviewTime] = useState(0);
+
+    const [stage, setStage] = useState(1); // 1 = MCQ, 2 = Coding, 3 = AI Interview
+    // =======================================================
+    // ⭐ STAGE MANAGEMENT
+    // =======================================================
+
+    function renderRightContent() {
+        if (stage === 1) {
+            return (
+                <MCQ onComplete={() => setStage(2)} />
+            );
+        }
+
+        if (stage === 2) {
+            return (
+                <CodingTestPanel onComplete={() => setStage(3)} />
+            );
+        }
+
+        // Stage 3 → Transcript Panel
+        return (
+            <TranscriptPanel
+                transcript={transcript}
+                jdId={jdId}
+                jdText={jdText}
+            />
+        );
+    }
+    // =======================================================
+    // Interview timer
+    useEffect(() => {
+        let timer = null;
+
+        const startTimer = () => {
+            if (timer) return;
+            timer = setInterval(() => {
+                setInterviewTime((t) => t + 1);
+            }, 1000);
+        };
+
+        const stopTimer = () => {
+            clearInterval(timer);
+            timer = null;
+        };
+
+        window.addEventListener("startInterviewTimer", startTimer);
+        window.addEventListener("stopInterviewTimer", stopTimer);
+
+        return () => {
+            window.removeEventListener("startInterviewTimer", startTimer);
+            window.removeEventListener("stopInterviewTimer", stopTimer);
+            clearInterval(timer);
+        };
+    }, []);
 
     // Transcript collector
     useEffect(() => {
@@ -306,7 +364,9 @@ export default function InterviewMode() {
                     candidateId={candidateId}
                     candidateName={candidateName}
                     jdText={jdText}
+                    interviewTime={interviewTime}
                 />
+
             </div>
 
             <div className="interview-layout">
@@ -336,13 +396,17 @@ export default function InterviewMode() {
                 </div>
 
                 {/* RIGHT SIDE */}
-                <div className="right-panel">
+                {/* <div className="right-panel">
                     <TranscriptPanel
                         transcript={transcript}
                         jdId={jdId}
                         jdText={jdText}
                     />
+                </div> */}
+                <div className="right-panel">
+                    {renderRightContent()}
                 </div>
+
 
             </div>
         </div>
