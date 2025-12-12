@@ -440,6 +440,8 @@
 // }
 // FILE: src/interview/InterviewMode.jsx
 
+// FILE: src/interview/InterviewMode.jsx
+
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { API_BASE } from "@/utils/constants";
@@ -458,27 +460,32 @@ export default function InterviewMode() {
     const location = useLocation();
     const navigate = useNavigate();
 
+    // Candidate & JD info
     const candidateName = location.state?.candidateName || "Anonymous";
     const initialCandidateId = location.state?.candidateId || null;
     const jdText = location.state?.jd_text || "";
     const jdId = location.state?.jd_id || null;
 
+    // Core states
     const [candidateId, setCandidateId] = useState(initialCandidateId);
     const [transcript, setTranscript] = useState([]);
-
     const [insights, setInsights] = useState({});
     const [anomalyCounts, setAnomalyCounts] = useState({});
     const [interviewTime, setInterviewTime] = useState(0);
 
-    // ⭐ Stage flow → 1 = MCQ → 2 = Coding → 3 = AI Interview
+    // Stage: 1 = MCQ, 2 = Coding, 3 = AI Interview
     const [stage, setStage] = useState(1);
 
-    // ⭐ MCQ Data
+    // MCQ data
     const [mcq, setMcq] = useState([]);
     const [mcqLoaded, setMcqLoaded] = useState(false);
+    const [mcqResult, setMcqResult] = useState(null);
+
+    // Coding data
+    const [codingResult, setCodingResult] = useState(null);
 
     /* ===========================================================
-       LOAD MCQ FROM BACKEND (ONLY ONCE)
+       LOAD MCQ QUESTIONS (ONLY ONCE)
     =========================================================== */
     useEffect(() => {
         async function loadMCQ() {
@@ -492,10 +499,10 @@ export default function InterviewMode() {
             if (jdId) fd.append("jd_id", jdId);
 
             try {
-                const r = await fetch(
-                    `${API_BASE}/mcp/interview_bot_beta/generate-mcq`,
-                    { method: "POST", body: fd }
-                );
+                const r = await fetch(`${API_BASE}/mcp/interview_bot_beta/generate-mcq`, {
+                    method: "POST",
+                    body: fd
+                });
 
                 const d = await r.json();
                 if (d.ok) {
@@ -514,26 +521,34 @@ export default function InterviewMode() {
 
 
     /* ===========================================================
-       STAGE RENDERING
+       STAGE RENDERER
     =========================================================== */
-
     function renderRightContent() {
         if (stage === 1) {
             return (
                 <MCQ
                     questions={mcq}
-                    onComplete={() => setStage(2)}
+                    onComplete={(result) => {
+                        console.log("MCQ Results:", result);
+                        setMcqResult(result);
+                        setStage(2);
+                    }}
                 />
             );
         }
 
         if (stage === 2) {
             return (
-                <CodingTestPanel onComplete={() => setStage(3)} />
+                <CodingTestPanel
+                    onComplete={(codingScore) => {
+                        console.log("Coding Score:", codingScore);
+                        setCodingResult(codingScore);
+                        setStage(3);
+                    }}
+                />
             );
         }
 
-        // Stage 3 → Main Interview Panel
         return (
             <TranscriptPanel
                 transcript={transcript}
@@ -581,7 +596,7 @@ export default function InterviewMode() {
     }, []);
 
     /* ===========================================================
-       INSIGHTS LISTENER
+       LIVE INSIGHTS LISTENER
     =========================================================== */
     useEffect(() => {
         const handler = (e) => {
@@ -593,7 +608,7 @@ export default function InterviewMode() {
     }, []);
 
     /* ===========================================================
-       STOP INTERVIEW → FINAL EVALUATION
+       STOP → FINAL EVALUATION
     =========================================================== */
     useEffect(() => {
         const stopHandler = async () => {
@@ -609,6 +624,7 @@ export default function InterviewMode() {
                 `${API_BASE}/mcp/interview_bot_beta/evaluate-transcript`,
                 { method: "POST", body: fd }
             );
+
             const d = await r.json();
 
             if (!d.ok) {
@@ -616,9 +632,12 @@ export default function InterviewMode() {
                 return;
             }
 
+            // Move to certificate page with ALL RESULTS
             navigate("/certificatedata", {
                 state: {
-                    ...d,
+                    ...d,                    // AI interview scores
+                    mcq: mcqResult,          // MCQ scores
+                    coding: codingResult,    // Coding scores
                     transcript,
                     insights,
                     anomalyCounts,
@@ -629,7 +648,7 @@ export default function InterviewMode() {
         window.addEventListener("stopInterview", stopHandler);
         return () => window.removeEventListener("stopInterview", stopHandler);
 
-    }, [candidateId, transcript, insights, anomalyCounts]);
+    }, [candidateId, transcript, insights, anomalyCounts, mcqResult, codingResult]);
 
     /* ===========================================================
        MAIN RENDER
@@ -649,7 +668,7 @@ export default function InterviewMode() {
 
             <div className="interview-layout">
 
-                {/* LEFT PANEL */}
+                {/* LEFT SIDE */}
                 <div className="left-panel">
 
                     <div className="video-wrapper">
@@ -670,14 +689,12 @@ export default function InterviewMode() {
                             <AIChartPanel />
                         </div>
                     </div>
-
                 </div>
 
-                {/* RIGHT PANEL */}
+                {/* RIGHT SIDE */}
                 <div className="right-panel">
                     {renderRightContent()}
                 </div>
-
             </div>
         </div>
     );
