@@ -1,421 +1,214 @@
-/* ============================================================
-   PRIMEHIRE VALIDATION PANEL — FULL MATCH TO ChatInput Shell
-   Includes: Blue/white BG + Glass Glow + Neon Rim + Frost Shell
-============================================================ */
-
-/* 🌈 PAGE BACKGROUND — same gradient style as hero + subtle glow */
-/* ============================================================
-   PAGE WRAPPER — ALWAYS CENTER PANEL HORIZONTALLY & VERTICALLY
-============================================================ */
-.vp-page {
-    width: 100%;
-    height: 100vh;
-
-    display: flex;
-    justify-content: center;
-    /* ⬅ Center horizontally */
-    align-items: flex-start;
-    /* ⬅ Push panel slightly down (not centered like modal) */
-
-    padding-top: 60px;
-    box-sizing: border-box;
-
-    background: linear-gradient(135deg,
-            #eef3ff 0%,
-            #f2f6ff 30%,
-            #ffffff 60%);
-
-    position: relative;
-    overflow-y: auto;
+/* ===============================
+   ROOT THEME
+================================ */
+:root {
+    --bg-main: #f5f7fa;
+    --card-bg: rgba(255, 255, 255, 0.95);
+    --border-soft: #e5e7eb;
+    --text-main: #111827;
+    --text-muted: #6b7280;
+    --blue: #0a66c2;
+    --blue-soft: #e8f1fb;
+    --green: #16a34a;
+    --red: #dc2626;
+    --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.06);
+    --radius-lg: 16px;
+    --radius-md: 12px;
 }
 
-/* Floating ambient glow like Cluely */
-.vp-page::before,
-.vp-page::after {
-    content: "";
-    position: absolute;
-    pointer-events: none;
-
-    width: 480px;
-    height: 480px;
-    border-radius: 50%;
-    filter: blur(120px);
-    opacity: 0.5;
-    animation: vpFloat 14s ease-in-out infinite alternate;
+/* ===============================
+   PAGE CONTAINER
+================================ */
+.vp-container {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 32px;
+    background: var(--bg-main);
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont;
+    color: var(--text-main);
 }
 
-.vp-page::before {
-    top: -80px;
-    left: -120px;
-    background: rgba(99, 102, 241, 0.35);
-}
-
-.vp-page::after {
-    bottom: -100px;
-    right: -150px;
-    background: rgba(59, 130, 246, 0.30);
-}
-
-@keyframes vpFloat {
-    from {
-        transform: translateY(0);
-    }
-
-    to {
-        transform: translateY(40px);
-    }
-}
-
-
-
-/* ============================================================
-   MAIN GLASS WRAPPER — exact match to .ci-shell
-=========================================================== */
-.vp-glass-wrapper {
-    width: clamp(380px, 90vw, 960px);
-    padding: 42px 48px;
-    border-radius: 26px;
-
-    /* ⭐ SAME glass formula as ChatInput */
-    background: rgba(255, 255, 255, 0.92);
-    border: 1px solid rgba(255, 255, 255, 0.55);
-
-    backdrop-filter: blur(22px) saturate(150%);
-    -webkit-backdrop-filter: blur(22px) saturate(150%);
-
-    box-shadow:
-        0 18px 46px rgba(0, 0, 0, 0.18),
-        0 0 130px rgba(124, 138, 255, 0.40),
-        inset 0 2px 0 rgba(255, 255, 255, 0.75),
-        inset 0 -12px 22px rgba(255, 255, 255, 0.22);
-
-    position: relative;
-    overflow: hidden;
-    animation: fadeUp .35s ease;
-
-    color: #0f172a;
-}
-
-/* ⭐ Neon Glow Rim (same as ci-shell::before) */
-.vp-glass-wrapper::before {
-    content: "";
-    position: absolute;
-    inset: -2px;
-    border-radius: inherit;
-
-    background: linear-gradient(135deg,
-            rgba(99, 102, 241, 0.35),
-            rgba(124, 138, 255, 0.25),
-            rgba(255, 255, 255, 0.3));
-
-    filter: blur(14px);
-    z-index: -1;
-}
-
-/* ⭐ Soft Frost Cavity (same as ci-shell::after) */
-.vp-glass-wrapper::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    pointer-events: none;
-
-    background: radial-gradient(circle at 50% 100%,
-            rgba(255, 255, 255, 0.28),
-            transparent 70%);
-
-    mix-blend-mode: soft-light;
-    opacity: 0.55;
-}
-
-/* Smooth entrance */
-@keyframes fadeUp {
-    from {
-        opacity: 0;
-        transform: translateY(15px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-
-/* ============================================================
-   TITLE — Premium Blue Gradient
-=========================================================== */
+/* ===============================
+   TITLE
+================================ */
 .vp-title {
-    font-size: 32px;
-    font-weight: 900;
-    margin-bottom: 34px;
-
-    background: linear-gradient(90deg, #1e3a8a, #2563eb, #3b82f6);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    color: var(--text-main);
 }
 
-
-/* ============================================================
-   INPUT BLOCK
-=========================================================== */
-.vp-input-block {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    margin-bottom: 38px;
+/* ===============================
+   CARD BLOCKS
+================================ */
+.vp-input-block,
+.vp-pan-block,
+.vp-camera-row,
+.vp-jd-block {
+    background: var(--card-bg);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-soft);
 }
 
-.vp-input-block label {
-    font-size: 14px;
+/* ===============================
+   INPUTS
+================================ */
+.vp-input-block label,
+.vp-pan-block label {
+    font-size: 13px;
     font-weight: 600;
-    color: #1e293b;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 6px;
 }
 
-.vp-input {
-    padding: 14px;
-    border-radius: 16px;
-
-    background: rgba(255, 255, 255, 0.75);
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    backdrop-filter: blur(12px);
-    font-size: 15px;
-    color: #0f172a;
-
-    transition: 0.25s ease;
+.vp-input-block input,
+.vp-pan-block input,
+.vp-jd-block textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-soft);
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s ease;
+    background: white;
 }
 
-.vp-input:focus {
-    background: rgba(255, 255, 255, 0.95);
-    border-color: #6366f1;
-
-    box-shadow:
-        0 0 12px rgba(124, 138, 255, 0.35),
-        inset 0 0 6px rgba(255, 255, 255, 0.4);
+.vp-input-block input:focus,
+.vp-pan-block input:focus,
+.vp-jd-block textarea:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(10, 102, 194, 0.1);
 }
 
+/* ===============================
+   PAN VALIDATION STATUS
+================================ */
+.vp-pan-status {
+    margin-top: 12px;
+    padding: 12px 14px;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 500;
+}
 
-/* ============================================================
-   CAMERA BLOCK
-=========================================================== */
+.vp-pan-status.success {
+    background: #ecfdf5;
+    color: var(--green);
+    border: 1px solid #bbf7d0;
+}
+
+.vp-pan-status.error {
+    background: #fef2f2;
+    color: var(--red);
+    border: 1px solid #fecaca;
+}
+
+/* ===============================
+   CAMERA ROW
+================================ */
 .vp-camera-row {
-    display: flex;
-    gap: 30px;
-    margin-bottom: 40px;
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 24px;
 }
 
 .vp-video-box {
-    width: 420px;
-    height: 300px;
-
-    border-radius: 20px;
-    background: rgba(255, 255, 255, 0.70);
-    border: 1px solid rgba(255, 255, 255, 0.55);
-
-    backdrop-filter: blur(12px);
+    background: #000;
+    border-radius: var(--radius-lg);
     overflow: hidden;
-
-    box-shadow:
-        0 14px 26px rgba(0, 0, 0, 0.12),
-        0 0 40px rgba(124, 138, 255, 0.25);
+    height: 320px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.vp-video,
-.vp-captured-img {
+.vp-video-box video,
+.vp-video-box img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-
-/* ============================================================
-   BUTTONS — EXACT MATCH TO ChatInput ICON BUTTONS
-=========================================================== */
+/* ===============================
+   ACTION BUTTONS
+================================ */
 .vp-actions {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 12px;
 }
 
-/* Base glass button */
-.vp-btn {
+.vp-actions button {
     padding: 12px 16px;
-    font-size: 15px;
+    font-size: 14px;
+    border-radius: var(--radius-md);
+    border: none;
     font-weight: 600;
-
-    border-radius: 14px;
     cursor: pointer;
-
-    background: rgba(255, 255, 255, 0.75);
-    border: 1px solid rgba(255, 255, 255, 0.45);
-    backdrop-filter: blur(12px);
-    color: #0f172a;
-
-    transition: 0.25s ease;
+    transition: all 0.2s ease;
 }
 
-.vp-btn:hover {
-    background: rgba(255, 255, 255, 0.95);
-    box-shadow:
-        inset 0 1px 1px rgba(255, 255, 255, 1),
-        inset 0 -1px 6px rgba(0, 0, 0, 0.08);
+/* Primary */
+.vp-actions button:first-child,
+.vp-pan-block button {
+    background: linear-gradient(135deg, #0a66c2, #004182);
+    color: white;
 }
 
+.vp-actions button:first-child:hover,
+.vp-pan-block button:hover {
+    opacity: 0.9;
+}
 
-/* Continue Button — Primary */
-.vp-btn-next {
-    padding: 14px;
-    font-size: 16px;
-    font-weight: 700;
-    border-radius: 16px;
+/* Secondary */
+.vp-actions button:not(:first-child) {
+    background: #f3f4f6;
+    color: var(--text-main);
+}
 
-    background: #cdd5ff;
-    color: #475569;
+.vp-actions button:not(:first-child):hover {
+    background: #e5e7eb;
+}
 
+/* Disabled */
+.vp-actions button:disabled {
+    opacity: 0.5;
     cursor: not-allowed;
-    transition: 0.25s ease;
 }
 
-.vp-btn-next.ready {
-    cursor: pointer;
-    color: white;
-
-    background: linear-gradient(135deg, #4f46e5, #6366f1);
-
-    box-shadow:
-        0 12px 22px rgba(124, 138, 255, 0.35),
-        0 0 16px rgba(124, 138, 255, 0.6);
-}
-
-.vp-btn-next.ready:hover {
-    transform: translateY(-3px) scale(1.03);
-}
-
-
-/* ============================================================
+/* ===============================
    STATUS TEXT
-=========================================================== */
+================================ */
 .vp-status {
-    font-size: 14px;
-    font-weight: 600;
-    color: #334155;
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--text-muted);
 }
 
-
-/* ============================================================
-   JD PREVIEW BLOCK
-=========================================================== */
-.vp-jd-block {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.vp-jd-block label {
-    font-size: 14px;
-    font-weight: 600;
-    color: #1e293b;
-}
-
-.vp-jd-display {
-    height: 150px;
-    padding: 16px;
-
-    border-radius: 20px;
-    background: rgba(255, 255, 255, 0.75);
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    backdrop-filter: blur(12px);
-
-    color: #0f172a;
+/* ===============================
+   JD BLOCK
+================================ */
+.vp-jd-block textarea {
+    min-height: 140px;
     resize: vertical;
-
-    transition: 0.25s ease;
+    font-size: 13px;
+    line-height: 1.6;
 }
 
-.vp-jd-display:focus {
-    background: rgba(255, 255, 255, 0.95);
-    border-color: #6366f1;
+/* ===============================
+   RESPONSIVE
+================================ */
+@media (max-width: 900px) {
+    .vp-camera-row {
+        grid-template-columns: 1fr;
+    }
 
-    box-shadow:
-        0 0 12px rgba(124, 138, 255, 0.35),
-        inset 0 0 6px rgba(255, 255, 255, 0.4);
-}
-
-/* Wrap entire camera section */
-.vp-camera-section {
-    display: flex;
-    gap: 2rem;
-    margin-top: 2.5rem;
-    align-items: flex-start;
-}
-
-/* Left camera box */
-.vp-video-box {
-    width: 360px;
-    height: 260px;
-    position: relative;
-    border-radius: 14px;
-    overflow: hidden;
-    border: 3px solid #38bdf8;
-    background: #e0f2fe;
-    box-shadow: 0 8px 20px rgba(56, 189, 248, 0.25);
-}
-
-/* Right side container */
-.vp-right-section {
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-}
-
-/* Preview box */
-.vp-preview-box {
-    width: 360px;
-    height: 260px;
-    border: 3px solid #a3e635;
-    border-radius: 14px;
-    overflow: hidden;
-    background: #ffffff;
-    box-shadow: 0 8px 20px rgba(163, 230, 53, 0.25);
-}
-
-/* Buttons container below preview */
-.vp-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-    width: 360px;
-}
-
-.vp-btn {
-    width: 100%;
-    padding: 0.75rem;
-    background: linear-gradient(135deg, #38bdf8, #0284c7);
-    border-radius: 10px;
-    color: white;
-    font-weight: 600;
-}
-
-.vp-btn-next.ready {
-    background: linear-gradient(135deg, #10b981, #059669);
-}
-
-.vp-status {
-    margin-top: 0.5rem;
-    font-weight: 600;
-    color: #0f172a;
-    text-align: center;
-}
-
-.hidden-video {
-    display: none !important;
-}
-
-.vp-preview-img {
-    width: 100%;
-    height: auto;
-    border-radius: 12px;
-    border: 2px solid #38bdf8;
-    margin-top: 10px;
-    box-shadow: 0 4px 12px rgba(0, 150, 255, 0.3);
+    .vp-video-box {
+        height: 260px;
+    }
 }
