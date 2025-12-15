@@ -1,23 +1,95 @@
+/* ===== ROOT ===== */
+.primehirebrain-container {
+  width: 100%;
+  max-width: 100vw;
+  overflow: hidden;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+/* ===== TITLE ===== */
+.brain-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+/* ===== ACTION BAR ===== */
 .brain-actions {
   display: flex;
   gap: 12px;
+  flex-wrap: wrap;
   margin-bottom: 14px;
   align-items: center;
 }
 
 .search-input {
   padding: 8px 12px;
-  min-width: 280px;
+  min-width: 260px;
   border-radius: 6px;
   border: 1px solid #ccc;
 }
 
-.candidates-table th,
-.candidates-table td {
-  padding: 8px;
-  text-align: left;
+/* ===== TABLE HEADER ===== */
+.table-header {
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #444;
 }
 
+/* ===== TABLE WRAPPER ===== */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ===== TABLE ===== */
+.candidates-table {
+  width: 100%;
+  min-width: 1100px;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+.candidates-table th,
+.candidates-table td {
+  padding: 10px 12px;
+  text-align: left;
+  white-space: nowrap;
+  font-size: 13px;
+  border-bottom: 1px solid #eee;
+}
+
+/* ===== HEADER ===== */
+.candidates-table thead {
+  background: #f9fafb;
+}
+
+/* ===== STICKY FIRST COLUMN ===== */
+.candidates-table th:first-child,
+.candidates-table td:first-child {
+  position: sticky;
+  left: 0;
+  background: #fff;
+  z-index: 2;
+  box-shadow: 6px 0 6px rgba(0, 0, 0, 0.04);
+}
+
+/* ===== STICKY LAST COLUMN ===== */
+.candidates-table th:last-child,
+.candidates-table td:last-child {
+  position: sticky;
+  right: 0;
+  background: #fff;
+  z-index: 2;
+  box-shadow: -6px 0 6px rgba(0, 0, 0, 0.04);
+}
+
+/* ===== DELETE BUTTON ===== */
 .delete-btn {
   background: none;
   border: none;
@@ -29,14 +101,170 @@
   color: red;
 }
 
-.table-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 8px;
-  font-size: 14px;
-  color: #444;
+/* ===== MOBILE OPTIMIZATION ===== */
+@media (max-width: 768px) {
+
+  /* Hide low-priority columns */
+  .candidates-table th:nth-child(4),
+  .candidates-table td:nth-child(4),
+  .candidates-table th:nth-child(5),
+  .candidates-table td:nth-child(5),
+  .candidates-table th:nth-child(7),
+  .candidates-table td:nth-child(7),
+  .candidates-table th:nth-child(8),
+  .candidates-table td:nth-child(8) {
+    display: none;
+  }
+
+  .candidates-table {
+    min-width: 650px;
+  }
+
+  .search-input {
+    min-width: 100%;
+  }
 }
 
-.resume-count strong {
-  font-size: 15px;
+/* ===== SKILLS COLUMN HARD LIMIT ===== */
+.skills-cell {
+  max-width: 220px;
+  /* 🔥 hard stop */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+}
+
+/* Desktop large screens */
+@media (min-width: 1200px) {
+  .skills-cell {
+    max-width: 260px;
+  }
+}
+
+/* Mobile tighter clamp */
+@media (max-width: 768px) {
+  .skills-cell {
+    max-width: 140px;
+  }
+}
+
+/* ======================================================
+   COMPACT GRID MODE — NO SCROLL, NO OVERFLOW
+====================================================== */
+
+/* Force compression */
+.candidates-table.compact {
+  table-layout: fixed;
+  /* 🔥 KEY */
+  width: 100%;
+  min-width: 0 !important;
+  font-size: 11px;
+}
+
+/* Cells */
+.candidates-table.compact th,
+.candidates-table.compact td {
+  padding: 4px 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* COLUMN WIDTHS (HARD CAPS) */
+.candidates-table.compact th:nth-child(1),
+.candidates-table.compact td:nth-child(1) {
+  width: 32px;
+  /* checkbox */
+}
+
+.candidates-table.compact th:nth-child(2),
+.candidates-table.compact td:nth-child(2) {
+  width: 130px;
+  /* name */
+}
+
+.candidates-table.compact th:nth-child(3),
+.candidates-table.compact td:nth-child(3) {
+  width: 110px;
+  /* title */
+}
+
+.candidates-table.compact th:nth-child(4),
+.candidates-table.compact td:nth-child(4) {
+  width: 150px;
+  /* email */
+}
+
+.candidates-table.compact th:nth-child(5),
+.candidates-table.compact td:nth-child(5) {
+  width: 160px;
+  /* skills */
+}
+
+.candidates-table.compact th:nth-child(6),
+.candidates-table.compact td:nth-child(6) {
+  width: 60px;
+  /* exp */
+  text-align: center;
+}
+
+.candidates-table.compact th:nth-child(7),
+.candidates-table.compact td:nth-child(7) {
+  width: 120px;
+  /* company */
+}
+
+.candidates-table.compact th:nth-child(8),
+.candidates-table.compact td:nth-child(8) {
+  width: 90px;
+  /* updated */
+}
+
+.candidates-table.compact th:nth-child(9),
+.candidates-table.compact td:nth-child(9) {
+  width: 40px;
+  /* action */
+  text-align: center;
+}
+
+/* Remove sticky behavior in compact */
+.candidates-table.compact th:first-child,
+.candidates-table.compact td:first-child,
+.candidates-table.compact th:last-child,
+.candidates-table.compact td:last-child {
+  position: static;
+  box-shadow: none;
+}
+
+/* Skills tighter clamp */
+.candidates-table.compact .skills-cell {
+  max-width: 160px;
+}
+
+/* Action button smaller */
+.candidates-table.compact .delete-btn {
+  font-size: 14px;
+}
+
+/* ===== MOBILE HARD COMPRESSION ===== */
+@media (max-width: 768px) {
+  .candidates-table.compact {
+    font-size: 10px;
+  }
+
+  .candidates-table.compact th,
+  .candidates-table.compact td {
+    padding: 3px 4px;
+  }
+
+  .candidates-table.compact th:nth-child(4),
+  .candidates-table.compact td:nth-child(4),
+  .candidates-table.compact th:nth-child(7),
+  .candidates-table.compact td:nth-child(7),
+  .candidates-table.compact th:nth-child(8),
+  .candidates-table.compact td:nth-child(8) {
+    display: none;
+    /* still fits fully */
+  }
 }
