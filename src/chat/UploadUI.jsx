@@ -918,6 +918,7 @@ export default function UploadUI() {
     const [uploadedData, setUploadedData] = React.useState([]);
     const [duplicateItems, setDuplicateItems] = React.useState([]);
     const [showOverwriteDialog, setShowOverwriteDialog] = React.useState(false);
+    const uploadStartedRef = React.useRef(false);
 
     const {
         progressData,
@@ -935,6 +936,7 @@ export default function UploadUI() {
 
     /* FILE SELECT */
     const handleFileChange = (e) => {
+        uploadStartedRef.current = false;  // 🔥 reset session
         console.log("FILE CHANGE FIRED", e.target.files);
         setFiles(Array.from(e.target.files));
         setUploadedData([]);
@@ -951,6 +953,7 @@ export default function UploadUI() {
 
     /* UPLOAD */
     const handleUpload = async (forceOverwrite = false) => {
+        uploadStartedRef.current = true;
         if (!files.length) return;
 
         resetProgress();
@@ -1012,11 +1015,10 @@ export default function UploadUI() {
                 </p>
             )}
 
-            {isCompleted && (
-                <p className="progress-status success">
-                    ✅ Upload Complete
-                </p>
+            {uploadStartedRef.current && isCompleted && (
+                <p className="progress-status success">✅ Upload Complete</p>
             )}
+
 
             <button
                 className="upload-btn"

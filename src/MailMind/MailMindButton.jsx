@@ -730,6 +730,7 @@
 //   );
 // }
 import { useState, useRef } from "react";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -761,6 +762,7 @@ export default function MailMindButton() {
   const [loadingLogin, setLoadingLogin] = useState(false);
   const [loadingExtract, setLoadingExtract] = useState(false);
   const [loadingUpload, setLoadingUpload] = useState(false);
+  const uploadStartedRef = React.useRef(false);
 
   /* =======================
      DUPLICATE PROMPT LATCH
@@ -824,6 +826,7 @@ export default function MailMindButton() {
 
       setResumes(data.result || []);
       setExtractedFiles(data.files || []);
+      uploadStartedRef.current = false; // 🔥 important
       setPendingFiles(data.files || []);
 
       if (!data.files?.length) {
@@ -843,6 +846,7 @@ export default function MailMindButton() {
      (NO recursion bug, NO infinite prompt)
   ======================= */
   const uploadToDatabase = async (overwrite = false, filesOverride = null) => {
+    uploadStartedRef.current = true;
     resetProgress();
     setLoadingUpload(true);
 
