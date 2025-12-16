@@ -65,6 +65,9 @@ export default function Scheduler() {
         const endDt = new Date(
             startDt.getTime() + INTERVIEW_DURATION_MINUTES * 60 * 1000
         );
+        const url = rescheduling
+            ? `${API_BASE}/mcp/interview_bot_beta/scheduler/reschedule`
+            : `${API_BASE}/mcp/interview_bot_beta/scheduler/schedule`;
 
         const payload = {
             candidate_id: candidateId,
@@ -81,14 +84,12 @@ export default function Scheduler() {
         setLoading(true);
 
         try {
-            const res = await fetch(
-                `${API_BASE}/mcp/interview_bot_beta/scheduler/schedule`,
-                {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(payload),
-                }
-            );
+            const res = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
+
 
             const data = await res.json();
 
