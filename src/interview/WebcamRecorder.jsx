@@ -1013,13 +1013,14 @@ export default function WebcamRecorder({
     - Starts timer, sets recording state
     - Triggers stage 1 after loop started
     --------------------------------------------*/
+    const interviewStartedRef = useRef(false);
     async function startInterview() {
-        if (recording) return; // 🛑 safety guard
+        if (interviewStartedRef.current) return;
+        interviewStartedRef.current = true;
 
         console.log("▶ INTERVIEW STARTED — Stage:", stage);
         setRecording(true);
         window.dispatchEvent(new Event("startInterviewTimer"));
-
         const v = videoRef.current;
 
         // Case 1: video already ready

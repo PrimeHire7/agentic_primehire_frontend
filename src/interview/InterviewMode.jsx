@@ -34,7 +34,8 @@ export default function InterviewMode() {
     const [interviewTime, setInterviewTime] = useState(0);
 
     // Stage: 1 = MCQ, 2 = Coding, 3 = AI Interview
-    const [stage, setStage] = useState(null);
+    // const [stage, setStage] = useState(null);
+    const [stage, setStage] = useState(() => 1);
 
     // MCQ & Coding data
     const [mcq, setMcq] = useState([]);
@@ -215,13 +216,15 @@ export default function InterviewMode() {
                     onComplete={(score) => {
                         setCodingResult(score);
 
-                        // 🔴 PAUSE FACE MONITOR BEFORE STAGE SWITCH
+                        // pause face monitor first
                         window.dispatchEvent(new Event("pauseFaceMonitor"));
 
-                        setTimeout(() => {
+                        // allow React to settle BEFORE stage switch
+                        requestAnimationFrame(() => {
                             setStage(3);
-                        }, 100); // let React settle
+                        });
                     }}
+
                 />
 
 
