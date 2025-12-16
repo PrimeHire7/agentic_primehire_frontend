@@ -356,7 +356,9 @@ export default function InterviewMode() {
 
                     <div className="insight-score-row">
                         <div className="insights-box">
-                            <LiveInsightsPanel candidateId={candidateId} />
+                            {/* <LiveInsightsPanel candidateId={candidateId} /> */}
+                            <LiveInsightsPanel />
+
                         </div>
 
                         <div className="aichart-box">
