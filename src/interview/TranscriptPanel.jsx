@@ -5,14 +5,37 @@ import "./TranscriptPanel.css";
 /* ------------------------------------------------------
    AI Voice Output (Web Speech API)
 -------------------------------------------------------*/
+// function speakAI(text) {
+//     if (!window.speechSynthesis) {
+//         console.warn("Speech synthesis not supported.");
+//         return;
+//     }
+
+//     const utter = new SpeechSynthesisUtterance(text);
+//     const voices = speechSynthesis.getVoices();
+
+//     const preferred = voices.find(
+//         (v) =>
+//             v.name.includes("Google UK English Male") ||
+//             v.name.includes("Google US English") ||
+//             v.lang === "en-US"
+//     );
+
+//     if (preferred) utter.voice = preferred;
+
+//     utter.rate = 1.0;
+//     utter.pitch = 1.0;
+
+//     window.speechSynthesis.speak(utter);
+// }
 function speakAI(text) {
-    if (!window.speechSynthesis) {
-        console.warn("Speech synthesis not supported.");
-        return;
-    }
+    if (!window.speechSynthesis) return;
+
+    // 🔴 CRITICAL: cancel previous speech
+    window.speechSynthesis.cancel();
 
     const utter = new SpeechSynthesisUtterance(text);
-    const voices = speechSynthesis.getVoices();
+    const voices = window.speechSynthesis.getVoices();
 
     const preferred = voices.find(
         (v) =>
@@ -25,6 +48,22 @@ function speakAI(text) {
 
     utter.rate = 1.0;
     utter.pitch = 1.0;
+
+    // 🔥 GLOBAL FLAG FOR FACE MONITOR THROTTLING
+    utter.onstart = () => {
+        window.__AI_SPEAKING__ = true;
+        window.dispatchEvent(new CustomEvent("aiSpeaking", { detail: true }));
+    };
+
+    utter.onend = () => {
+        window.__AI_SPEAKING__ = false;
+        window.dispatchEvent(new CustomEvent("aiSpeaking", { detail: false }));
+    };
+
+    utter.onerror = () => {
+        window.__AI_SPEAKING__ = false;
+        window.dispatchEvent(new CustomEvent("aiSpeaking", { detail: false }));
+    };
 
     window.speechSynthesis.speak(utter);
 }
@@ -53,21 +92,32 @@ export default function TranscriptPanel({ transcript, jdId = null, jdText = "" }
     /* ------------------------------------------------------
        Speak AI messages
     -------------------------------------------------------*/
+    // useEffect(() => {
+    //     if (!transcript || transcript.length === 0) return;
+
+    //     const lastMsg = transcript[transcript.length - 1];
+
+    //     if (lastMsg.role === "ai") {
+    //         setAiSpeaking(true);
+
+    //         // Speak text
+    //         speakAI(lastMsg.text);
+
+    //         // Stop animation after TTS duration estimate
+    //         setTimeout(() => setAiSpeaking(false), Math.min(lastMsg.text.length * 60, 3000));
+    //     }
+    // }, [transcript]);
     useEffect(() => {
-        if (!transcript || transcript.length === 0) return;
+        if (!transcript?.length) return;
 
         const lastMsg = transcript[transcript.length - 1];
-
         if (lastMsg.role === "ai") {
-            setAiSpeaking(true);
-
-            // Speak text
             speakAI(lastMsg.text);
-
-            // Stop animation after TTS duration estimate
-            setTimeout(() => setAiSpeaking(false), Math.min(lastMsg.text.length * 60, 3000));
         }
     }, [transcript]);
+
+    window.__CANDIDATE_SPEAKING__ = true;
+    window.dispatchEvent(new CustomEvent("candidateSpeaking", { detail: true }));
 
     /* ------------------------------------------------------
        Listen for speaking events

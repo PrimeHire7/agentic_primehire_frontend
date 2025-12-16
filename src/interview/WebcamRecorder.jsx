@@ -950,13 +950,18 @@ export default function WebcamRecorder({
 
         faceLoopRef.current = setInterval(() => {
             const v = videoRef.current;
-            // if video not ready, just return so it retries next tick
-            if (!v || v.videoWidth === 0 || v.videoHeight === 0) {
-                // console.debug("⏳ video not ready, skipping frame");
-                return;
-            }
+            if (!v || v.videoWidth === 0 || v.videoHeight === 0) return;
+
+            // Throttle when AI or candidate is speaking
+            const isBusy =
+                window.__AI_SPEAKING__ === true ||
+                window.__CANDIDATE_SPEAKING__ === true;
+
+            if (isBusy && Math.random() > 0.3) return;
+
             sendFaceFrame();
         }, 300);
+
     }
 
     function stopFaceLoop() {
