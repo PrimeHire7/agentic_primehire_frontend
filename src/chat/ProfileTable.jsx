@@ -663,8 +663,6 @@ export default function ProfileTable({
               <th>Exp</th>
               <th>Skills</th>
               <th>Actions</th>
-              <th>Actions</th>
-              <th>Actions</th>
               <th>Score</th>
               <th>Interview</th>
             </tr>
