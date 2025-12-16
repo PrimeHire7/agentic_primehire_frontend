@@ -1,11 +1,16 @@
-// import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { API_BASE } from "@/utils/constants";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./Scheduler.css";
-import React, { useState, useEffect } from "react";
+import logo from "../assets/primehire_logo.png";
 
-function isoIST(dateStr, timeStr) {
-    const dt = new Date(`${dateStr}T${timeStr}:00+05:30`);
+/* ================== CONFIG ================== */
+const INTERVIEW_DURATION_MINUTES = 30; // change to 60 if needed
+
+/* ================== HELPERS ================== */
+function toISO(date, time) {
+    // date: YYYY-MM-DD, time: HH:mm (IST)
+    const dt = new Date(`${date}T${time}:00+05:30`);
     return dt.toISOString();
 }
 
@@ -16,56 +21,63 @@ export default function Scheduler() {
 
     const candidateId = params.get("candidateId");
     const candidateName = params.get("candidateName") || "Candidate";
-
     const jdId = params.get("jd_id");
-    const jdToken = params.get("jd_token");  // <-- JD-less mode support
+    const jdToken = params.get("jd_token");
 
+    /* ================== STATE ================== */
     const [date, setDate] = useState(() => {
         const d = new Date();
         d.setDate(d.getDate() + 1);
         return d.toISOString().slice(0, 10);
     });
 
-    const [availableTimes, setAvailableTimes] = useState([]);
-    const [selectedTime, setSelectedTime] = useState("");
+    const [startTime, setStartTime] = useState("10:00");
     const [loading, setLoading] = useState(false);
+    const [existing, setExisting] = useState(null);
     const [confirmed, setConfirmed] = useState(null);
 
+    /* ================== CHECK EXISTING ================== */
     useEffect(() => {
-        const slots = [];
-        for (let h = 9; h < 18; h++) {
-            for (let m of [0, 20, 40]) {
-                slots.push(`${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`);
-            }
-        }
-        setAvailableTimes(slots);
-    }, []);
+        if (!candidateId) return;
 
+        const checkExisting = async () => {
+            try {
+                const res = await fetch(
+                    `${API_BASE}/mcp/interview_bot_beta/scheduler/existing?candidate_id=${candidateId}&jd_id=${jdId}`
+                );
+                const data = await res.json();
+                if (data.exists) setExisting(data);
+            } catch (e) {
+                console.error("Existing schedule check failed", e);
+            }
+        };
+
+        checkExisting();
+    }, [candidateId, jdId]);
+
+    /* ================== CONFIRM ================== */
     const handleConfirm = async () => {
-        if (!selectedTime) return alert("Select a time slot.");
         if (!candidateId) return alert("Missing candidate ID");
 
-        setLoading(true);
-
-        const start_iso = isoIST(date, selectedTime);
+        const start_iso = toISO(date, startTime);
         const startDt = new Date(start_iso);
-        const endDt = new Date(startDt.getTime() + 20 * 60 * 1000);
+        const endDt = new Date(
+            startDt.getTime() + INTERVIEW_DURATION_MINUTES * 60 * 1000
+        );
 
         const payload = {
             candidate_id: candidateId,
             candidate_name: candidateName,
-            candidate_email: candidateId, // email = candidateId in your system
+            candidate_email: candidateId,
 
             jd_id: jdId === "null" ? null : jdId,
-            jd_token: jdToken || null, // <-- SUPPORT JD TOKEN
+            jd_token: jdToken || null,
 
             start_iso: startDt.toISOString(),
             end_iso: endDt.toISOString(),
-
-            slot_minutes: 20,
         };
 
-        console.log("SCHEDULER PAYLOAD >>>", payload);
+        setLoading(true);
 
         try {
             const res = await fetch(
@@ -77,80 +89,155 @@ export default function Scheduler() {
                 }
             );
 
-            const d = await res.json();
+            const data = await res.json();
+
+            if (res.status === 409) {
+                alert(
+                    `❌ Interview already scheduled\n\n` +
+                    `Start: ${new Date(data.detail.slot_start).toLocaleString()}\n` +
+                    `End: ${new Date(data.detail.slot_end).toLocaleString()}`
+                );
+                return;
+            }
+
             if (!res.ok) {
                 alert("Scheduling failed.");
                 return;
             }
 
             setConfirmed({
-                candidateId,
-                jdId,
-                jdToken,
-                start_iso: payload.start_iso,
-                end_iso: payload.end_iso,
-                interview_token: d.interview_token,
+                start: payload.start_iso,
+                end: payload.end_iso,
+                token: data.interview_token,
             });
 
-            alert("Slot scheduled! Check your email.");
+            alert("✅ Interview scheduled. Check your email.");
         } catch (err) {
             console.error(err);
-            alert("Failed.");
+            alert("Failed to schedule.");
+        } finally {
+            setLoading(false);
         }
-
-        setLoading(false);
     };
 
+    /* ================== UI ================== */
     return (
         <div className="scheduler-container">
-            <h2>Schedule Interview</h2>
+            <div className="scheduler-header">
+                <div className="brand">
+                    <img src={logo} alt="PrimeHire" />
+                    <div className="brand-text">
+                        {/* <span className="brand-name">PrimeHire</span> */}
+                        <span className="brand-tagline">Interview Scheduling</span>
+                    </div>
 
-            <p>
-                Candidate: <strong>{candidateName}</strong> ({candidateId})
-            </p>
 
-            <p>
-                JD ID: {jdId}
-                {jdToken && <span> | JD Token: {jdToken}</span>}
-            </p>
+                </div>
 
-            <div className="date-section">
-                <label>
-                    Choose date:
-                    <input type="date" value={date}
-                        onChange={e => setDate(e.target.value)} />
-                </label>
-            </div>
 
-            <div className="slots-section">
-                <h4>Available Slots (20 min)</h4>
-                <div className="slots-grid">
-                    {availableTimes.map(t => (
-                        <button
-                            key={t}
-                            onClick={() => setSelectedTime(t)}
-                            className={selectedTime === t ? "slot-button selected" : "slot-button"}>
-                            {t}
-                        </button>
-                    ))}
+                <div className="scheduler-card">
+                    <div className="info-row">
+                        <div className="header-title">
+                            <h1>Choose your interview time</h1>
+                            <p>
+                                Select a convenient date and start time. The interview duration is fixed
+                                by the recruiter.
+                            </p>
+                        </div>
+                        <div>
+                            <label>Candidate</label>
+                            <div className="value">{candidateName}</div>
+                        </div>
+                        <div>
+                            <label>Email</label>
+                            <div className="value">{candidateId}</div>
+                        </div>
+                    </div>
+
+                    <div className="divider" />
+
+                    {existing && (
+                        <div className="existing-box">
+                            <h4>⚠ Interview Already Scheduled</h4>
+                            <p>
+                                {new Date(existing.slot_start).toLocaleString()} —{" "}
+                                {new Date(existing.slot_end).toLocaleString()}
+                            </p>
+                            <button onClick={() => navigate(-1)}>Go Back</button>
+                        </div>
+                    )}
+
+                    {!existing && (
+                        <>
+                            <div className="grid">
+                                <div>
+                                    <label>Select Date</label>
+                                    <input
+                                        type="date"
+                                        value={date}
+                                        min={new Date().toISOString().slice(0, 10)}
+                                        onChange={(e) => setDate(e.target.value)}
+                                    />
+                                </div>
+
+                                <div>
+                                    <label>Start Time</label>
+                                    <input
+                                        type="time"
+                                        value={startTime}
+                                        onChange={(e) => setStartTime(e.target.value)}
+                                    />
+                                </div>
+
+                                <div>
+                                    <label>Duration</label>
+                                    <input
+                                        type="text"
+                                        value={`${INTERVIEW_DURATION_MINUTES} minutes`}
+                                        disabled
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="preview-box">
+                                <strong>Interview Window</strong>
+                                <div>
+                                    {new Date(toISO(date, startTime)).toLocaleString()} —{" "}
+                                    {new Date(
+                                        new Date(toISO(date, startTime)).getTime() +
+                                        INTERVIEW_DURATION_MINUTES * 60000
+                                    ).toLocaleString()}
+                                </div>
+                                <small>Duration is fixed by the recruiter</small>
+                            </div>
+
+                            <div className="actions">
+                                <button
+                                    className="confirm"
+                                    onClick={handleConfirm}
+                                    disabled={loading}
+                                >
+                                    {loading ? "Scheduling..." : "Confirm Schedule"}
+                                </button>
+                                <button className="cancel" onClick={() => navigate(-1)}>
+                                    Cancel
+                                </button>
+                            </div>
+                        </>
+                    )}
+
+                    {confirmed && (
+                        <div className="confirmation-box">
+                            <h4>✅ Scheduled Successfully</h4>
+                            <p>
+                                {new Date(confirmed.start).toLocaleString()} —{" "}
+                                {new Date(confirmed.end).toLocaleString()}
+                            </p>
+                            <small>Interview link sent to your email</small>
+                        </div>
+                    )}
                 </div>
             </div>
-
-            <div className="actions-section">
-                <button className="confirm-button" onClick={handleConfirm} disabled={loading}>
-                    {loading ? "Scheduling..." : "Confirm"}
-                </button>
-                <button className="cancel-button" onClick={() => navigate(-1)}>Cancel</button>
-            </div>
-
-            {confirmed && (
-                <div className="confirmation-box">
-                    <h4>Scheduled</h4>
-                    <div>Start: {confirmed.start_iso}</div>
-                    <div>End: {confirmed.end_iso}</div>
-                    <div>Token: {confirmed.interview_token}</div>
-                </div>
-            )}
         </div>
     );
 }
