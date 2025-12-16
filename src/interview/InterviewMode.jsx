@@ -4,6 +4,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { API_BASE } from "@/utils/constants";
+import { useSearchParams } from "react-router-dom";
 
 import WebcamRecorder from "./WebcamRecorder";
 import TranscriptPanel from "./TranscriptPanel";
@@ -40,14 +41,58 @@ export default function InterviewMode() {
     const [mcqLoaded, setMcqLoaded] = useState(false);
     const [mcqResult, setMcqResult] = useState(null);
     const [codingResult, setCodingResult] = useState(null);
+
+    const [searchParams] = useSearchParams();
+    const interviewToken = searchParams.get("token");
+
     /* ===========================================================
        AI INTERVIEW INIT LISTENER
     =========================================================== */
+    // useEffect(() => {
+    //     async function startAI() {
+    //         if (!candidateId) return;
+
+    //         console.log("🤖 Starting AI Interview (Tell me about yourself)");
+
+    //         const fd = new FormData();
+    //         fd.append("init", "true");
+    //         fd.append("candidate_name", candidateName);
+    //         fd.append("candidate_id", candidateId);
+    //         fd.append("job_description", jdText);
+    //         fd.append("token", interviewToken);
+
+    //         if (jdId) fd.append("jd_id", jdId);
+
+    //         try {
+    //             const r = await fetch(
+    //                 `${API_BASE}/mcp/interview_bot_beta/process-answer`,
+    //                 { method: "POST", body: fd }
+    //             );
+    //             const d = await r.json();
+
+    //             if (d.next_question) {
+    //                 window.dispatchEvent(
+    //                     new CustomEvent("transcriptAdd", {
+    //                         detail: { role: "ai", text: d.next_question }
+    //                     })
+    //                 );
+    //             }
+    //         } catch (e) {
+    //             console.error("AI init failed:", e);
+    //         }
+    //     }
+
+    //     window.addEventListener("startAIInterview", startAI);
+    //     return () => window.removeEventListener("startAIInterview", startAI);
+    // }, [candidateId, candidateName, jdText, jdId]);
     useEffect(() => {
         async function startAI() {
-            if (!candidateId) return;
+            if (!candidateId || !interviewToken) {
+                console.error("❌ Missing candidateId or interviewToken");
+                return;
+            }
 
-            console.log("🤖 Starting AI Interview (Tell me about yourself)");
+            console.log("🤖 Starting AI Interview with token:", interviewToken);
 
             const fd = new FormData();
             fd.append("init", "true");
@@ -55,7 +100,6 @@ export default function InterviewMode() {
             fd.append("candidate_id", candidateId);
             fd.append("job_description", jdText);
             fd.append("token", interviewToken);
-
             if (jdId) fd.append("jd_id", jdId);
 
             try {
@@ -63,7 +107,9 @@ export default function InterviewMode() {
                     `${API_BASE}/mcp/interview_bot_beta/process-answer`,
                     { method: "POST", body: fd }
                 );
+
                 const d = await r.json();
+                console.log("AI INIT RESPONSE:", d);
 
                 if (d.next_question) {
                     window.dispatchEvent(
@@ -73,13 +119,13 @@ export default function InterviewMode() {
                     );
                 }
             } catch (e) {
-                console.error("AI init failed:", e);
+                console.error("❌ AI init failed:", e);
             }
         }
 
         window.addEventListener("startAIInterview", startAI);
         return () => window.removeEventListener("startAIInterview", startAI);
-    }, [candidateId, candidateName, jdText, jdId]);
+    }, [candidateId, interviewToken, candidateName, jdText, jdId]);
 
     /* ===========================================================
        START STAGE HANDLER (triggered by WebcamRecorder Start button)
