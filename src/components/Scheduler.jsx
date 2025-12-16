@@ -35,6 +35,7 @@ export default function Scheduler() {
     const [loading, setLoading] = useState(false);
     const [existing, setExisting] = useState(null);
     const [confirmed, setConfirmed] = useState(null);
+    const [rescheduling, setRescheduling] = useState(false);
 
     /* ================== CHECK EXISTING ================== */
     useEffect(() => {
@@ -156,18 +157,36 @@ export default function Scheduler() {
 
                     <div className="divider" />
 
-                    {existing && (
+                    {existing && !rescheduling && (
                         <div className="existing-box">
-                            <h4>⚠ Interview Already Scheduled</h4>
+                            <h4>Interview Already Scheduled</h4>
                             <p>
                                 {new Date(existing.slot_start).toLocaleString()} —{" "}
                                 {new Date(existing.slot_end).toLocaleString()}
                             </p>
-                            <button onClick={() => navigate(-1)}>Go Back</button>
+
+                            <div className="existing-actions">
+                                <button
+                                    className="confirm"
+                                    onClick={() => {
+                                        // prefill with existing time
+                                        const d = new Date(existing.slot_start);
+                                        setDate(d.toISOString().slice(0, 10));
+                                        setStartTime(d.toTimeString().slice(0, 5));
+                                        setRescheduling(true);
+                                    }}
+                                >
+                                    Reschedule
+                                </button>
+
+                                <button className="cancel" onClick={() => navigate(-1)}>
+                                    Go Back
+                                </button>
+                            </div>
                         </div>
                     )}
 
-                    {!existing && (
+                    {(!existing || rescheduling) && (
                         <>
                             <div className="grid">
                                 <div>
@@ -200,7 +219,9 @@ export default function Scheduler() {
                             </div>
 
                             <div className="preview-box">
-                                <strong>Interview Window</strong>
+                                <strong>
+                                    {rescheduling ? "New Interview Window" : "Interview Window"}
+                                </strong>
                                 <div>
                                     {new Date(toISO(date, startTime)).toLocaleString()} —{" "}
                                     {new Date(
@@ -217,14 +238,27 @@ export default function Scheduler() {
                                     onClick={handleConfirm}
                                     disabled={loading}
                                 >
-                                    {loading ? "Scheduling..." : "Confirm Schedule"}
+                                    {loading
+                                        ? "Saving..."
+                                        : rescheduling
+                                            ? "Confirm Reschedule"
+                                            : "Confirm Schedule"}
                                 </button>
-                                <button className="cancel" onClick={() => navigate(-1)}>
+
+                                <button
+                                    className="cancel"
+                                    onClick={() => {
+                                        setRescheduling(false);
+                                        navigate(-1);
+                                    }}
+                                >
                                     Cancel
                                 </button>
                             </div>
                         </>
                     )}
+
+
 
                     {confirmed && (
                         <div className="confirmation-box">
