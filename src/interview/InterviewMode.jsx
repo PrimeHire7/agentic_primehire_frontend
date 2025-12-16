@@ -45,6 +45,20 @@ export default function InterviewMode() {
     const [searchParams] = useSearchParams();
     const interviewToken = searchParams.get("token");
 
+    const aiStartedRef = React.useRef(false);
+
+    useEffect(() => {
+        if (stage !== 3) return;
+        if (!candidateId) return;
+        if (!interviewToken) return;
+        if (aiStartedRef.current) return;
+
+        console.log("🤖 SAFE AI INTERVIEW START");
+        aiStartedRef.current = true;
+
+        startAIInterview();
+    }, [stage, candidateId, interviewToken]);
+
     /* ===========================================================
        AI INTERVIEW INIT LISTENER
     =========================================================== */
@@ -178,10 +192,8 @@ export default function InterviewMode() {
                     onComplete={(score) => {
                         setCodingResult(score);
                         setStage(3);
-
-                        // 🔥 DIRECT CALL (NO RACE CONDITION)
-                        startAIInterview();
                     }}
+
                 />
 
 
