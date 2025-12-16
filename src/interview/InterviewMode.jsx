@@ -35,7 +35,8 @@ export default function InterviewMode() {
 
     // Stage: 1 = MCQ, 2 = Coding, 3 = AI Interview
     // const [stage, setStage] = useState(null);
-    const [stage, setStage] = useState(() => 1);
+    const [stage, setStage] = useState(1); // MCQ first
+
 
     // MCQ & Coding data
     const [mcq, setMcq] = useState([]);
@@ -165,34 +166,34 @@ export default function InterviewMode() {
 
 
 
-    /* ===========================================================
-       START STAGE HANDLER (triggered by WebcamRecorder Start button)
-    =========================================================== */
-    async function handleStartStage(stageNumber) {
-        console.log("Starting stage:", stageNumber);
-        setStage(stageNumber);
+    // /* ===========================================================
+    //    START STAGE HANDLER (triggered by WebcamRecorder Start button)
+    // =========================================================== */
+    // async function handleStartStage(stageNumber) {
+    //     console.log("Starting stage:", stageNumber);
+    //     setStage(stageNumber);
 
-        // ⭐ LOAD MCQ WHEN STAGE 1 STARTS
-        if (stageNumber === 1 && !mcqLoaded) {
-            const fd = new FormData();
-            fd.append("job_description", jdText);
-            fd.append("candidate_id", candidateId);
-            if (jdId) fd.append("jd_id", jdId);
+    //     // ⭐ LOAD MCQ WHEN STAGE 1 STARTS
+    //     if (stageNumber === 1 && !mcqLoaded) {
+    //         const fd = new FormData();
+    //         fd.append("job_description", jdText);
+    //         fd.append("candidate_id", candidateId);
+    //         if (jdId) fd.append("jd_id", jdId);
 
-            const r = await fetch(`${API_BASE}/mcp/interview_bot_beta/generate-mcq`, {
-                method: "POST",
-                body: fd,
-            });
+    //         const r = await fetch(`${API_BASE}/mcp/interview_bot_beta/generate-mcq`, {
+    //             method: "POST",
+    //             body: fd,
+    //         });
 
-            const d = await r.json();
-            if (d.ok) {
-                setMcq(d.mcq);
-                setMcqLoaded(true);
-            } else {
-                alert("Failed to load MCQ");
-            }
-        }
-    }
+    //         const d = await r.json();
+    //         if (d.ok) {
+    //             setMcq(d.mcq);
+    //             setMcqLoaded(true);
+    //         } else {
+    //             alert("Failed to load MCQ");
+    //         }
+    //     }
+    // }
 
     /* ===========================================================
        RIGHT PANEL RENDER BASED ON STAGE

@@ -1018,41 +1018,32 @@ export default function WebcamRecorder({
         if (interviewStartedRef.current) return;
         interviewStartedRef.current = true;
 
-        console.log("▶ INTERVIEW STARTED — Stage:", stage);
+        console.log("▶ INTERVIEW STARTED");
         setRecording(true);
         window.dispatchEvent(new Event("startInterviewTimer"));
+
         const v = videoRef.current;
 
-        // Case 1: video already ready
+        const start = () => {
+            startFaceLoop();
+            console.log("🎥 Face monitor started safely");
+        };
+
         if (v && v.videoWidth > 0) {
-            setTimeout(() => {
-                onStartStage(1);     // 1️⃣ mount MCQ
-                startFaceLoop();    // 2️⃣ then start monitoring
-            }, 200);
+            setTimeout(start, 200);
             return;
         }
 
-        // Case 2: wait for video
-        let tries = 0;
         waitForVideoRef.current = setInterval(() => {
             const vv = videoRef.current;
             if (vv && vv.videoWidth > 0) {
                 clearInterval(waitForVideoRef.current);
                 waitForVideoRef.current = null;
-
-                setTimeout(() => {
-                    onStartStage(1);   // 1️⃣ mount MCQ
-                    startFaceLoop();  // 2️⃣ then start monitoring
-                    console.log("🎥 VIDEO ready -> face loop started");
-                }, 200);
-            } else {
-                tries++;
-                if (tries % 5 === 0) {
-                    console.log("⏳ Waiting for video to stabilize...");
-                }
+                setTimeout(start, 200);
             }
         }, 200);
     }
+
 
     function stopInterview() {
         console.log("⛔ INTERVIEW STOPPED");
