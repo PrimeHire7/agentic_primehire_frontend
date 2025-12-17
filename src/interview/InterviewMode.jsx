@@ -979,7 +979,11 @@ export default function InterviewMode() {
     const [interviewTime, setInterviewTime] = useState(0);
 
     const [searchParams] = useSearchParams();
-    const interviewToken = searchParams.get("token");
+    const interviewToken =
+        location.state?.interviewToken ||
+        new URLSearchParams(window.location.search).get("token") ||
+        null;
+
 
     const aiInitOnceRef = useRef(false);
 

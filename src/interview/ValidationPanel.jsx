@@ -259,6 +259,7 @@ export default function ValidationPanel() {
     const [candidateId, setCandidateId] = useState("");
     const [jdId, setJdId] = useState("");
     const [jdText, setJdText] = useState("");
+    const interviewToken = params.get("token");
 
     /* PAN VALIDATION */
     const [panFile, setPanFile] = useState(null);
@@ -394,6 +395,7 @@ export default function ValidationPanel() {
                 candidateId,
                 jd_id: jdId || null,
                 jd_text: jdText || "",
+                interviewToken,
             },
         });
     };

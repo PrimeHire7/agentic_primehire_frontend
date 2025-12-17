@@ -13,6 +13,7 @@ export default function InstructionsPanel() {
     const candidateId = location.state?.candidateId || null;
     const jd_id = location.state?.jd_id || null;
     const jd_text = location.state?.jd_text || "";
+    const interviewToken = location.state?.interviewToken || null;
 
     const [checked, setChecked] = useState(false);
 
@@ -32,6 +33,7 @@ export default function InstructionsPanel() {
                 candidateId,
                 jd_id,
                 jd_text,
+                interviewToken,
             },
         });
     };
