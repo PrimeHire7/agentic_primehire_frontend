@@ -1047,6 +1047,7 @@ export default function InterviewMode() {
 
         (async () => {
             const fd = new FormData();
+
             fd.append("init", "true");
             fd.append("candidate_name", candidateName);
             fd.append("candidate_id", candidateId);
@@ -1158,6 +1159,7 @@ export default function InterviewMode() {
                 candidateName={candidateName}
                 jdText={jdText}
                 interviewTime={interviewTime}
+                interviewToken={interviewToken}
             />
 
             <div className="interview-layout">

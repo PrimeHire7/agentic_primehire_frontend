@@ -7,7 +7,8 @@ export default function InterviewToolbar({
     candidateId,
     candidateName,
     jdText,
-    interviewTime  // ⬅ new prop
+    interviewTime,  // ⬅ new prop
+    interviewToken
 }) {
     const [recording, setRecording] = useState(false);
     const mediaRecorderRef = useRef(null);
@@ -76,6 +77,8 @@ export default function InterviewToolbar({
         fd.append("candidate_id", candidateId);
         fd.append("candidate_name", candidateName);
         fd.append("job_description", jdText);
+        fd.append("token", interviewToken);
+        if (jdId) fd.append("jd_id", jdId);
 
         const res = await fetch(`${API_BASE}/mcp/interview_bot_beta/process-answer`, {
             method: "POST",
