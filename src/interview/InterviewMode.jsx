@@ -1008,10 +1008,12 @@ export default function InterviewMode() {
 
     /* ---------------- INIT AI INTERVIEW ---------------- */
     useEffect(() => {
-        if (stage !== 3 || !candidateId || !interviewToken) return;
+        if (stage !== 3) return;
+        if (!candidateId || !interviewToken) return;
         if (aiInitOnceRef.current) return;
 
         aiInitOnceRef.current = true;
+        console.log("🤖 Initializing AI Interview");
 
         (async () => {
             const fd = new FormData();
@@ -1030,14 +1032,18 @@ export default function InterviewMode() {
 
             if (typeof d?.next_question === "string" && d.next_question.trim()) {
                 setAiInterviewStarted(true);
+
                 window.dispatchEvent(
                     new CustomEvent("transcriptAdd", {
                         detail: { role: "ai", text: d.next_question }
                     })
                 );
+            } else {
+                console.warn("AI init returned no question", d);
             }
         })();
     }, [stage, candidateId, interviewToken]);
+
 
     /* ---------------- TRANSCRIPT LISTENER (SAFE) ---------------- */
     useEffect(() => {

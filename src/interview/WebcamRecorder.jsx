@@ -1719,6 +1719,15 @@ export default function WebcamRecorder({
     }, [candidateId]);
 
     /* ---------------- Camera Preview ---------------- */
+    /* ---------------- AUTO START RECORDING FOR STAGE 3 ---------------- */
+    useEffect(() => {
+        if (stage === 3 && !recording) {
+            console.log("▶ Auto-start recording for AI stage");
+            setRecording(true);
+            window.dispatchEvent(new Event("startInterviewTimer"));
+        }
+    }, [stage]);
+
     useEffect(() => {
         let mounted = true;
 
@@ -1824,15 +1833,19 @@ export default function WebcamRecorder({
         <div className="webcam-glass-shell">
             <video ref={videoRef} className="webcam-video" autoPlay muted playsInline />
 
-            {!recording ? (
-                <button className="webcam-start-btn" onClick={startInterview}>
-                    Start Interview
-                </button>
-            ) : (
-                <button className="webcam-stop-btn" onClick={stopInterview}>
-                    Stop Interview
-                </button>
+            {/* Manual control ONLY before Stage 3 */}
+            {stage !== 3 && (
+                !recording ? (
+                    <button className="webcam-start-btn" onClick={startInterview}>
+                        Start Interview
+                    </button>
+                ) : (
+                    <button className="webcam-stop-btn" onClick={stopInterview}>
+                        Stop Interview
+                    </button>
+                )
             )}
+
         </div>
     );
 }
