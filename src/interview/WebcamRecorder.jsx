@@ -1834,17 +1834,16 @@ export default function WebcamRecorder({
             <video ref={videoRef} className="webcam-video" autoPlay muted playsInline />
 
             {/* Manual control ONLY before Stage 3 */}
-            {stage !== 3 && (
-                !recording ? (
-                    <button className="webcam-start-btn" onClick={startInterview}>
-                        Start Interview
-                    </button>
-                ) : (
-                    <button className="webcam-stop-btn" onClick={stopInterview}>
-                        Stop Interview
-                    </button>
-                )
+            {!recording ? (
+                <button className="webcam-start-btn" onClick={startInterview}>
+                    Start Interview
+                </button>
+            ) : (
+                <button className="webcam-stop-btn" onClick={stopInterview}>
+                    Stop Interview
+                </button>
             )}
+
 
         </div>
     );
