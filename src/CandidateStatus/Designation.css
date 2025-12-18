@@ -1,45 +1,157 @@
+/* ===============================
+   DESIGNATION CONTAINER
+================================ */
 .designation-container {
-    width: 100%;
-    padding: 20px 30px;
-    font-family: "Inter", sans-serif;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px;
+    font-family: "Inter", system-ui, sans-serif;
+    background: #f9fafb;
+    min-height: 100vh;
 }
 
+/* ===============================
+   HEADING
+================================ */
 .heading {
-    font-size: 24px;
+    font-size: 28px;
     font-weight: 700;
-    margin-bottom: 18px;
-    color: #1a1a1a;
+    color: #111827;
+    margin-bottom: 32px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
 }
 
+.heading span {
+    font-size: 32px;
+}
+
+/* ===============================
+   DESIGNATION CARD
+================================ */
 .designation-card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 18px 22px;
-    margin-bottom: 14px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    border: 2px solid transparent;
-    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.05);
-    cursor: pointer;
+    justify-content: space-between;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
     text-decoration: none;
-    color: #222;
-    transition: 0.2s ease;
+    transition: all 0.3s ease;
+    border: 1px solid #e5e7eb;
+    cursor: pointer;
 }
 
 .designation-card:hover {
-    border-color: #3cb9ff;
-    background-color: rgba(60, 185, 255, 0.08);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    border-color: #667eea;
+}
+
+.designation-card:active {
+    transform: translateY(0);
+}
+
+/* ===============================
+   CARD CONTENT
+================================ */
+.card-content {
+    flex: 1;
 }
 
 .jd-title {
     font-size: 18px;
     font-weight: 600;
+    color: #111827;
+    margin: 0 0 8px;
+    line-height: 1.4;
 }
 
+.sub-info {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ===============================
+   ARROW ICON
+================================ */
 .arrow-icon {
-    opacity: 0.7;
+    color: #9ca3af;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.designation-card:hover .arrow-icon {
+    color: #667eea;
+    transform: translateX(4px);
+}
+
+/* ===============================
+   LOADING & EMPTY STATES
+================================ */
+.designation-container>p {
+    text-align: center;
+    font-size: 16px;
+    color: #6b7280;
+    padding: 60px 20px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+@media (max-width: 768px) {
+    .designation-container {
+        padding: 24px 16px;
+    }
+
+    .heading {
+        font-size: 24px;
+        margin-bottom: 24px;
+    }
+
+    .heading span {
+        font-size: 28px;
+    }
+
+    .designation-card {
+        padding: 20px;
+    }
+
+    .jd-title {
+        font-size: 16px;
+    }
+
+    .sub-info {
+        font-size: 13px;
+    }
+
+    .arrow-icon {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .designation-container {
+        padding: 20px 12px;
+    }
+
+    .designation-card {
+        padding: 16px;
+        margin-bottom: 12px;
+    }
+
+    .jd-title {
+        font-size: 15px;
+    }
 }

@@ -833,6 +833,22 @@ export default function CertificateData() {
       <div className="analytics-container">
 
         <h2 className="analytics-title">Interview Analytics</h2>
+        {/* ---------- ANOMALIES ---------- */}
+        <section className="analytics-section">
+          <h3>Anomaly Summary</h3>
+
+          {Object.keys(anomalyCounts).length === 0 ? (
+            <p className="muted">No anomalies detected.</p>
+          ) : (
+            <ul className="anomaly-list">
+              {Object.entries(anomalyCounts).map(([k, v]) => (
+                <li key={k}>
+                  <strong>{k.replace(/_/g, " ")}</strong>: {v}
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
 
         {/* ---------- MCQ ---------- */}
         <section className="analytics-section">

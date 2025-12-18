@@ -1,493 +1,364 @@
-/* CandidateOverview.css */
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
 .candidate-status-container {
+    padding: 32px 24px;
+    background: #f9fafb;
     min-height: 100vh;
-    background: #f5f7fa;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    padding-bottom: 40px;
+    font-family: "Inter", system-ui, sans-serif;
 }
 
-/* TOP HEADER */
 .top-header1 {
-    background: #fff;
-    padding: 0px 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-    margin-bottom: 30px;
+    display: flex;
+
+    align-items: center;
+    margin-bottom: 12px;
 }
 
 .top-logo2 {
-    height: 55px;
+    height: 50px;
     object-fit: contain;
     cursor: pointer;
 }
 
-/* TITLE */
 .title {
-    font-size: 28px;
-    font-weight: 600;
-    color: #1a1a1a;
     text-align: center;
-    margin-bottom: 30px;
-    letter-spacing: 1px;
+    margin: 16px 0 32px;
+    font-size: 24px;
+    font-weight: 740;
+    color: #111827;
 }
 
-/* MAIN STATUS CARD */
 .status-card {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 30px;
     display: grid;
     grid-template-columns: 300px 1fr;
-    gap: 25px;
+    gap: 24px;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
-/* PROFILE SECTION (LEFT SIDEBAR) */
+/* ===============================
+   LEFT SIDE - PROFILE SECTION
+================================ */
 .profile-section {
-    background: #fff;
-    border-radius: 12px;
-    padding: 30px 25px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 32px 24px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
     height: fit-content;
+    position: sticky;
+    top: 24px;
 }
 
-.profile-img {
-    width: 120px;
-    height: 120px;
+.profile-img-placeholder {
+    width: 96px;
+    height: 96px;
     border-radius: 50%;
-    object-fit: cover;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    font-weight: 600;
+    color: #ffffff;
     margin-bottom: 20px;
-    border: 4px solid #f0f0f0;
 }
 
 .candidate-name {
     font-size: 22px;
-    font-weight: 600;
-    color: #1a1a1a;
-    margin-bottom: 8px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 8px;
 }
 
 .candidate-role {
-    font-size: 15px;
-    color: #5f6368;
-    margin-bottom: 20px;
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0 0 20px;
 }
 
 .interview-score {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: #fff;
-    padding: 12px 20px;
-    border-radius: 8px;
-    margin-bottom: 25px;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 14px;
-    font-weight: 500;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    padding: 16px 0;
+    border-top: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 16px;
 }
 
-.score {
+.interview-score .score {
+    font-size: 15px;
     font-weight: 600;
-    font-size: 16px;
-    color: white;
+    color: #111827;
 }
 
-.contact-email,
-.contact-phone {
+.contact-email {
     font-size: 14px;
-    color: #5f6368;
-    margin-bottom: 10px;
-    padding: 10px 15px;
-    background: #f8f9fa;
-    border-radius: 6px;
+    color: #2563eb;
     word-break: break-word;
+    margin: 0;
 }
 
-/* CONTENT SECTION (RIGHT SIDE) */
+/* ===============================
+   STATUS PILLS
+================================ */
+.status-pill {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.status-scheduled {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.status-in_progress {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
+.status-completed,
+.status-locked {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-failed,
+.status-absent,
+.status-cancelled {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.status-pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+/* ===============================
+   RIGHT SIDE - CONTENT SECTION
+================================ */
 .content-section {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 20px;
-    align-items: start;
 }
 
-/* BOX BASE STYLE */
 .box {
-    background: #fff;
-    padding: 25px;
+    background: #ffffff;
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    transition: box-shadow 0.3s ease;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
-.box:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+.box.half {
+    /* Optional: for half-width boxes on larger screens */
 }
 
 .box h4 {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 600;
-    color: #1a1a1a;
-    margin-bottom: 20px;
+    color: #111827;
+    margin: 0 0 16px;
     padding-bottom: 12px;
-    border-bottom: 2px solid #f0f0f0;
+    border-bottom: 2px solid #f3f4f6;
 }
 
-.box h5 {
-    font-size: 15px;
-    font-weight: 600;
-    color: #333;
-    margin: 20px 0 12px 0;
-}
-
-/* FULL WIDTH BOXES */
-.box:nth-child(1),
-.box:nth-child(2) {
-    grid-column: 1 / -1;
-}
-
-/* JD DETAILS */
-.info-grid {
-    display: grid;
-    grid-template-columns: 150px 1fr;
-    gap: 15px 20px;
-    align-items: start;
-}
-
-.info-grid p {
+.box p {
     font-size: 14px;
-    font-weight: 600;
-    color: #5f6368;
-}
-
-.info-grid span {
-    font-size: 14px;
-    color: #333;
-    line-height: 1.5;
-}
-
-/* INTERVIEW PROGRESS */
-.progress-bar {
+    color: #374151;
+    margin: 8px 0;
     display: flex;
-    gap: 10px;
-    margin-bottom: 15px;
+    justify-content: space-between;
     align-items: center;
 }
 
-.step {
+.box p span {
+    font-weight: 600;
+    color: #111827;
+}
+
+/* ===============================
+   JD TEXT
+================================ */
+.jd-text {
+    font-family: "Inter", system-ui, sans-serif;
+    font-size: 13px;
+    line-height: 1.7;
+    color: #374151;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    background: #f9fafb;
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* ===============================
+   PROGRESS BAR
+================================ */
+.progress-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.progress-bar .step {
     flex: 1;
-    height: 12px;
-    background: #e9ecef;
-    border-radius: 6px;
-    position: relative;
+    height: 8px;
+    background: #e5e7eb;
+    border-radius: 999px;
     transition: background 0.3s ease;
 }
 
-.step.active {
+.progress-bar .step.active {
     background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
 }
 
 .progress-labels {
     display: flex;
     justify-content: space-between;
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 8px;
+}
+
+/* ===============================
+   CODE BLOCK
+================================ */
+.code {
+    font-family: "Fira Code", "Courier New", monospace;
     font-size: 13px;
-    color: #5f6368;
-    font-weight: 500;
+    line-height: 1.6;
+    background: #1f2937;
+    color: #e5e7eb;
+    padding: 16px;
+    border-radius: 8px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
 }
 
-/* PROFILE MATCH */
-.progress-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 25px;
-}
-
-.line {
-    flex: 1;
-    height: 12px;
-    background: #e9ecef;
-    border-radius: 6px;
-    position: relative;
-    overflow: hidden;
-}
-
-.line::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 95%;
-    background: linear-gradient(90deg, #2ecc71 0%, #27ae60 100%);
-    border-radius: 6px;
-}
-
-.progress-wrapper span {
-    font-size: 20px;
-    font-weight: 700;
-    color: #2ecc71;
-}
-
-.box.half p {
-    display: flex;
-    justify-content: space-between;
-    font-size: 14px;
-    color: #5f6368;
+/* ===============================
+   Q&A BLOCK
+================================ */
+.qa-block {
+    background: #f9fafb;
+    padding: 16px;
+    border-radius: 8px;
     margin-bottom: 12px;
-    padding: 10px 15px;
-    background: #f8f9fa;
-    border-radius: 6px;
+    border-left: 4px solid #667eea;
 }
 
-.box.half p span {
-    font-weight: 600;
-    color: #333;
+.qa-block:last-child {
+    margin-bottom: 0;
 }
 
-/* SCORE METRICS */
-.box.half:last-child p {
-    font-size: 14px;
-    color: #5f6368;
-    margin-bottom: 8px;
-}
-
-.box.half:last-child span {
+.qa-block p {
     display: block;
-    font-size: 14px;
-    color: #333;
-    font-weight: 500;
-    background: #f8f9fa;
-    padding: 10px 15px;
+    margin: 8px 0;
+    line-height: 1.6;
+}
+
+.qa-block strong {
+    color: #667eea;
+    font-weight: 600;
+    margin-right: 8px;
+}
+
+/* ===============================
+   TOKEN TEXT
+================================ */
+.token-text {
+    font-family: "Fira Code", monospace;
+    font-size: 12px;
+    color: #6b7280;
+    background: #f9fafb;
+    padding: 8px 12px;
     border-radius: 6px;
-    margin-top: 5px;
-    margin-bottom: 15px;
+    display: block;
+    margin-top: 8px;
     word-break: break-all;
 }
 
-.resume-btn {
-    width: 100%;
-    padding: 12px 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: #fff;
-    border: none;
+/* ===============================
+   ANOMALY COUNT GRID
+================================ */
+.anomaly-count-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+}
+
+.anomaly-pill {
+    background: #fef3c7;
+    border: 1px solid #fbbf24;
     border-radius: 8px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    margin-top: 20px;
-    transition: transform 0.2s, box-shadow 0.2s;
+    padding: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.resume-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+.anomaly-pill strong {
+    font-size: 13px;
+    color: #92400e;
+    text-transform: capitalize;
 }
 
-.resume-btn:active {
-    transform: translateY(0);
+.anomaly-pill span {
+    font-size: 18px;
+    font-weight: 700;
+    color: #b45309;
 }
 
-/* RESPONSIVE DESIGN */
-@media (max-width: 1200px) {
-    .status-card {
-        grid-template-columns: 280px 1fr;
-    }
-}
-
-@media (max-width: 992px) {
+/* ===============================
+   RESPONSIVE
+================================ */
+@media (max-width: 1024px) {
     .status-card {
         grid-template-columns: 1fr;
-        padding: 0 20px;
     }
 
     .profile-section {
-        max-width: 100%;
-    }
-
-    .content-section {
-        grid-template-columns: 1fr;
-    }
-
-    .box:nth-child(1),
-    .box:nth-child(2) {
-        grid-column: 1;
+        position: static;
     }
 }
 
 @media (max-width: 768px) {
-    .top-header1 {
-        padding: 15px 20px;
-    }
-
-    .top-logo2 {
-        height: 45px;
+    .candidate-status-container {
+        padding: 20px 16px;
     }
 
     .title {
-        font-size: 24px;
-        padding: 0 20px;
-    }
-
-    .status-card {
-        padding: 0 15px;
-        gap: 20px;
-    }
-
-    .profile-section {
-        padding: 25px 20px;
-    }
-
-    .profile-img {
-        width: 100px;
-        height: 100px;
-    }
-
-    .candidate-name {
         font-size: 20px;
+    }
+
+    .top-logo2 {
+        height: 42px;
     }
 
     .box {
         padding: 20px;
     }
 
-    .box h4 {
-        font-size: 16px;
-    }
-
-    .info-grid {
-        grid-template-columns: 120px 1fr;
-        gap: 12px 15px;
-    }
-
-    .progress-labels {
-        font-size: 12px;
-    }
-}
-
-@media (max-width: 480px) {
-    .top-header1 {
-        padding: 12px 15px;
-    }
-
-    .top-logo2 {
-        height: 40px;
-    }
-
-    .title {
-        font-size: 20px;
-        margin-bottom: 20px;
-    }
-
-    .status-card {
-        padding: 0 10px;
-    }
-
-    .profile-section {
-        padding: 20px 15px;
-    }
-
-    .profile-img {
-        width: 90px;
-        height: 90px;
-    }
-
-    .candidate-name {
-        font-size: 18px;
-    }
-
-    .candidate-role {
-        font-size: 14px;
-    }
-
-    .interview-score {
-        flex-direction: column;
-        gap: 8px;
-        text-align: center;
-    }
-
-    .box {
-        padding: 18px;
-    }
-
-    .box h4 {
-        font-size: 15px;
-        margin-bottom: 15px;
-    }
-
-    .info-grid {
+    .anomaly-count-grid {
         grid-template-columns: 1fr;
-        gap: 10px;
     }
 
-    .info-grid p {
-        font-weight: 600;
-        margin-bottom: 4px;
+    .progress-labels span {
+        font-size: 11px;
     }
-
-    .progress-wrapper {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .line {
-        width: 100%;
-    }
-
-    .resume-btn {
-        padding: 10px 16px;
-        font-size: 14px;
-    }
-}
-
-
-.anomaly-list li {
-    margin-bottom: 8px;
-    background: #ffe3e3;
-    padding: 8px;
-    border-radius: 6px;
-    border-left: 4px solid #e00;
-}
-
-/* ===============================
-   AI INSIGHTS SCROLL FIX
-================================ */
-
-.anomaly-scroll-box {
-    max-height: 320px;
-    overflow-y: auto;
-    padding-right: 6px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-
-.q-title {
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 6px;
-}
-
-.q-answer {
-    font-size: 12px;
-    color: #5374e3;
-    margin-bottom: 8px;
-}
-
-.q-metrics {
-    display: flex;
-    gap: 14px;
-    font-size: 11px;
-    color: #0d0e10;
-}
-
-.q-metrics span strong {
-    color: #0e55e5;
 }
