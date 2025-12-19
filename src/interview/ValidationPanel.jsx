@@ -779,6 +779,7 @@ export default function ValidationPanel() {
 
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
+    console.log("VALIDATION PANEL MOUNTED", window.location.pathname);
 
     /* =====================================================
          STEP 1: VALIDATE ACCESS (TIME SLOT + TOKEN)
@@ -925,6 +926,7 @@ export default function ValidationPanel() {
 
     const handleContinue = () => {
         navigate("/instructions", {
+            replace: true,
             state: {
                 candidateName,
                 candidateId,

@@ -127,6 +127,7 @@ export default function InstructionsPanel() {
 
         // 🚀 GO DIRECTLY TO INTERVIEW MODE
         navigate("/interview", {
+            replace: true,
             state: {
                 candidateName,
                 candidateId,
