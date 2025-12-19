@@ -1016,6 +1016,10 @@ export default function InterviewMode() {
    FORCE START STAGE 3 (FROM CODING PANEL)
 ====================================================== */
     useEffect(() => {
+        sessionStorage.setItem("INTERVIEW_STARTED", "true");
+    }, []);
+
+    useEffect(() => {
         const handler = () => {
             console.log("🚀 Stage 3 start signal received");
 

@@ -84,7 +84,16 @@ export default function App() {
                         {/* 🔒 deterministic root */}
                         <Route path="/" element={<Navigate to="/validation_panel" replace />} />
 
-                        <Route path="/validation_panel" element={<ValidationPanel />} />
+                        {/* <Route path="/validation_panel" element={<ValidationPanel />} /> */}
+                        <Route
+                            path="/validation_panel"
+                            element={
+                                sessionStorage.getItem("INTERVIEW_STARTED") === "true"
+                                    ? <InterviewMode />
+                                    : <ValidationPanel />
+                            }
+                        />
+
                         <Route path="/instructions" element={<InstructionsPanel />} />
                         <Route path="/interview" element={<InterviewMode />} />
 
