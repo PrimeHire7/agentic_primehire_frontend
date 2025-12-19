@@ -1135,7 +1135,7 @@ export default function InterviewMode() {
 
                 window.dispatchEvent(
                     new CustomEvent("transcriptAdd", {
-                        detail: { role: "ai", text: firstQuestion }
+                        detail: { sender: "ai", text: firstQuestion }
                     })
                 );
 
