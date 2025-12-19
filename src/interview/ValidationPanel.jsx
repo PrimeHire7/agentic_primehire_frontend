@@ -793,6 +793,10 @@ export default function ValidationPanel() {
          STEP 1: VALIDATE ACCESS (TIME SLOT + TOKEN)
       ===================================================== */
     useEffect(() => {
+        if (sessionStorage.getItem("INTERVIEW_STARTED") === "true") {
+            return; // ⛔ DO NOT validate again
+        }
+
         if (!candidateId || !jdId || !interviewToken) {
             setAccessState("error");
             setErrorMsg("Invalid interview link.");
@@ -814,35 +818,26 @@ export default function ValidationPanel() {
                 const data = await res.json();
 
                 if (!data.ok) {
-                    setSlot({
-                        start: data.slot_start,
-                        end: data.slot_end,
-                    });
+                    setSlot({ start: data.slot_start, end: data.slot_end });
 
-                    if (data.reason === "TOO_EARLY") {
-                        setAccessState("early");
-                    } else if (data.reason === "EXPIRED") {
-                        setAccessState("expired");
-                    } else {
+                    if (data.reason === "TOO_EARLY") setAccessState("early");
+                    else if (data.reason === "EXPIRED") setAccessState("expired");
+                    else {
                         setAccessState("error");
                         setErrorMsg("Interview not accessible.");
                     }
                     return;
                 }
 
-                setSlot({
-                    start: data.slot_start,
-                    end: data.slot_end,
-                });
-
+                setSlot({ start: data.slot_start, end: data.slot_end });
                 setAccessState("allowed");
+
             } catch (err) {
                 console.error(err);
                 setAccessState("error");
                 setErrorMsg("Server validation failed.");
             }
         };
-
 
         validateAccess();
     }, []);
