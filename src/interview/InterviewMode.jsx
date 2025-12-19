@@ -974,6 +974,7 @@ export default function InterviewMode() {
     const [mcqLoaded, setMcqLoaded] = useState(false);
     const [mcqResult, setMcqResult] = useState(null);
     const [codingResult, setCodingResult] = useState(null);
+    const [anomalyCounts, setAnomalyCounts] = useState({});
 
     const [transcript, setTranscript] = useState([]);
     const [interviewTime, setInterviewTime] = useState(0);
@@ -1085,6 +1086,25 @@ export default function InterviewMode() {
     //         setAiInterviewStarted(false);
     //     }
     // }, [stage]);
+
+    /* ---------------- INSIGHTS LISTENER (SAFE) ---------------- */
+    useEffect(() => {
+        const handler = (e) => {
+            const counts = e.detail?.counts;
+            if (!counts) return;
+
+            setAnomalyCounts(prev => ({
+                ...prev,
+                ...Object.keys(counts).reduce((acc, k) => {
+                    acc[k] = (prev[k] || 0) + counts[k];
+                    return acc;
+                }, {})
+            }));
+        };
+
+        window.addEventListener("liveInsightsUpdate", handler);
+        return () => window.removeEventListener("liveInsightsUpdate", handler);
+    }, []);
 
     /* ---------------- TRANSCRIPT LISTENER (SAFE) ---------------- */
     useEffect(() => {
