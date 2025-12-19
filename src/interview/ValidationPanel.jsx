@@ -792,9 +792,14 @@ export default function ValidationPanel() {
 
         const validateAccess = async () => {
             try {
+                const qs = new URLSearchParams({
+                    candidate_id: candidateId,
+                    jd_id: jdId,
+                    token: interviewToken,
+                });
+
                 const res = await fetch(
-                    `${API_BASE}/mcp/interview_bot_beta/scheduler/validate_access? +
-                    candidate_id=${candidateId}&jd_id=${jdId}&token=${interviewToken}`
+                    `${API_BASE}/mcp/interview_bot_beta/scheduler/validate_access?${qs.toString()}`
                 );
 
                 const data = await res.json();
@@ -828,6 +833,7 @@ export default function ValidationPanel() {
                 setErrorMsg("Server validation failed.");
             }
         };
+
 
         validateAccess();
     }, []);
