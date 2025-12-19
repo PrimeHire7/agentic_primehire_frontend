@@ -1089,6 +1089,61 @@ export default function InterviewMode() {
     //         }
     //     })();
     // }, [stage, candidateId, interviewToken]);
+    // /* ---------------- INIT AI INTERVIEW ---------------- */
+    // useEffect(() => {
+    //     if (stage !== 3) return;
+    //     if (!candidateId) return;
+    //     if (aiInitOnceRef.current) return;
+
+    //     aiInitOnceRef.current = true;
+    //     console.log("🤖 Initializing AI Interview");
+
+    //     (async () => {
+    //         try {
+    //             const fd = new FormData();
+
+    //             fd.append("init", "true");
+    //             fd.append("candidate_name", candidateName);
+    //             fd.append("candidate_id", candidateId);
+    //             fd.append("job_description", jdText);
+    //             fd.append("token", interviewToken || "");
+    //             if (jdId) fd.append("jd_id", jdId);
+
+    //             const r = await fetch(
+    //                 `${API_BASE}/mcp/interview_bot_beta/process-answer`,
+    //                 { method: "POST", body: fd }
+    //             );
+
+    //             const text = await r.text();
+    //             console.log("AI INIT RAW RESPONSE:", text);
+
+    //             let d = {};
+    //             try {
+    //                 d = JSON.parse(text);
+    //             } catch (e) {
+    //                 console.error("❌ Failed to parse AI init response", e);
+    //                 return;
+    //             }
+
+    //             // 🔒 Fallback safety (always start interview)
+    //             const firstQuestion =
+    //                 typeof d?.next_question === "string" && d.next_question.trim()
+    //                     ? d.next_question
+    //                     : "Tell me about yourself.";
+
+    //             setAiInterviewStarted(true);
+
+    //             window.dispatchEvent(
+    //                 new CustomEvent("transcriptAdd", {
+    //                     detail: { sender: "ai", text: firstQuestion }
+    //                 })
+    //             );
+
+    //         } catch (err) {
+    //             console.error("❌ AI init error:", err);
+    //         }
+    //     })();
+    // }, [stage, candidateId]); // 🔥 interviewToken removed on purpose
     /* ---------------- INIT AI INTERVIEW ---------------- */
     useEffect(() => {
         if (stage !== 3) return;
@@ -1106,7 +1161,6 @@ export default function InterviewMode() {
                 fd.append("candidate_name", candidateName);
                 fd.append("candidate_id", candidateId);
                 fd.append("job_description", jdText);
-                fd.append("token", interviewToken || "");
                 if (jdId) fd.append("jd_id", jdId);
 
                 const r = await fetch(
@@ -1117,7 +1171,7 @@ export default function InterviewMode() {
                 const text = await r.text();
                 console.log("AI INIT RAW RESPONSE:", text);
 
-                let d = {};
+                let d;
                 try {
                     d = JSON.parse(text);
                 } catch (e) {
@@ -1125,7 +1179,9 @@ export default function InterviewMode() {
                     return;
                 }
 
-                // 🔒 Fallback safety (always start interview)
+                // ✅ HARD SESSION LOCK (THIS IS THE KEY)
+                sessionStorage.setItem("INTERVIEW_STARTED", "true");
+
                 const firstQuestion =
                     typeof d?.next_question === "string" && d.next_question.trim()
                         ? d.next_question
@@ -1135,7 +1191,7 @@ export default function InterviewMode() {
 
                 window.dispatchEvent(
                     new CustomEvent("transcriptAdd", {
-                        detail: { sender: "ai", text: firstQuestion }
+                        detail: { role: "ai", text: firstQuestion } // 🔥 role, not sender
                     })
                 );
 
@@ -1143,7 +1199,7 @@ export default function InterviewMode() {
                 console.error("❌ AI init error:", err);
             }
         })();
-    }, [stage, candidateId]); // 🔥 interviewToken removed on purpose
+    }, [stage, candidateId, jdId]); // 🔥 token intentionally removed
 
     /* ======================================================
    HARD RESET AI INIT WHEN ENTERING STAGE 3
@@ -1214,6 +1270,7 @@ export default function InterviewMode() {
     /* ---------------- STOP INTERVIEW ---------------- */
     useEffect(() => {
         const stopHandler = async () => {
+            sessionStorage.removeItem("INTERVIEW_STARTED");
             const fd = new FormData();
             fd.append("candidate_name", candidateName);
             fd.append("candidate_id", candidateId);
@@ -1221,6 +1278,7 @@ export default function InterviewMode() {
             fd.append("mcq_result", JSON.stringify(mcqResult));
             fd.append("coding_result", JSON.stringify(codingResult));
             if (jdId) fd.append("jd_id", jdId);
+
 
             const r = await fetch(
                 `${API_BASE}/mcp/interview_bot_beta/evaluate-transcript`,

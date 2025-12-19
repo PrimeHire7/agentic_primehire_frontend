@@ -781,6 +781,14 @@ export default function ValidationPanel() {
     const canvasRef = useRef(null);
     console.log("VALIDATION PANEL MOUNTED", window.location.pathname);
 
+
+    useEffect(() => {
+        if (sessionStorage.getItem("INTERVIEW_STARTED") === "true") {
+            console.warn("⛔ Validation blocked — interview already started");
+            navigate("/interview", { replace: true });
+        }
+    }, []);
+
     /* =====================================================
          STEP 1: VALIDATE ACCESS (TIME SLOT + TOKEN)
       ===================================================== */
