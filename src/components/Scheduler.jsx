@@ -20,7 +20,9 @@ export default function Scheduler() {
     const params = new URLSearchParams(location.search);
 
     const candidateId = params.get("candidateId");
-    const candidateName = params.get("candidateName") || "Candidate";
+    // const candidateName = params.get("candidateName") || "Candidate";
+    const candidateName = params.get("candidateName") || "";
+
     const jdId = params.get("jd_id");
     const jdToken = params.get("jd_token");
 
@@ -146,10 +148,13 @@ export default function Scheduler() {
                                 by the recruiter.
                             </p>
                         </div>
-                        <div>
-                            <label>Candidate</label>
-                            <div className="value">{candidateName}</div>
-                        </div>
+                        {candidateName && (
+                            <div>
+                                <label>Candidate</label>
+                                <div className="value">{candidateName}</div>
+                            </div>
+                        )}
+
                         <div>
                             <label>Email</label>
                             <div className="value">{candidateId}</div>
