@@ -52,6 +52,7 @@ export default function Scheduler() {
 
                 const res = await fetch(url);
 
+
                 // const res = await fetch(
                 //     `${API_BASE}/mcp/interview_bot_beta/scheduler/validate_access?candidate_id=${encodeURIComponent(
                 //         candidateId

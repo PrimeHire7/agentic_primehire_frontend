@@ -1075,10 +1075,14 @@ export default function ValidationPanel() {
 
         const validateAccess = async () => {
             try {
-                const res = await fetch(
-                    `${API_BASE}/mcp/interview_bot_beta/scheduler/validate_access? +
-                    candidate_id=${candidateId}&jd_id=${jdId}&token=${interviewToken}`
-                );
+                const url =
+                    `${API_BASE}/mcp/interview_bot_beta/scheduler/validate_access` +
+                    `?candidate_id=${encodeURIComponent(candidateId)}` +
+                    `&jd_id=${jdId}` +
+                    `&token=${interviewToken}`;
+
+                const res = await fetch(url);
+
 
                 const data = await res.json();
 
