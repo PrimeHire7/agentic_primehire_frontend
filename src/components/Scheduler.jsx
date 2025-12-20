@@ -9,10 +9,9 @@ const INTERVIEW_DURATION_MINUTES = 30; // change to 60 if needed
 
 /* ================== HELPERS ================== */
 function toISO(date, time) {
-    // date: YYYY-MM-DD, time: HH:mm (IST)
-    const dt = new Date(`${date}T${time}:00+05:30`);
-    return dt.toISOString();
+    return new Date(`${date}T${time}:00`).toISOString();
 }
+
 
 export default function Scheduler() {
     const location = useLocation();
@@ -46,8 +45,11 @@ export default function Scheduler() {
         const checkExisting = async () => {
             try {
                 const res = await fetch(
-                    `${API_BASE}/mcp/interview_bot_beta/scheduler/existing?candidate_id=${candidateId}&jd_id=${jdId}`
+                    `${API_BASE}/mcp/interview_bot_beta/scheduler/validate_access?candidate_id=${encodeURIComponent(
+                        candidateId
+                    )}&jd_id=${jdId}&token=${interviewToken}`
                 );
+
                 const data = await res.json();
                 if (data.exists) setExisting(data);
             } catch (e) {
@@ -178,7 +180,8 @@ export default function Scheduler() {
                                         // prefill with existing time
                                         const d = new Date(existing.slot_start);
                                         setDate(d.toISOString().slice(0, 10));
-                                        setStartTime(d.toTimeString().slice(0, 5));
+                                        setStartTime(d.toISOString().slice(11, 16));
+
                                         setRescheduling(true);
                                     }}
                                 >
