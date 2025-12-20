@@ -3,7 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
+import { Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import CertificateData from "./pages/CertificateData";
@@ -40,7 +40,14 @@ export default function App() {
                         <Route path="/candidate-status/:jd_id" element={<CandidateStatus />} />
                         <Route path="/candidate/:id" element={<CandidateOverview />} />
                         <Route path="/interview" element={<InterviewMode />} />
-                        <Route path="/validation_panel" element={<ValidationPanel />} />
+                        <Route
+                            path="/validation_panel"
+                            element={
+                                sessionStorage.getItem("interview_started") === "true"
+                                    ? <Navigate to="/interview" replace />
+                                    : <ValidationPanel />
+                            }
+                        />
                         <Route path="/scheduler" element={<Scheduler />} />
 
                         <Route path="*" element={<NotFound />} />

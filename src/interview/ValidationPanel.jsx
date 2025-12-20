@@ -1487,6 +1487,7 @@ export default function ValidationPanel() {
 
     const handleContinue = () => {
         navigate("/instructions", {
+            replace: true,
             state: {
                 candidateName,
                 candidateId,
@@ -1495,6 +1496,7 @@ export default function ValidationPanel() {
                 interviewToken,
             },
         });
+
     };
 
     /* =====================================================
