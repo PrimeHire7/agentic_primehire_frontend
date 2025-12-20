@@ -2278,11 +2278,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { API_BASE } from "@/utils/constants";
 import "./WebcamRecorder.css";
 
-export default function WebcamRecorder({
-    candidateName,
-    candidateId,
-    aiInterviewStarted, // 🔑 IMPORTANT: gate face-monitor
-}) {
+export default function WebcamRecorder({ candidateName, candidateId }) {
     const videoRef = useRef(null);
     const streamRef = useRef(null);
     const faceLoopRef = useRef(null);
@@ -2324,13 +2320,13 @@ export default function WebcamRecorder({
                 videoRef.current.onloadedmetadata = () =>
                     videoRef.current.play().catch(() => { });
             } catch (e) {
-                console.error("❌ Camera error:", e);
+                console.error("Camera error:", e);
             }
         })();
 
         return () => {
             mounted = false;
-            streamRef.current?.getTracks().forEach(t => t.stop());
+            streamRef.current?.getTracks().forEach((t) => t.stop());
             stopFaceLoop();
         };
     }, []);
@@ -2349,20 +2345,17 @@ export default function WebcamRecorder({
         window.dispatchEvent(new Event("stopInterview"));
     }
 
-    /* ---------------- FACE MONITOR GATE (CRITICAL FIX) ---------------- */
+    /* ---------------- Face Monitor Loop ---------------- */
     useEffect(() => {
-        if (recording && aiInterviewStarted) {
-            startFaceLoop();
-        } else {
-            stopFaceLoop();
-        }
-    }, [recording, aiInterviewStarted]);
+        if (recording) startFaceLoop();
+        else stopFaceLoop();
+    }, [recording]);
 
     function startFaceLoop() {
         if (faceLoopRef.current) return;
 
         console.log("🎥 Face monitor START");
-        faceLoopRef.current = setInterval(sendFaceFrame, 1500); // slowed for stability
+        faceLoopRef.current = setInterval(sendFaceFrame, 900);
     }
 
     function stopFaceLoop() {
@@ -2375,8 +2368,7 @@ export default function WebcamRecorder({
 
     /* ---------------- Send Face Frame ---------------- */
     async function sendFaceFrame() {
-        if (!recording || !aiInterviewStarted) return;
-        if (document.hidden) return;
+        if (!recording || document.hidden) return;
         if (!videoRef.current || !localCandidateId) return;
 
         const now = Date.now();
@@ -2391,9 +2383,7 @@ export default function WebcamRecorder({
         canvas.height = video.videoHeight;
         canvas.getContext("2d").drawImage(video, 0, 0);
 
-        const blob = await new Promise(r =>
-            canvas.toBlob(r, "image/jpeg", 0.75)
-        );
+        const blob = await new Promise((r) => canvas.toBlob(r, "image/jpeg", 0.75));
         if (!blob) return;
 
         const fd = new FormData();
@@ -2402,10 +2392,10 @@ export default function WebcamRecorder({
         fd.append("frame", blob);
 
         try {
-            const res = await fetch(
-                `${API_BASE}/mcp/interview/face-monitor`,
-                { method: "POST", body: fd }
-            );
+            const res = await fetch(`${API_BASE}/mcp/interview/face-monitor`, {
+                method: "POST",
+                body: fd,
+            });
 
             if (!res.ok) return;
 
@@ -2444,11 +2434,9 @@ export default function WebcamRecorder({
                 method: "POST",
                 body: fd,
             })
-                .then(r => (r.ok ? r.json() : null))
-                .then(data => data && dispatchInsights(data))
-                .catch(err =>
-                    console.error("❌ Tab switch send failed:", err)
-                );
+                .then((r) => (r.ok ? r.json() : null))
+                .then((data) => data && dispatchInsights(data))
+                .catch((err) => console.error("❌ Tab switch send failed:", err));
         }
 
         document.addEventListener("visibilitychange", handleVisibilityChange);

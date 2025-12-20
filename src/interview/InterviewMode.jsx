@@ -1724,7 +1724,7 @@
 //     );
 // }
 import React, { useState, useEffect, useRef } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { API_BASE } from "@/utils/constants";
 
 import WebcamRecorder from "./WebcamRecorder";
@@ -1741,44 +1741,32 @@ export default function InterviewMode() {
     const location = useLocation();
     const navigate = useNavigate();
 
-    /* ---------------- BASIC CONTEXT ---------------- */
     const candidateName = location.state?.candidateName || "Anonymous";
     const jdText = location.state?.jd_text || "";
-
-    const searchParams = new URLSearchParams(window.location.search);
-    const jdId =
-        location.state?.jd_id ||
-        searchParams.get("jd_id") ||
-        null;
-
+    const jdId = location.state?.jd_id || null;
     const initialCandidateId = location.state?.candidateId || null;
+
     const [candidateId] = useState(initialCandidateId);
-
-    const interviewToken =
-        location.state?.interviewToken ||
-        searchParams.get("token") ||
-        null;
-
-    /* ---------------- STAGE STATE ---------------- */
     const [stage, setStage] = useState(1);
     const [aiInterviewStarted, setAiInterviewStarted] = useState(false);
 
-    /* ---------------- MCQ + CODING ---------------- */
     const [mcq, setMcq] = useState([]);
     const [mcqLoaded, setMcqLoaded] = useState(false);
     const [mcqResult, setMcqResult] = useState(null);
     const [codingResult, setCodingResult] = useState(null);
 
-    /* ---------------- TRANSCRIPT + TIMER ---------------- */
     const [transcript, setTranscript] = useState([]);
     const [interviewTime, setInterviewTime] = useState(0);
 
-    /* ---------------- AI INIT GUARD ---------------- */
+    // const [searchParams] = useSearchParams();
+    const interviewToken =
+        location.state?.interviewToken ||
+        new URLSearchParams(window.location.search).get("token") ||
+        null;
+
     const aiInitOnceRef = useRef(false);
 
-    /* ======================================================
-       LOAD MCQs (STAGE 1)
-    ====================================================== */
+    /* ---------------- LOAD MCQs ---------------- */
     useEffect(() => {
         if (stage !== 1 || mcqLoaded || !candidateId) return;
 
@@ -1788,10 +1776,10 @@ export default function InterviewMode() {
             fd.append("candidate_id", candidateId);
             if (jdId) fd.append("jd_id", jdId);
 
-            const r = await fetch(
-                `${API_BASE}/mcp/interview_bot_beta/generate-mcq`,
-                { method: "POST", body: fd }
-            );
+            const r = await fetch(`${API_BASE}/mcp/interview_bot_beta/generate-mcq`, {
+                method: "POST",
+                body: fd,
+            });
             const d = await r.json();
 
             if (d?.ok && Array.isArray(d.mcq)) {
@@ -1799,16 +1787,18 @@ export default function InterviewMode() {
                 setMcqLoaded(true);
             }
         })();
-    }, [stage, candidateId, mcqLoaded, jdId, jdText]);
+    }, [stage, candidateId, mcqLoaded]);
 
     /* ======================================================
-       FORCE STAGE 3 (FROM CODING PANEL)
-    ====================================================== */
+     FORCE START STAGE 3 (FROM CODING PANEL)
+  ====================================================== */
     useEffect(() => {
         const handler = () => {
             console.log("🚀 Stage 3 start signal received");
 
-            setStage(3);
+            setStage((prev) => (prev === 3 ? prev : 3));
+
+            // 🔁 Reset AI state cleanly
             aiInitOnceRef.current = false;
             setAiInterviewStarted(false);
         };
@@ -1817,68 +1807,70 @@ export default function InterviewMode() {
         return () => window.removeEventListener("startStage3", handler);
     }, []);
 
-    /* ======================================================
-       AI INTERVIEW INIT (STAGE 3) — SAFE + DELAYED
-    ====================================================== */
-    useEffect(() => {
-        if (stage !== 3) {
-            aiInitOnceRef.current = false;
-            return;
-        }
+    console.log("AI INIT CHECK:", {
+        stage,
+        candidateId,
+        interviewToken,
+        aiInitOnce: aiInitOnceRef.current,
+    });
 
+    /* ---------------- INIT AI INTERVIEW ---------------- */
+    useEffect(() => {
+        if (stage !== 3) return;
         if (!candidateId || !interviewToken) return;
         if (aiInitOnceRef.current) return;
 
         aiInitOnceRef.current = true;
+        console.log("🤖 Initializing AI Interview");
 
-        const timer = setTimeout(() => {
-            (async () => {
-                try {
-                    console.log("🤖 Initializing AI Interview");
+        (async () => {
+            const fd = new FormData();
 
-                    const fd = new FormData();
-                    fd.append("init", "true");
-                    fd.append("candidate_name", candidateName);
-                    fd.append("candidate_id", candidateId);
-                    fd.append("job_description", jdText);
-                    fd.append("token", interviewToken);
-                    if (jdId) fd.append("jd_id", jdId);
+            fd.append("init", "true");
+            fd.append("candidate_name", candidateName);
+            fd.append("candidate_id", candidateId);
+            fd.append("job_description", jdText);
+            fd.append("token", interviewToken);
+            if (jdId) fd.append("jd_id", jdId);
 
-                    const r = await fetch(
-                        `${API_BASE}/mcp/interview_bot_beta/process-answer`,
-                        { method: "POST", body: fd }
-                    );
+            const r = await fetch(
+                `${API_BASE}/mcp/interview_bot_beta/process-answer`,
+                { method: "POST", body: fd }
+            );
+            const d = await r.json();
 
-                    if (!r.ok) throw new Error("AI init failed");
+            if (typeof d?.next_question === "string" && d.next_question.trim()) {
+                setAiInterviewStarted(true);
 
-                    const d = await r.json();
-
-                    if (typeof d?.next_question === "string") {
-                        setAiInterviewStarted(true);
-
-                        window.dispatchEvent(
-                            new CustomEvent("transcriptAdd", {
-                                detail: { role: "ai", text: d.next_question },
-                            })
-                        );
-                    }
-                } catch (err) {
-                    console.error("❌ AI init failed — retry enabled", err);
-                    aiInitOnceRef.current = false;
-                }
-            })();
-        }, 400); // 🔑 stabilization delay
-
-        return () => clearTimeout(timer);
-    }, [stage, candidateId, interviewToken, jdId, jdText, candidateName]);
+                window.dispatchEvent(
+                    new CustomEvent("transcriptAdd", {
+                        detail: { role: "ai", text: d.next_question },
+                    })
+                );
+            } else {
+                console.warn("AI init returned no question", d);
+            }
+        })();
+    }, [stage, candidateId, interviewToken]);
 
     /* ======================================================
-       TRANSCRIPT LISTENER
-    ====================================================== */
+     HARD RESET AI INIT WHEN ENTERING STAGE 3
+  ====================================================== */
+    // useEffect(() => {
+    //     if (stage === 3) {
+    //         console.log("🔁 Resetting AI init on stage=3");
+    //         aiInitOnceRef.current = false;
+    //         setAiInterviewStarted(false);
+    //     }
+    // }, [stage]);
+
+    /* ---------------- TRANSCRIPT LISTENER (SAFE) ---------------- */
     useEffect(() => {
         const handler = (e) => {
             const msg = e.detail;
-            if (!msg || !msg.role || !msg.text) return;
+            if (!msg || typeof msg !== "object") return;
+            if (!msg.role || typeof msg.text !== "string") return;
+
             setTranscript((prev) => [...prev, msg]);
         };
 
@@ -1886,17 +1878,14 @@ export default function InterviewMode() {
         return () => window.removeEventListener("transcriptAdd", handler);
     }, []);
 
-    /* ======================================================
-       INTERVIEW TIMER
-    ====================================================== */
+    /* ---------------- TIMER ---------------- */
     useEffect(() => {
         let timer = null;
 
         const start = () => {
             if (!timer)
-                timer = setInterval(() => setInterviewTime(t => t + 1), 1000);
+                timer = setInterval(() => setInterviewTime((t) => t + 1), 1000);
         };
-
         const stop = () => {
             clearInterval(timer);
             timer = null;
@@ -1912,9 +1901,7 @@ export default function InterviewMode() {
         };
     }, []);
 
-    /* ======================================================
-       STOP INTERVIEW → FINAL EVALUATION
-    ====================================================== */
+    /* ---------------- STOP INTERVIEW ---------------- */
     useEffect(() => {
         const stopHandler = async () => {
             const fd = new FormData();
@@ -1938,11 +1925,9 @@ export default function InterviewMode() {
 
         window.addEventListener("stopInterview", stopHandler);
         return () => window.removeEventListener("stopInterview", stopHandler);
-    }, [candidateId, mcqResult, codingResult, transcript, jdId, jdText, candidateName, navigate]);
+    }, [candidateId, mcqResult, codingResult, transcript]);
 
-    /* ======================================================
-       RIGHT PANEL
-    ====================================================== */
+    /* ---------------- RIGHT PANEL ---------------- */
     const renderRightPanel = () => {
         if (stage === 1)
             return (
@@ -1966,21 +1951,15 @@ export default function InterviewMode() {
 
         if (stage === 3)
             return (
-                <TranscriptPanel
-                    transcript={transcript}
-                    jdText={jdText}
-                    jdId={jdId}
-                />
+                <TranscriptPanel transcript={transcript} jdText={jdText} jdId={jdId} />
             );
 
         return null;
     };
 
-    /* ======================================================
-       RENDER
-    ====================================================== */
     return (
         <div className="interview-root">
+
             <InterviewToolbar
                 candidateId={candidateId}
                 candidateName={candidateName}
@@ -1995,7 +1974,8 @@ export default function InterviewMode() {
                     <WebcamRecorder
                         candidateName={candidateName}
                         candidateId={candidateId}
-                        aiInterviewStarted={aiInterviewStarted}
+                    // stage={stage}
+                    // aiInterviewStarted={aiInterviewStarted}
                     />
 
                     <div className="insight-score-row">
