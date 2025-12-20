@@ -1068,10 +1068,10 @@ export default function ValidationPanel() {
       ===================================================== */
     useEffect(() => {
         if (!candidateId || !jdId || !interviewToken) {
-            setAccessState("error");
-            setErrorMsg("Invalid interview link.");
+            console.warn("Missing params, but NOT invalidating interview");
             return;
         }
+
 
         const validateAccess = async () => {
             try {
