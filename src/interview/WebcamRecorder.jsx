@@ -2467,199 +2467,6 @@
 // //         </div>
 // //     );
 // // }
-// import React, { useEffect, useRef, useState } from "react";
-// import { API_BASE } from "@/utils/constants";
-// import "./WebcamRecorder.css";
-
-// export default function WebcamRecorder({
-//     candidateName,
-//     candidateId,
-//     aiBusyRef, // 🔑 NEW
-// }) {
-//     const videoRef = useRef(null);
-//     const streamRef = useRef(null);
-//     const faceLoopRef = useRef(null);
-//     const lastDispatchRef = useRef(0);
-//     const failCountRef = useRef(0);
-
-//     const [recording, setRecording] = useState(false);
-//     const [localCandidateId, setLocalCandidateId] = useState(candidateId);
-
-//     /* ---------------- DISPATCH LIVE INSIGHTS ---------------- */
-//     function dispatchInsights(data) {
-//         window.dispatchEvent(
-//             new CustomEvent("liveInsightsUpdate", {
-//                 detail: {
-//                     anomalies: data?.anomalies || [],
-//                     counts: data?.anomaly_counts || {},
-//                 },
-//             })
-//         );
-//     }
-
-//     /* ---------------- Sync Candidate ID ---------------- */
-//     useEffect(() => {
-//         if (candidateId) setLocalCandidateId(candidateId);
-//     }, [candidateId]);
-
-//     /* ---------------- Camera Preview ---------------- */
-//     useEffect(() => {
-//         let mounted = true;
-
-//         (async () => {
-//             try {
-//                 streamRef.current = await navigator.mediaDevices.getUserMedia({
-//                     video: true,
-//                     audio: true,
-//                 });
-//                 if (!mounted) return;
-
-//                 videoRef.current.srcObject = streamRef.current;
-//                 videoRef.current.onloadedmetadata = () =>
-//                     videoRef.current.play().catch(() => { });
-//             } catch (e) {
-//                 console.error("Camera error:", e);
-//             }
-//         })();
-
-//         return () => {
-//             mounted = false;
-//             streamRef.current?.getTracks().forEach((t) => t.stop());
-//             stopFaceLoop();
-//         };
-//     }, []);
-
-//     /* ---------------- Start / Stop Interview ---------------- */
-//     function startInterview() {
-//         setRecording(true);
-//         window.dispatchEvent(new Event("startInterviewTimer"));
-//     }
-
-//     function stopInterview() {
-//         setRecording(false);
-//         stopFaceLoop();
-//         window.dispatchEvent(new Event("stopInterviewTimer"));
-//         window.dispatchEvent(new Event("stopInterview"));
-//     }
-
-//     /* ---------------- Face Monitor Loop ---------------- */
-//     useEffect(() => {
-//         if (recording) startFaceLoop();
-//         else stopFaceLoop();
-//     }, [recording]);
-
-//     function startFaceLoop() {
-//         if (faceLoopRef.current) return;
-//         faceLoopRef.current = setInterval(sendFaceFrame, 1800);
-//     }
-
-//     function stopFaceLoop() {
-//         if (faceLoopRef.current) {
-//             clearInterval(faceLoopRef.current);
-//             faceLoopRef.current = null;
-//         }
-//     }
-
-//     /* ---------------- Send Face Frame ---------------- */
-//     async function sendFaceFrame() {
-//         if (!recording) return;
-//         if (aiBusyRef?.current) return; // 🔑 AI PRIORITY
-//         if (document.hidden) return;
-//         if (!videoRef.current || !localCandidateId) return;
-
-//         const now = Date.now();
-//         if (now - lastDispatchRef.current < 1200) return;
-//         lastDispatchRef.current = now;
-
-//         const video = videoRef.current;
-//         if (!video.videoWidth || !video.videoHeight) return;
-
-//         const canvas = document.createElement("canvas");
-//         canvas.width = video.videoWidth;
-//         canvas.height = video.videoHeight;
-//         canvas.getContext("2d").drawImage(video, 0, 0);
-
-//         const blob = await new Promise((r) =>
-//             canvas.toBlob(r, "image/jpeg", 0.7)
-//         );
-//         if (!blob) return;
-
-//         const fd = new FormData();
-//         fd.append("candidate_name", candidateName);
-//         fd.append("candidate_id", localCandidateId);
-//         fd.append("frame", blob);
-
-//         try {
-//             const res = await fetch(`${API_BASE}/mcp/interview/face-monitor`, {
-//                 method: "POST",
-//                 body: fd,
-//             });
-
-//             if (!res.ok) throw new Error("Bad response");
-
-//             const data = await res.json();
-//             dispatchInsights(data);
-//             failCountRef.current = 0;
-//         } catch (err) {
-//             failCountRef.current++;
-
-//             // 🛑 AUTO-PAUSE ON NETWORK FAILURE
-//             if (failCountRef.current >= 3) {
-//                 stopFaceLoop();
-//             }
-//         }
-//     }
-
-//     /* ---------------- TAB SWITCH ---------------- */
-//     useEffect(() => {
-//         if (!localCandidateId) return;
-
-//         function handleVisibilityChange() {
-//             if (!document.hidden) return;
-
-//             const fd = new FormData();
-//             fd.append("candidate_name", candidateName);
-//             fd.append("candidate_id", localCandidateId);
-//             fd.append("event_type", "tab_switch");
-//             fd.append("event_msg", "Tab switch detected");
-
-//             fetch(`${API_BASE}/mcp/interview/face-monitor`, {
-//                 method: "POST",
-//                 body: fd,
-//             })
-//                 .then((r) => (r.ok ? r.json() : null))
-//                 .then((d) => d && dispatchInsights(d))
-//                 .catch(() => { });
-//         }
-
-//         document.addEventListener("visibilitychange", handleVisibilityChange);
-//         return () =>
-//             document.removeEventListener("visibilitychange", handleVisibilityChange);
-//     }, [localCandidateId, candidateName]);
-
-//     /* ---------------- Render ---------------- */
-//     return (
-//         <div className="webcam-glass-shell">
-//             <video
-//                 ref={videoRef}
-//                 className="webcam-video"
-//                 autoPlay
-//                 muted
-//                 playsInline
-//             />
-
-//             {!recording ? (
-//                 <button className="webcam-start-btn" onClick={startInterview}>
-//                     Start Interview
-//                 </button>
-//             ) : (
-//                 <button className="webcam-stop-btn" onClick={stopInterview}>
-//                     Stop Interview
-//                 </button>
-//             )}
-//         </div>
-//     );
-// }
 import React, { useEffect, useRef, useState } from "react";
 import { API_BASE } from "@/utils/constants";
 import "./WebcamRecorder.css";
@@ -2667,13 +2474,79 @@ import "./WebcamRecorder.css";
 export default function WebcamRecorder({
     candidateName,
     candidateId,
-    faceMonitorEnabled, // 🔑 EXPLICIT CONTROL
+    aiBusyRef, // 🔑 NEW
 }) {
     const videoRef = useRef(null);
     const streamRef = useRef(null);
-    const loopRef = useRef(null);
     const faceLoopRef = useRef(null);
+    const lastDispatchRef = useRef(0);
+    const failCountRef = useRef(0);
+
     const [recording, setRecording] = useState(false);
+    const [localCandidateId, setLocalCandidateId] = useState(candidateId);
+
+    /* ---------------- DISPATCH LIVE INSIGHTS ---------------- */
+    function dispatchInsights(data) {
+        window.dispatchEvent(
+            new CustomEvent("liveInsightsUpdate", {
+                detail: {
+                    anomalies: data?.anomalies || [],
+                    counts: data?.anomaly_counts || {},
+                },
+            })
+        );
+    }
+
+    /* ---------------- Sync Candidate ID ---------------- */
+    useEffect(() => {
+        if (candidateId) setLocalCandidateId(candidateId);
+    }, [candidateId]);
+
+    /* ---------------- Camera Preview ---------------- */
+    useEffect(() => {
+        let mounted = true;
+
+        (async () => {
+            try {
+                streamRef.current = await navigator.mediaDevices.getUserMedia({
+                    video: true,
+                    audio: true,
+                });
+                if (!mounted) return;
+
+                videoRef.current.srcObject = streamRef.current;
+                videoRef.current.onloadedmetadata = () =>
+                    videoRef.current.play().catch(() => { });
+            } catch (e) {
+                console.error("Camera error:", e);
+            }
+        })();
+
+        return () => {
+            mounted = false;
+            streamRef.current?.getTracks().forEach((t) => t.stop());
+            stopFaceLoop();
+        };
+    }, []);
+
+    /* ---------------- Start / Stop Interview ---------------- */
+    function startInterview() {
+        setRecording(true);
+        window.dispatchEvent(new Event("startInterviewTimer"));
+    }
+
+    function stopInterview() {
+        setRecording(false);
+        stopFaceLoop();
+        window.dispatchEvent(new Event("stopInterviewTimer"));
+        window.dispatchEvent(new Event("stopInterview"));
+    }
+
+    /* ---------------- Face Monitor Loop ---------------- */
+    useEffect(() => {
+        if (recording) startFaceLoop();
+        else stopFaceLoop();
+    }, [recording]);
 
     function startFaceLoop() {
         if (faceLoopRef.current) return;
@@ -2686,76 +2559,17 @@ export default function WebcamRecorder({
             faceLoopRef.current = null;
         }
     }
-    /* ---------------- CAMERA PREVIEW ---------------- */
-    useEffect(() => {
-        let mounted = true;
 
-        (async () => {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({
-                    video: true,
-                    audio: true,
-                });
+    /* ---------------- Send Face Frame ---------------- */
+    async function sendFaceFrame() {
+        if (!recording) return;
+        if (aiBusyRef?.current) return; // 🔑 AI PRIORITY
+        if (document.hidden) return;
+        if (!videoRef.current || !localCandidateId) return;
 
-                if (!mounted) return;
-                streamRef.current = stream;
-                videoRef.current.srcObject = stream;
-                await videoRef.current.play();
-            } catch (e) {
-                console.error("Camera error:", e);
-            }
-        })();
-
-        return () => {
-            mounted = false;
-            streamRef.current?.getTracks().forEach((t) => t.stop());
-            stopLoop();
-        };
-    }, []);
-
-    /* ---------------- START / STOP ---------------- */
-    function startInterview() {
-        setRecording(true);
-        window.dispatchEvent(new Event("startInterviewTimer"));
-    }
-
-    function stopInterview() {
-        setRecording(false);
-        stopLoop();
-        window.dispatchEvent(new Event("stopInterviewTimer"));
-        window.dispatchEvent(new Event("stopInterview"));
-    }
-
-    /* ---------------- FACE MONITOR LOOP ---------------- */
-    useEffect(() => {
-        if (recording && faceMonitorEnabled) startLoop();
-        else stopLoop();
-    }, [recording, faceMonitorEnabled]);
-
-    function startLoop() {
-        if (loopRef.current) return;
-
-        loopRef.current = setInterval(sendFrame, 1500);
-    }
-
-    function stopLoop() {
-        if (loopRef.current) {
-            clearInterval(loopRef.current);
-            loopRef.current = null;
-        }
-    }
-    /* ---------------- FACE MONITOR ENABLED ---------------- */
-    useEffect(() => {
-        if (!faceMonitorEnabled) {
-            stopFaceLoop();
-            return;
-        }
-        startFaceLoop();
-    }, [faceMonitorEnabled]);
-
-    async function sendFrame() {
-        if (!faceMonitorEnabled) return;
-        if (!videoRef.current || !candidateId) return;
+        const now = Date.now();
+        if (now - lastDispatchRef.current < 1200) return;
+        lastDispatchRef.current = now;
 
         const video = videoRef.current;
         if (!video.videoWidth || !video.videoHeight) return;
@@ -2772,20 +2586,58 @@ export default function WebcamRecorder({
 
         const fd = new FormData();
         fd.append("candidate_name", candidateName);
-        fd.append("candidate_id", candidateId);
+        fd.append("candidate_id", localCandidateId);
         fd.append("frame", blob);
 
         try {
-            await fetch(`${API_BASE}/mcp/interview/face-monitor`, {
+            const res = await fetch(`${API_BASE}/mcp/interview/face-monitor`, {
                 method: "POST",
                 body: fd,
             });
-        } catch {
-            // ignore silently
+
+            if (!res.ok) throw new Error("Bad response");
+
+            const data = await res.json();
+            dispatchInsights(data);
+            failCountRef.current = 0;
+        } catch (err) {
+            failCountRef.current++;
+
+            // 🛑 AUTO-PAUSE ON NETWORK FAILURE
+            if (failCountRef.current >= 3) {
+                stopFaceLoop();
+            }
         }
     }
 
-    /* ---------------- RENDER ---------------- */
+    /* ---------------- TAB SWITCH ---------------- */
+    useEffect(() => {
+        if (!localCandidateId) return;
+
+        function handleVisibilityChange() {
+            if (!document.hidden) return;
+
+            const fd = new FormData();
+            fd.append("candidate_name", candidateName);
+            fd.append("candidate_id", localCandidateId);
+            fd.append("event_type", "tab_switch");
+            fd.append("event_msg", "Tab switch detected");
+
+            fetch(`${API_BASE}/mcp/interview/face-monitor`, {
+                method: "POST",
+                body: fd,
+            })
+                .then((r) => (r.ok ? r.json() : null))
+                .then((d) => d && dispatchInsights(d))
+                .catch(() => { });
+        }
+
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+        return () =>
+            document.removeEventListener("visibilitychange", handleVisibilityChange);
+    }, [localCandidateId, candidateName]);
+
+    /* ---------------- Render ---------------- */
     return (
         <div className="webcam-glass-shell">
             <video
@@ -2808,3 +2660,151 @@ export default function WebcamRecorder({
         </div>
     );
 }
+// import React, { useEffect, useRef, useState } from "react";
+// import { API_BASE } from "@/utils/constants";
+// import "./WebcamRecorder.css";
+
+// export default function WebcamRecorder({
+//     candidateName,
+//     candidateId,
+//     faceMonitorEnabled, // 🔑 EXPLICIT CONTROL
+// }) {
+//     const videoRef = useRef(null);
+//     const streamRef = useRef(null);
+//     const loopRef = useRef(null);
+//     const faceLoopRef = useRef(null);
+//     const [recording, setRecording] = useState(false);
+
+//     function startFaceLoop() {
+//         if (faceLoopRef.current) return;
+//         faceLoopRef.current = setInterval(sendFaceFrame, 1800);
+//     }
+
+//     function stopFaceLoop() {
+//         if (faceLoopRef.current) {
+//             clearInterval(faceLoopRef.current);
+//             faceLoopRef.current = null;
+//         }
+//     }
+//     /* ---------------- CAMERA PREVIEW ---------------- */
+//     useEffect(() => {
+//         let mounted = true;
+
+//         (async () => {
+//             try {
+//                 const stream = await navigator.mediaDevices.getUserMedia({
+//                     video: true,
+//                     audio: true,
+//                 });
+
+//                 if (!mounted) return;
+//                 streamRef.current = stream;
+//                 videoRef.current.srcObject = stream;
+//                 await videoRef.current.play();
+//             } catch (e) {
+//                 console.error("Camera error:", e);
+//             }
+//         })();
+
+//         return () => {
+//             mounted = false;
+//             streamRef.current?.getTracks().forEach((t) => t.stop());
+//             stopLoop();
+//         };
+//     }, []);
+
+//     /* ---------------- START / STOP ---------------- */
+//     function startInterview() {
+//         setRecording(true);
+//         window.dispatchEvent(new Event("startInterviewTimer"));
+//     }
+
+//     function stopInterview() {
+//         setRecording(false);
+//         stopLoop();
+//         window.dispatchEvent(new Event("stopInterviewTimer"));
+//         window.dispatchEvent(new Event("stopInterview"));
+//     }
+
+//     /* ---------------- FACE MONITOR LOOP ---------------- */
+//     useEffect(() => {
+//         if (recording && faceMonitorEnabled) startLoop();
+//         else stopLoop();
+//     }, [recording, faceMonitorEnabled]);
+
+//     function startLoop() {
+//         if (loopRef.current) return;
+
+//         loopRef.current = setInterval(sendFrame, 1500);
+//     }
+
+//     function stopLoop() {
+//         if (loopRef.current) {
+//             clearInterval(loopRef.current);
+//             loopRef.current = null;
+//         }
+//     }
+//     /* ---------------- FACE MONITOR ENABLED ---------------- */
+//     useEffect(() => {
+//         if (!faceMonitorEnabled) {
+//             stopFaceLoop();
+//             return;
+//         }
+//         startFaceLoop();
+//     }, [faceMonitorEnabled]);
+
+//     async function sendFrame() {
+//         if (!faceMonitorEnabled) return;
+//         if (!videoRef.current || !candidateId) return;
+
+//         const video = videoRef.current;
+//         if (!video.videoWidth || !video.videoHeight) return;
+
+//         const canvas = document.createElement("canvas");
+//         canvas.width = video.videoWidth;
+//         canvas.height = video.videoHeight;
+//         canvas.getContext("2d").drawImage(video, 0, 0);
+
+//         const blob = await new Promise((r) =>
+//             canvas.toBlob(r, "image/jpeg", 0.7)
+//         );
+//         if (!blob) return;
+
+//         const fd = new FormData();
+//         fd.append("candidate_name", candidateName);
+//         fd.append("candidate_id", candidateId);
+//         fd.append("frame", blob);
+
+//         try {
+//             await fetch(`${API_BASE}/mcp/interview/face-monitor`, {
+//                 method: "POST",
+//                 body: fd,
+//             });
+//         } catch {
+//             // ignore silently
+//         }
+//     }
+
+//     /* ---------------- RENDER ---------------- */
+//     return (
+//         <div className="webcam-glass-shell">
+//             <video
+//                 ref={videoRef}
+//                 className="webcam-video"
+//                 autoPlay
+//                 muted
+//                 playsInline
+//             />
+
+//             {!recording ? (
+//                 <button className="webcam-start-btn" onClick={startInterview}>
+//                     Start Interview
+//                 </button>
+//             ) : (
+//                 <button className="webcam-stop-btn" onClick={stopInterview}>
+//                     Stop Interview
+//                 </button>
+//             )}
+//         </div>
+//     );
+// }
