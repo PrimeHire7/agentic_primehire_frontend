@@ -1483,6 +1483,7 @@ export default function InterviewMode() {
     //     })();
     // }, [stage, candidateId, interviewToken]);
     useEffect(() => {
+        // Reset lock whenever we leave stage 3
         if (stage !== 3) {
             aiInitOnceRef.current = false;
             return;
@@ -1495,34 +1496,45 @@ export default function InterviewMode() {
         console.log("🤖 Initializing AI Interview");
 
         (async () => {
-            const fd = new FormData();
-            fd.append("init", "true");
-            fd.append("candidate_name", candidateName);
-            fd.append("candidate_id", candidateId);
-            fd.append("job_description", jdText);
-            fd.append("token", interviewToken);
-            if (jdId) fd.append("jd_id", jdId);
+            try {
+                const fd = new FormData();
+                fd.append("init", "true");
+                fd.append("candidate_name", candidateName);
+                fd.append("candidate_id", candidateId);
+                fd.append("job_description", jdText);
+                fd.append("token", interviewToken);
+                if (jdId) fd.append("jd_id", jdId);
 
-            const r = await fetch(
-                `${API_BASE}/mcp/interview_bot_beta/process-answer`,
-                { method: "POST", body: fd }
-            );
-
-            const d = await r.json();
-
-            if (typeof d?.next_question === "string" && d.next_question.trim()) {
-                setAiInterviewStarted(true);
-
-                window.dispatchEvent(
-                    new CustomEvent("transcriptAdd", {
-                        detail: { role: "ai", text: d.next_question },
-                    })
+                const r = await fetch(
+                    `${API_BASE}/mcp/interview_bot_beta/process-answer`,
+                    { method: "POST", body: fd }
                 );
-            } else {
-                console.warn("AI init returned no question", d);
+
+                if (!r.ok) {
+                    throw new Error(`Init failed: ${r.status}`);
+                }
+
+                const d = await r.json();
+
+                if (typeof d?.next_question === "string" && d.next_question.trim()) {
+                    setAiInterviewStarted(true);
+
+                    window.dispatchEvent(
+                        new CustomEvent("transcriptAdd", {
+                            detail: { role: "ai", text: d.next_question },
+                        })
+                    );
+                } else {
+                    console.warn("AI init returned no question", d);
+                }
+            } catch (err) {
+                console.error("❌ AI init failed, retry enabled", err);
+
+                // 🔑 CRITICAL FIX: allow retry
+                aiInitOnceRef.current = false;
             }
         })();
-    }, [stage, candidateId, interviewToken]);
+    }, [stage, candidateId, interviewToken, jdId]);
 
 
     /* ======================================================
