@@ -2672,7 +2672,7 @@ export default function WebcamRecorder({
     const videoRef = useRef(null);
     const streamRef = useRef(null);
     const loopRef = useRef(null);
-
+    const faceLoopRef = useRef(null);
     const [recording, setRecording] = useState(false);
 
     function startFaceLoop() {
