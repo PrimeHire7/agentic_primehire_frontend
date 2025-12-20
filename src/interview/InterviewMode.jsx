@@ -1437,12 +1437,12 @@ export default function InterviewMode() {
         return () => window.removeEventListener("startStage3", handler);
     }, []);
 
-    console.log("AI INIT CHECK:", {
-        stage,
-        candidateId,
-        interviewToken,
-        aiInitOnce: aiInitOnceRef.current,
-    });
+    // console.log("AI INIT CHECK:", {
+    //     stage,
+    //     candidateId,
+    //     interviewToken,
+    //     aiInitOnce: aiInitOnceRef.current,
+    // });
 
     /* ---------------- INIT AI INTERVIEW ---------------- */
     // useEffect(() => {
