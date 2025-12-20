@@ -2069,12 +2069,48 @@ export default function InterviewMode() {
     }, []);
 
     /* ---------------- INIT AI INTERVIEW ---------------- */
+    // useEffect(() => {
+    //     if (stage !== 3) return;
+    //     if (!candidateId || !interviewToken) return;
+    //     if (aiInitOnceRef.current) return;
+
+    //     aiInitOnceRef.current = true;
+    //     aiBusyRef.current = true;
+
+    //     (async () => {
+    //         try {
+    //             const fd = new FormData();
+    //             fd.append("init", "true");
+    //             fd.append("candidate_name", candidateName);
+    //             fd.append("candidate_id", candidateId);
+    //             fd.append("job_description", jdText);
+    //             fd.append("token", interviewToken);
+    //             if (jdId) fd.append("jd_id", jdId);
+
+    //             const r = await fetch(
+    //                 `${API_BASE}/mcp/interview_bot_beta/process-answer`,
+    //                 { method: "POST", body: fd }
+    //             );
+    //             const d = await r.json();
+
+    //             if (typeof d?.next_question === "string") {
+    //                 window.dispatchEvent(
+    //                     new CustomEvent("transcriptAdd", {
+    //                         detail: { role: "ai", text: d.next_question },
+    //                     })
+    //                 );
+    //             }
+    //         } finally {
+    //             aiBusyRef.current = false; // 🔑 RELEASE
+    //         }
+    //     })();
+    // }, [stage, candidateId, interviewToken]);
     useEffect(() => {
         if (stage !== 3) return;
         if (!candidateId || !interviewToken) return;
-        if (aiInitOnceRef.current) return;
+        if (aiInitStatus !== "idle") return;
 
-        aiInitOnceRef.current = true;
+        setAiInitStatus("initializing");
         aiBusyRef.current = true;
 
         (async () => {
@@ -2091,20 +2127,28 @@ export default function InterviewMode() {
                     `${API_BASE}/mcp/interview_bot_beta/process-answer`,
                     { method: "POST", body: fd }
                 );
+
                 const d = await r.json();
 
-                if (typeof d?.next_question === "string") {
+                if (typeof d?.next_question === "string" && d.next_question.trim()) {
                     window.dispatchEvent(
                         new CustomEvent("transcriptAdd", {
                             detail: { role: "ai", text: d.next_question },
                         })
                     );
+
+                    setAiInitStatus("ready"); // 🔒 LOCK AFTER SUCCESS
+                } else {
+                    setAiInitStatus("idle"); // retry allowed
                 }
+            } catch (e) {
+                console.error("AI init failed:", e);
+                setAiInitStatus("idle");
             } finally {
-                aiBusyRef.current = false; // 🔑 RELEASE
+                aiBusyRef.current = false;
             }
         })();
-    }, [stage, candidateId, interviewToken]);
+    }, [stage, candidateId, interviewToken, aiInitStatus]);
 
     /* ---------------- TRANSCRIPT LISTENER ---------------- */
     useEffect(() => {

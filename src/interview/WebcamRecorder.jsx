@@ -2550,7 +2550,7 @@ export default function WebcamRecorder({
 
     function startFaceLoop() {
         if (faceLoopRef.current) return;
-        faceLoopRef.current = setInterval(sendFaceFrame, 1200);
+        faceLoopRef.current = setInterval(sendFaceFrame, 1800);
     }
 
     function stopFaceLoop() {
