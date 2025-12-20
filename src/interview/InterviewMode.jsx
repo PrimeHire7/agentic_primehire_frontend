@@ -2341,11 +2341,13 @@ export default function InterviewMode() {
         const handler = () => {
             setStage(3);
             setAiInitStatus("idle");
+            setTranscript([]); // 🔑 RESET transcript
         };
 
         window.addEventListener("startStage3", handler);
         return () => window.removeEventListener("startStage3", handler);
     }, []);
+
 
     /* ---------------- INIT AI (STAGE 3 ONLY) ---------------- */
     useEffect(() => {

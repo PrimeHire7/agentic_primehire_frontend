@@ -482,6 +482,20 @@ export default function ValidationPanel() {
         setCapturedImage(canvas.toDataURL("image/png"));
     };
 
+    // const saveFaceToBackend = async () => {
+    //     const blob = await (await fetch(capturedImage)).blob();
+    //     const fd = new FormData();
+    //     fd.append("candidate_name", candidateName);
+    //     fd.append("candidate_id", candidateId);
+    //     fd.append("face_image", blob);
+
+    //     await fetch(
+    //         `${API_BASE}/mcp/tools/candidate_validation/save_face_image`,
+    //         { method: "POST", body: fd }
+    //     );
+
+    //     setIsSaved(true);
+    // };
     const saveFaceToBackend = async () => {
         const blob = await (await fetch(capturedImage)).blob();
         const fd = new FormData();
@@ -493,6 +507,13 @@ export default function ValidationPanel() {
             `${API_BASE}/mcp/tools/candidate_validation/save_face_image`,
             { method: "POST", body: fd }
         );
+
+        // 🔑 STOP CAMERA STREAM
+        const stream = videoRef.current?.srcObject;
+        if (stream) {
+            stream.getTracks().forEach(t => t.stop());
+            videoRef.current.srcObject = null;
+        }
 
         setIsSaved(true);
     };

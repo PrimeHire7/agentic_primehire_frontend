@@ -2733,6 +2733,14 @@ export default function WebcamRecorder({
             loopRef.current = null;
         }
     }
+    /* ---------------- FACE MONITOR ENABLED ---------------- */
+    useEffect(() => {
+        if (!faceMonitorEnabled) {
+            stopFaceLoop();
+            return;
+        }
+        startFaceLoop();
+    }, [faceMonitorEnabled]);
 
     async function sendFrame() {
         if (!faceMonitorEnabled) return;
