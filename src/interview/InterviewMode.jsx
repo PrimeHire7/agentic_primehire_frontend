@@ -2527,7 +2527,7 @@ export default function InterviewMode() {
                     <WebcamRecorder
                         candidateName={candidateName}
                         candidateId={candidateId}
-                        faceMonitorEnabled={stage === 1}
+                        faceMonitorEnabled={stage === 3}
                     />
 
                     <div className="insight-score-row">
