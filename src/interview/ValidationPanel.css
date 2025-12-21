@@ -227,7 +227,7 @@
    ACCESS STATES
 ================================ */
 .vp-state {
-    max-width: 800px;
+    max-width: 520px;
     margin: 80px auto;
     background: var(--bg-card);
     border: 1px solid var(--border);
