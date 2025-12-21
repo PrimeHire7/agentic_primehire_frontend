@@ -2809,24 +2809,36 @@ export default function InterviewMode() {
         if (stage !== 1 || mcqLoaded || !attemptId) return;
 
         (async () => {
-            // inside MCQ load effect
-            const fd = new FormData();
-            fd.append("attempt_id", attemptId);   // ✅ FIX
-            fd.append("job_description", jdText);
-            if (jdId) fd.append("jd_id", jdId);
+            try {
+                const fd = new FormData();
+                fd.append("attempt_id", attemptId);   // ✅ correct
+                fd.append("job_description", jdText);
+                if (jdId) fd.append("jd_id", jdId);
 
-            fetch(`${API_BASE}/mcp/interview_bot_beta/generate-mcq`, {
-                method: "POST",
-                body: fd,
-            });
+                const res = await fetch(
+                    `${API_BASE}/mcp/interview_bot_beta/generate-mcq`,
+                    {
+                        method: "POST",
+                        body: fd,
+                    }
+                );
 
-            const d = await r.json();
-            if (d?.ok) {
-                setMcq(d.mcq);
-                setMcqLoaded(true);
+                if (!res.ok) {
+                    console.error("MCQ fetch failed:", res.status);
+                    return;
+                }
+
+                const d = await res.json();
+
+                if (d?.ok) {
+                    setMcq(d.mcq);
+                    setMcqLoaded(true);
+                }
+            } catch (err) {
+                console.error("MCQ load error:", err);
             }
         })();
-    }, [stage]);
+    }, [stage, attemptId]);
 
     /* ================= AI INIT (ONCE) ================= */
     useEffect(() => {
@@ -2840,6 +2852,7 @@ export default function InterviewMode() {
                 const fd = new FormData();
                 fd.append("init", "true");
                 fd.append("attempt_id", attemptId);
+                fd.append("candidate_id", candidateId);
                 fd.append("candidate_name", candidateName);
                 fd.append("job_description", jdText);
                 fd.append("token", interviewToken);

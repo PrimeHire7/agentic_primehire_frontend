@@ -3469,34 +3469,45 @@ export default function WebcamRecorder({
     useEffect(() => {
         if (!attemptId) return;
 
-        const onVisibilityChange = () => {
+        const onVisibilityChange = async () => {
             if (!document.hidden) return;
             if (tabReportedRef.current) return;
 
             tabReportedRef.current = true;
 
-            const fd = new FormData();
-            fd.append("attempt_id", attemptId);
-            fd.append("candidate_id", candidateId);
-            fd.append("candidate_name", candidateName);
-            fd.append("event_type", "tab_switch");
-            fd.append("event_msg", "Tab switch detected");
+            try {
+                const fd = new FormData();
+                fd.append("attempt_id", attemptId);
+                fd.append("candidate_id", candidateId);
+                fd.append("candidate_name", candidateName);
+                fd.append("event_type", "tab_switch");
+                fd.append("event_msg", "Tab switch detected");
 
-            fetch(`${API_BASE}/mcp/interview/face-monitor`, {
-                method: "POST",
-                body: fd,
-                keepalive: true,
-                cache: "no-store",
-            })
-                .then((r) => (r.ok ? r.json() : null))
-                .then((data) => data && dispatchInsights(data))
-                .catch(() => { });
+                const res = await fetch(
+                    `${API_BASE}/mcp/interview/face-monitor`,
+                    {
+                        method: "POST",
+                        body: fd,
+                        keepalive: true,
+                        cache: "no-store",
+                    }
+                );
+
+                if (!res.ok) return;
+
+                const data = await res.json();
+                dispatchInsights(data);
+
+            } catch (err) {
+                console.warn("Tab switch report failed", err);
+            }
         };
 
         document.addEventListener("visibilitychange", onVisibilityChange);
         return () =>
             document.removeEventListener("visibilitychange", onVisibilityChange);
     }, [attemptId, candidateId, candidateName]);
+
 
     /* =====================================================
        CAMERA INIT + CLEANUP (SAFE)
