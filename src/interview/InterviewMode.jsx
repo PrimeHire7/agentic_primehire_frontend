@@ -2910,7 +2910,7 @@ export default function InterviewMode() {
             const d = await r.json();
 
             navigate("/certificatedata", {
-                state: { ...d, transcript },
+                state: d,
             });
         };
 
