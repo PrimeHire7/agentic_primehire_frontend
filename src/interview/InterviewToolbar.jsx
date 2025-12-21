@@ -5,6 +5,7 @@ import { Mic, Square } from "lucide-react"; // icons
 
 export default function InterviewToolbar({
     candidateId,
+    attemptId,
     candidateName,
     jdText,
     interviewTime,  // ⬅ new prop
