@@ -326,6 +326,7 @@ export default function InstructionsPanel() {
     const location = useLocation();
 
     /* ================== STATE FROM VALIDATION ================== */
+    const attemptId = location.state?.attemptId || null;   // ✅ NEW
     const candidateName = location.state?.candidateName || "Candidate";
     const candidateId = location.state?.candidateId || null;
     const jd_id = location.state?.jd_id || null;
@@ -353,6 +354,7 @@ export default function InstructionsPanel() {
         sessionStorage.setItem(
             "interview_ctx",
             JSON.stringify({
+                attemptId,
                 candidateName,
                 candidateId,
                 jd_id,
@@ -365,6 +367,7 @@ export default function InstructionsPanel() {
         navigate("/interview", {
             replace: true, // 🔒 PREVENT BACK / REVALIDATION
             state: {
+                attemptId,
                 candidateName,
                 candidateId,
                 jd_id,

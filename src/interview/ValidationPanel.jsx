@@ -1596,6 +1596,8 @@ export default function ValidationPanel() {
 
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
+    // Added for future use
+    const [attemptId, setAttemptId] = useState(null);
 
     /* =====================================================
        🔒 Redirect if interview already started
@@ -1643,7 +1645,7 @@ export default function ValidationPanel() {
                     if (!data.ok) setErrorMsg("Interview not accessible.");
                     return;
                 }
-
+                setAttemptId(data.attempt_id);
                 setAccessState("allowed");
             } catch {
                 setAccessState("error");
@@ -1737,6 +1739,7 @@ export default function ValidationPanel() {
         navigate("/instructions", {
             replace: true,
             state: {
+                attemptId,
                 candidateName,
                 candidateId,
                 jd_id: jdId,
@@ -1789,7 +1792,7 @@ export default function ValidationPanel() {
             <Button onClick={captureFace}>Capture</Button>
             <Button onClick={saveFaceToBackend}>Save Face</Button>
 
-            <Button disabled={!isSaved} onClick={handleContinue}>
+            <Button disabled={!isSaved || !attemptId} onClick={handleContinue}>
                 Continue →
             </Button>
         </div>
