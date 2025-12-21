@@ -2809,15 +2809,17 @@ export default function InterviewMode() {
         if (stage !== 1 || mcqLoaded || !attemptId) return;
 
         (async () => {
+            // inside MCQ load effect
             const fd = new FormData();
-            fd.append("attempt_id", attemptId);
+            fd.append("attempt_id", attemptId);   // ✅ FIX
             fd.append("job_description", jdText);
             if (jdId) fd.append("jd_id", jdId);
 
-            const r = await fetch(
-                `${API_BASE}/mcp/interview_bot_beta/generate-mcq`,
-                { method: "POST", body: fd }
-            );
+            fetch(`${API_BASE}/mcp/interview_bot_beta/generate-mcq`, {
+                method: "POST",
+                body: fd,
+            });
+
             const d = await r.json();
             if (d?.ok) {
                 setMcq(d.mcq);
