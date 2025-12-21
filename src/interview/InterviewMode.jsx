@@ -2938,10 +2938,15 @@ export default function InterviewMode() {
     return (
         <div className="interview-root">
             <InterviewToolbar
-                attemptId={attemptId}
+                attemptId={attemptId}     // ✅ MUST BE HERE
+                candidateId={candidateId}
                 candidateName={candidateName}
+                jdText={jdText}
                 interviewTime={interviewTime}
+                interviewToken={interviewToken}
+                jdId={jdId}
             />
+
 
             <div className="interview-layout">
                 <div className="left-panel">
