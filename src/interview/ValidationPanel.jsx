@@ -1960,8 +1960,10 @@ export default function ValidationPanel() {
         const blob = await (await fetch(capturedImage)).blob();
         const fd = new FormData();
 
-        fd.append("candidate_name", candidateName);
-        fd.append("candidate_id", candidateId);
+        // fd.append("candidate_name", candidateName);
+        // fd.append("candidate_id", candidateId);
+        // fd.append("face_image", blob);
+        fd.append("attempt_id", attemptId);
         fd.append("face_image", blob);
 
         await fetch(
