@@ -975,22 +975,41 @@ export default function CertificateData() {
   const [faceImage, setFaceImage] = useState(null);
 
   /* ================= LOAD FACE IMAGE ================= */
+  // useEffect(() => {
+  //   if (!candidateId || !candidateName) return;
+
+  //   (async () => {
+  //     try {
+  //       const res = await fetch(
+  //         `${API_BASE}/mcp/tools/candidate_validation/get_face_image/${candidateName}/${candidateId}`
+  //       );
+  //       if (!res.ok) return;
+  //       const blob = await res.blob();
+  //       setFaceImage(URL.createObjectURL(blob));
+  //     } catch {
+  //       // ignore
+  //     }
+  //   })();
+  // }, [candidateId, candidateName]);
+
   useEffect(() => {
-    if (!candidateId || !candidateName) return;
+    if (!attemptId) return;
 
     (async () => {
       try {
         const res = await fetch(
-          `${API_BASE}/mcp/tools/candidate_validation/get_face_image/${candidateName}/${candidateId}`
+          `${API_BASE}/mcp/tools/candidate_validation/get_face_image/${attemptId}`
         );
         if (!res.ok) return;
+
         const blob = await res.blob();
         setFaceImage(URL.createObjectURL(blob));
-      } catch {
-        // ignore
+      } catch (e) {
+        console.warn("Face image load failed", e);
       }
     })();
-  }, [candidateId, candidateName]);
+  }, [attemptId]);
+
 
   /* ================= DOWNLOAD CERT ================= */
   const handleDownload = async () => {
