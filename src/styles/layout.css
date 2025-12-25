@@ -101,11 +101,9 @@
 ======================================================== */
 .ph-chatinput-fixed {
     position: fixed;
-    bottom: 0;
-
+    bottom: 25px;
     left: var(--sidebar-width, 260px);
     width: calc(100% - var(--sidebar-width, 260px));
-
     display: flex;
     justify-content: center;
     background: transparent;
@@ -127,4 +125,14 @@
     /* important */
     display: flex;
     flex-direction: column;
+}
+
+/* 
+.mobile_menu {
+    border: 10px solid red;
+    margin-left: 100px;
+} */
+
+.chat-container-wrapper{    
+    display: inline-block !important;
 }

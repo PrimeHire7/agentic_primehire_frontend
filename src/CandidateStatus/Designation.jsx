@@ -259,7 +259,7 @@ const Designation = () => {
        UI
     --------------------------------------------------------- */
     return (
-        <div className="designation-container">
+        <div className="designation-container jd-history-container">
             <h2 className="heading">
                 <span>📄</span> Job Designations
             </h2>

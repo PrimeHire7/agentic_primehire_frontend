@@ -6,7 +6,8 @@
     margin: 0 auto;
     padding: 40px 24px;
     font-family: "Inter", system-ui, sans-serif;
-    background: #f9fafb;
+    background: #fff;
+    /* background: #f9fafb; */
     min-height: 100vh;
 }
 

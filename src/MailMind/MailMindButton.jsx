@@ -744,6 +744,10 @@ import { Loader2 } from "lucide-react";
 import { API_BASE } from "@/utils/constants";
 import { useUploadProgress } from "@/hooks/useUploadProgress";
 import "./MailMindButton.css";
+import { HiOutlineMail } from "react-icons/hi";
+import { RiLockPasswordFill } from "react-icons/ri";
+import { PiMicrosoftOutlookLogoFill } from "react-icons/pi";
+
 
 export default function MailMindButton() {
   /* =======================
@@ -927,24 +931,36 @@ export default function MailMindButton() {
   return (
     <div className="mailmind-container">
 
-      <h3 className="mailmind-title">📬 MailMind</h3>
+      <h3 className="mailmind-title gradient-txt">MailMind</h3>
 
       {!connected && (
         <>
+
           <div className="mailmind-form">
+             <div className="columns-3 mt-5">
+          <div className="col-md-4">
+            <div className="form-field">
             <Input
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-            />
-
+            /><HiOutlineMail className="icon-xt"/>
+</div>
+            
+</div>
+ <div className="col-md-4">
+   <div className="form-field">
             <Input
               type="password"
               placeholder="Password / App Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-
+            <RiLockPasswordFill  className="icon-xt"/>
+</div>
+</div>
+ <div className="col-md-4">
+   <div className="form-field">
             <Select onValueChange={setPlatform} defaultValue={platform}>
               <SelectTrigger>
                 <SelectValue />
@@ -954,11 +970,16 @@ export default function MailMindButton() {
                 <SelectItem value="gmail">Gmail</SelectItem>
               </SelectContent>
             </Select>
+            <PiMicrosoftOutlookLogoFill  className="icon-xt"/>
+</div>
           </div>
-
-          <Button onClick={handleConnect} disabled={loadingLogin}>
+</div>
+</div>
+<div className="col-md-12 mt-3">
+          <Button className="btn" onClick={handleConnect} disabled={loadingLogin}>
             {loadingLogin ? <Loader2 className="animate-spin" /> : "Login"}
           </Button>
+          </div>
         </>
       )}
 

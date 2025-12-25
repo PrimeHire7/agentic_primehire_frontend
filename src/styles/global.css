@@ -8,6 +8,11 @@
 /* ----------------------------------------------------------
    CORE GLOBAL FIX — NO HORIZONTAL SHIFT ⚡
 ---------------------------------------------------------- */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
 html,
 body {
     margin: 0;
@@ -30,6 +35,8 @@ body {
 /* ----------------------------------------------------------
    PAGE STRUCTURE (Header + Sidebar + MainContent)
 ---------------------------------------------------------- */
+
+
 .page-root {
     display: flex;
     flex-direction: column;
@@ -49,6 +56,29 @@ body {
     /* ★ fixes clipping */
 }
 
+
+h1,h2,h3,h4,h5,h6 {
+  font-family: "Inter", sans-serif !important;
+/* font-weight:700 !important; */
+
+}
+
+ul,li {
+margin: 0px;
+	padding:0px;
+}
+
+li::marker {
+display: none;
+}
+
+li {
+list-style: none;
+}
+
+a:focus {
+outline: none;
+}
 /* ----------------------------------------------------------
    SIDEBAR + MAIN AREA
 ---------------------------------------------------------- */
@@ -117,9 +147,10 @@ body {
 }
 
 .mc-title {
-    font-size: 2.8rem;
-    font-weight: 800;
+    font-size: 2.9rem;
+    font-weight: 700;
     text-align: center;
+    font-family: "Inter", sans-serif !important;
 }
 
 .mc-accent {
@@ -276,7 +307,9 @@ li.group\/menu-item.relative button {
     margin-bottom: 7px !important;
     border-radius: 10px !important;
     font-size: 15.5px;
-    transition: .6s;
+    /* transition: .6s; */
+        transition: all 0.3s ease-in-out;
+        border: none !important;
 }
 
 .ph-icon {
@@ -320,3 +353,110 @@ li.group\/menu-item.relative button {
     top: 15px;
     left: -5px;
 }
+
+.skls_ot{
+    height: 100px !important;
+    border: 1px solid red;
+}
+
+.icon_out img {
+    width: 39px !important;
+    background: #38bdf8 !important;
+    border-radius: 50px;
+    padding: 5px;
+}
+
+
+.mt-3{
+    margin-top: 20px;
+}
+
+/* .mobile_menu {
+    border: 10px solid red;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    left: 120px;
+    z-index: 9999999999999999999999;
+    background: #000;
+    top: 177px;
+} */
+
+.mobile_menu  .ph-sidebar{
+    /* border:10px solid red !important; */
+margin-left: 100px;
+}
+
+
+/* /////// */
+
+.col-md-4{
+  width: 33.3%;
+  float: left;
+  padding:0px 10px;
+}
+
+.col-md-4 input,.col-md-4 button{
+  border-radius:10px ;
+  border: 1px solid #ced4da;
+    box-shadow: 0 2px 6px 0 rgba(114, 124, 245, 0.23) !important;
+    border-radius: 10px !important;
+}
+.col-md-4 input::placeholder{
+  color: #9da1ba;
+}
+.mt-5{
+  margin-top: 20px;
+}
+
+/* //////// */
+
+
+.primehirebrain-container{
+    padding: 0px !important;
+}
+
+
+.gradient-txt{
+      background: linear-gradient(90deg, #1e3a8a, #2563eb, #3b82f6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.col-md-4 input, .col-md-4 button {
+    border: 1px solid #ced4da !important;
+    box-shadow: 0 2px 6px 0 rgba(114, 124, 245, 0.23) !important;
+    border-radius: 10px !important;
+    padding: 14px 20px !important;
+    line-height: 13px !important;
+    height: auto !important;
+    background-color: #fff;
+    padding-left: 40px !important;
+}
+.form-field{
+    position: relative;
+}
+.form-field .icon-xt {
+    position: absolute;
+    left: 16px;
+    z-index: 9;
+    top: 12px;
+    font-size: 20px;
+    color: #0c68efdb;
+}
+
+.btn{
+    background-image: linear-gradient(-180deg, #37AEE2 0%, #1E96C8 100%) !important;
+  border-radius: 10px !important;
+  box-sizing: border-box;
+  color: #FFFFFF !important;
+  font-size: 16px;
+  /* padding: 1rem 1.75rem; */
+  text-decoration: none;
+  border: 0;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+

@@ -683,6 +683,8 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { API_BASE } from "@/utils/constants";
 import "./PrimeHireBrain.css";
+import { LuRefreshCw } from "react-icons/lu";
+
 
 const PrimeHireBrain = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -809,7 +811,7 @@ const PrimeHireBrain = () => {
       : 0;
 
   return (
-    <div className="primehirebrain-container">
+    <div className="jd-history-container">
       <h2 className="brain-title">PrimeHire Brain</h2>
 
       {/* ACTION BAR */}
@@ -822,11 +824,12 @@ const PrimeHireBrain = () => {
         />
 
         <Button
-          className="refresh-btn" onClick={() => fetchStoredResumes(search)}>
-          🔄 Refresh
+          className="refresh-btn jd-refresh btn" onClick={() => fetchStoredResumes(search)}>
+          <LuRefreshCw />
+ Refresh
         </Button>
 
-        <Button
+        <Button className="repair-btn"
           variant="outline"
           disabled={repairing}
           onClick={startRepair}

@@ -663,6 +663,7 @@ export default function ProfileTable({
               <th>Exp</th>
               <th>Skills</th>
               <th>Actions</th>
+              <th>Satus</th>
               <th>Score</th>
               <th>Interview</th>
             </tr>
@@ -850,7 +851,7 @@ function ProfileTableRow({
       <td>{item.phone}</td>
       <td>{item.email}</td>
       <td>{item.experience_years}Y</td>
-      <td>{(item.skills || []).join(", ")}</td>
+      <td className="skls_ot">{(item.skills || []).join(", ")}</td>
 
       {/* ======================== ACTIONS ======================== */}
       <td className="actions-cell">
@@ -906,6 +907,86 @@ function ProfileTableRow({
               <div>Round: {statusInfo.interview_round || 1}</div>
             </div>
           )} */}
+
+          {/* ---------------- SEND TO CLIENT ---------------- */}
+          <button className="action-btn bot" onClick={() => setShowClient(!showClient)}>
+            <Send size={16} />
+            To Client
+          </button>
+
+          {showClient && (
+            <div className="client-inline-row">
+              <input
+                type="email"
+                placeholder="Client email"
+                value={clientEmail}
+                className="client-inline-input"
+                onChange={(e) => setClientEmail(e.target.value)}
+              />
+              <button
+                className="client-inline-send"
+                disabled={clientLoading}
+                onClick={sendClientMail}
+              >
+                {clientLoading ? <Loader2 className="spin" /> : "Send"}
+              </button>
+            </div>
+          )}
+        </div>
+      </td>
+      <td className="actions-cell">
+        <div className="action-group">
+
+          {/* ---------------- MAIL ---------------- */}
+          <button
+            className="action-btn mail"
+            disabled={mailLoading}
+            onClick={handleEmailSend}
+          >
+            {mailLoading ? <Loader2 className="spin" /> : <Mail size={16} />}
+            Mail
+          </button>
+
+          {/* ---------------- WHATSAPP ---------------- */}
+          <button
+            className={`action-btn whatsapp ${!whatsappAvailable ? "disabled" : ""}`}
+            disabled={waLoading || !whatsappAvailable}
+            onClick={handleWhatsApp}
+          >
+            {waLoading ? <Loader2 className="spin" /> : <MessageSquare size={16} />}
+            WhatsApp
+          </button>
+
+          {/* ---------------- STATUS ---------------- */}
+          <button
+            className="action-btn status"
+            disabled={statusLoading}
+            onClick={async () => {
+              if (!item.phone) return alert("Phone unavailable");
+              setStatusLoading(true);
+
+              try {
+                const res = await fetch(
+                  `${API_BASE}/mcp/tools/jd_history/scheduler/latest_attempt/${item.phone}/${jdId}`
+                );
+                const data = await res.json();
+                setStatusInfo(data);
+              } catch {
+                alert("Status check failed.");
+              }
+              setStatusLoading(false);
+            }}
+          >
+            {statusLoading ? <Loader2 className="spin" /> : <BsGraphUpArrow size={16} />}
+            Status
+          </button>
+
+          {statusInfo && (
+            <div className="status-popup">
+              <div>{statusInfo.progress || "Not Started"}</div>
+              <div>Round: {statusInfo.interview_round || 1}</div>
+            </div>
+          )}
 
           {/* ---------------- SEND TO CLIENT ---------------- */}
           <button className="action-btn bot" onClick={() => setShowClient(!showClient)}>
