@@ -6,8 +6,7 @@ import logo from "@/assets/primehire_logo.png";
 import AppSidebar from "../components/AppSidebar/AppSidebar";
 import "./Header.css";
 import Button from 'react-bootstrap/Button';
-import Offcanvas from 'react-bootstrap/Offcanvas';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import { FaBarsStaggered } from "react-icons/fa6";
 
 const Header = ({ onRefresh }) => {
 
@@ -60,8 +59,8 @@ const Header = ({ onRefresh }) => {
             <RefreshCcw className="ph-btn-icon" />
             Refresh
           </button>
-           <Button variant="primary" onClick={toggleShow} className="me-2">
-        tets
+           <Button  className="me-2">
+        <FaBarsStaggered />
       </Button>
 
           {/* <button className="ph-btn-primary">
@@ -71,7 +70,7 @@ const Header = ({ onRefresh }) => {
 
       </div>
     </header>
-<div className="mobile_menu">
+{/* <div className="mobile_menu">
 
 
    <Offcanvas show={show} onHide={handleClose}>
@@ -84,7 +83,7 @@ const Header = ({ onRefresh }) => {
         </Offcanvas.Body>
       </Offcanvas>
 
-</div>
+</div> */}
 </div>
   );
 };
