@@ -599,6 +599,9 @@ body .ph-chatinput-fixed {
     width: 100%;
     max-width: 100%;
 }
+.ph-sidebar{
+    display: none;
+}
 }
 @media only screen and (max-width: 767px) {
 .mc-subtitle {
@@ -815,4 +818,14 @@ tbody tr:nth-child(2n) {
 
 .ci-suggestions{
     display: none !important;
+}
+
+
+.assistant-loading{
+    justify-content: center;
+}
+
+.over_scrl_table {
+    width: auto !important;
+    overflow-x: auto !important;
 }

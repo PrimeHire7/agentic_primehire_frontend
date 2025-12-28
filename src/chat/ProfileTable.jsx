@@ -1130,7 +1130,7 @@ const ProfileTable = ({ data = [], index = 0, jdId = null, jdText = "" }) => {
           <span className={`badge good ${selectedCategory === "good" ? "active" : ""}`} onClick={() => setSelectedCategory("good")}>👍 Good ({summary.good})</span>
         </div>
       </div>
-
+<div className="over_scrl_table">
       <table className="profiles-table">
         <thead>
           <tr>
@@ -1164,6 +1164,7 @@ const ProfileTable = ({ data = [], index = 0, jdId = null, jdText = "" }) => {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 };
