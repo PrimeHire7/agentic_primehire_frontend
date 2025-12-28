@@ -676,12 +676,22 @@ body .ph-chatinput-fixed {
 .chat-content {
     padding: 8px 10px;
     border-radius: 14px;
-    font-size: 14px;
+    font-size: 13px;
 }
+.chat-avatar {
+    width: 25px !important;
+    height: 25px !important;
+    top: 10px !important;
+    left: 3px !important;
+}
+
 }
 @media only screen and (max-width: 575px) {
 .ph-logo {
     width: 180px;
+}
+.chat-content h2 {
+    font-size: 1rem !important;
 }
 }
 @media only screen and (max-width: 554px) {
@@ -689,6 +699,7 @@ body .ph-chatinput-fixed {
     grid-template-columns: repeat(auto-fit, minmax(169px, 1fr)) !important;
 }
 }
+
 @media only screen and (max-width: 480px) {
 .mc-action-card {
     padding: 15px 15px;
@@ -711,7 +722,11 @@ body .ph-chatinput-fixed {
     gap: 3px 0px !important;
 }
 }
-
+@media only screen and (max-width: 400px) {
+        .mc-action-card {
+        padding: 15px 10px !important;
+    }
+}
 span.sk-bg-clrs {
     background: #fff3cd;
     font-size: 13px !important;
