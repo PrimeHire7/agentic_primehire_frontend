@@ -291,7 +291,7 @@ export const useUploadProgress = (pollInterval = 800) => {
 
             try {
                 const res = await fetch(
-                    "https://primehire.nirmataneurotech.com/mcp/tools/resume/progress"
+                    "https://agentic.primehire.ai/api/mcp/tools/resume/progress"
                 );
                 const data = await res.json();
 
