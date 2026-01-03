@@ -1,5 +1,5 @@
 // 📁 src/utils/api.js
-import { API_BASE } from "./constants";
+import { API_BASE, UI_BASE } from "./constants";
 
 function stripHtml(html) {
   if (!html) return "";
@@ -302,7 +302,7 @@ export const sendMailMessage = async (item, jdId, jdTextFromMatcher = null) => {
        BUILD CORRECT SCHEDULER LINK (NOT validation_panel)
     ========================================================== */
     const schedulerLink =
-      `https://agentic.primehire.ai/scheduler?candidateId=` +
+      `${UI_BASE}/scheduler?candidateId=` +
       `${encodeURIComponent(candidateId)}&candidateName=` +
       `${encodeURIComponent(candidateName)}&jd_token=${jdToken}&jd_id=${finalJdId}`;
 
