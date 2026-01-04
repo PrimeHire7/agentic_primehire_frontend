@@ -302,28 +302,59 @@
   min-width: 200px;
 }
 
-.client-mail-box {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  margin-top: 5px;
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  padding: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 100;
-  min-width: 250px;
+/* ===== Client Email Modal ===== */
+
+.client-mail-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.client-mail-box {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px 22px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+  min-width: 320px;
+  max-width: 90%;
+  animation: popupFade 0.2s ease-out;
+}
+
+@keyframes popupFade {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.client-mail-box h4 {
+  margin: 0 0 10px;
+  font-size: 16px;
+  font-weight: 600;
 }
 
 .client-mail-input {
-  padding: 8px;
+  padding: 10px;
   border: 1px solid #ddd;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 14px;
+  width: 100%;
+}
+
+.client-mail-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 12px;
 }
 
 .client-mail-send-btn {
@@ -331,10 +362,20 @@
   background: #28a745;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
 }
+
+.client-mail-cancel-btn {
+  padding: 8px 14px;
+  background: #eee;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
 
 .score {
   font-weight: 700;

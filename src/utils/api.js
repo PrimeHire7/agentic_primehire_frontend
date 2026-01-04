@@ -491,3 +491,31 @@ export const generateSingleJD = async (prompt) => {
     throw err;
   }
 };
+
+export async function sendToClient(clientEmail, candidateId, jdId) {
+  const res = await fetch(`${API_BASE}/mcp/tools/match/send_to_client`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      client_email: clientEmail,
+      candidate_id: candidateId,
+      jd_id: jdId ?? null,
+    }),
+  });
+
+  let data;
+  try {
+    data = await res.json();
+  } catch {
+    data = null;
+  }
+
+  if (!res.ok) {
+    const err =
+      (data && (data.detail || data.message)) ||
+      `Request failed (${res.status})`;
+    throw new Error(err);
+  }
+
+  return data;
+}

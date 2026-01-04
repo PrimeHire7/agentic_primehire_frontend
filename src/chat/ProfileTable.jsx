@@ -1,5 +1,7 @@
 // src/components/ProfileTable.jsx
 import React, { useState, useEffect } from "react";
+import { sendToClient } from "@/utils/api";
+
 import { Mail, MessageSquare, Send, Loader2 } from "lucide-react";
 import { sendMailMessage, sendWhatsAppMessage } from "@/utils/api";
 import { API_BASE } from "@/utils/constants";
@@ -188,14 +190,67 @@ const ProfileTableRow = ({ item, jdId, jdText, responses, whatsappAvailable, onR
           <button className="action-btn mail" onClick={handleEmailSend} disabled={mailLoading}>
             {mailLoading ? <Loader2 className="spin" /> : <Mail size={16} />}
           </button>
-          <button className="action-btn bot" onClick={() => setShowClient(p => !p)}>
+          <button
+            className="action-btn bot"
+            onClick={() => {
+              setShowClient(true);
+            }}
+          >
             <Send size={16} />
           </button>
+
           {showClient && (
-            <div className="client-mail-box">
-              <input className="client-mail-input" placeholder="Client email" value={clientEmail} onChange={e => setClientEmail(e.target.value)} />
+            <div className="client-mail-overlay" onClick={() => setShowClient(false)}>
+              <div className="client-mail-box" onClick={(e) => e.stopPropagation()}>
+                <h4>Send Candidate to Client</h4>
+
+                <input
+                  className="client-mail-input"
+                  placeholder="Client email"
+                  value={clientEmail}
+                  onChange={e => setClientEmail(e.target.value)}
+                />
+
+                <div className="client-mail-actions">
+                  <button
+                    className="client-mail-cancel-btn"
+                    onClick={() => setShowClient(false)}
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    className="client-mail-send-btn"
+                    disabled={mailLoading || !clientEmail.trim()}
+                    onClick={async () => {
+                      try {
+                        setMailLoading(true);
+
+                        const candidateId =
+                          item.candidate_id || item.email || item.phone || item.name;
+
+                        await sendToClient(clientEmail.trim(), candidateId, jdId);
+
+                        alert("✅ Sent to client successfully");
+
+                        setShowClient(false);
+                        setClientEmail("");
+                      } catch (e) {
+                        console.error(e);
+                        alert(e.message || "Failed to send to client");
+                      } finally {
+                        setMailLoading(false);
+                      }
+                    }}
+                  >
+                    {mailLoading ? "Sending..." : "Send"}
+                  </button>
+                </div>
+              </div>
             </div>
           )}
+
+
         </div>
       </td>
       <td className="score">{score}/100</td>
