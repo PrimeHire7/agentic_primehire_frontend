@@ -1,9 +1,7 @@
-
-// useUploadProgress.js
 import { useState, useEffect, useRef } from "react";
-import { WS_URL, API_BASE } from "@/utils/constants";
-export const useUploadProgress = (pollInterval = 800) => {
+import { API_BASE } from "@/utils/constants";
 
+export const useUploadProgress = (pollInterval = 800) => {
     const [progressData, setProgressData] = useState({
         total: 0,
         processed: 0,
@@ -13,52 +11,53 @@ export const useUploadProgress = (pollInterval = 800) => {
     });
 
     const [isProcessing, setIsProcessing] = useState(false);
-    const [isCompleted, setIsCompleted] = useState(false);
+    const jobIdRef = useRef(null);
+    const intervalRef = useRef(null);
 
-    // controls whether we SHOULD process updates
-    const stopPollingRef = useRef(false);
+    const fetchProgress = async () => {
+        const jobId = jobIdRef.current;
+        if (!jobId) return;
 
-    useEffect(() => {
-        const fetchProgress = async () => {
-            // 🔒 polling paused (but effect still alive)
-            if (stopPollingRef.current) return;
+        try {
+            const res = await fetch(
+                `${API_BASE}/mcp/tools/resume/progress/live?job_id=${jobId}`
+            );
+            const data = await res.json();
 
-            try {
-                const res = await fetch(`${API_BASE}/mcp/tools/resume/progress`);
+            if (!data?.progress) return;
 
-                const data = await res.json();
+            const pd = data.progress;
+            setProgressData(pd);
 
-                if (!data?.progress) return;
+            const processing = pd.total > 0 && pd.processed < pd.total;
+            setIsProcessing(processing);
 
-                const pd = data.progress;
-                setProgressData(pd);
-
-                const processing = pd.total > 0 && pd.processed < pd.total;
-                // const completed = pd.total > 0 && pd.processed === pd.total;
-                const completed =
-                    pd.total > 0 &&
-                    pd.processed >= pd.total;
-
-                setIsProcessing(processing);
-
-                if (completed) {
-                    setIsCompleted(true);
-                    stopPollingRef.current = true; // pause polling
-                }
-            } catch (err) {
-                console.error("❌ Progress fetch failed:", err);
+            if (!processing && intervalRef.current) {
+                clearInterval(intervalRef.current);
+                intervalRef.current = null;
             }
-        };
+
+        } catch (err) {
+            console.error("Progress fetch failed:", err);
+        }
+    };
+
+    const startTracking = (newJobId) => {
+        if (!newJobId) return;
+
+        if (intervalRef.current) clearInterval(intervalRef.current);
+
+        jobIdRef.current = newJobId;
+        setIsProcessing(true);
 
         fetchProgress();
-        const interval = setInterval(fetchProgress, pollInterval);
-
-        return () => clearInterval(interval);
-    }, [pollInterval]);
+        intervalRef.current = setInterval(fetchProgress, pollInterval);
+    };
 
     const resetProgress = () => {
-        stopPollingRef.current = false;   // 🔥 important
-        setIsCompleted(false);
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        intervalRef.current = null;
+        jobIdRef.current = null;
         setIsProcessing(false);
         setProgressData({
             total: 0,
@@ -69,12 +68,16 @@ export const useUploadProgress = (pollInterval = 800) => {
         });
     };
 
+    useEffect(() => {
+        return () => {
+            if (intervalRef.current) clearInterval(intervalRef.current);
+        };
+    }, []);
 
     return {
         progressData,
         isProcessing,
-        isCompleted,
         resetProgress,
-        setProgressData
+        startTracking
     };
 };

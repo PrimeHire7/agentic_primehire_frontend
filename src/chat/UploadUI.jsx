@@ -1,178 +1,23 @@
-
-// import React from "react";
-// import { useUploadProgress } from "@/hooks/useUploadProgress";
-// import { uploadResumes } from "@/utils/uploadResumes";
-// import OverwriteDialog from "@/components/OverwriteDialog";
-// import { API_BASE } from "@/utils/constants";
-// import "./UploadUI.css";
-
-// export default function UploadUI() {
-//     const [files, setFiles] = React.useState([]);
-//     const [uploading, setUploading] = React.useState(false);
-//     const [uploadedData, setUploadedData] = React.useState([]);
-//     const [duplicateItems, setDuplicateItems] = React.useState([]);
-//     const [showOverwriteDialog, setShowOverwriteDialog] = React.useState(false);
-//     const uploadStartedRef = React.useRef(false);
-
-//     const {
-//         progressData,
-//         isProcessing,
-//         isCompleted,
-//         resetProgress,
-//         setProgressData
-//     } = useUploadProgress();
-
-//     const confirmOverwrite = () => {
-//         setShowOverwriteDialog(false);   // ✅ close modal
-//         setDuplicateItems([]);           // ✅ clear duplicate state
-//         handleUpload(true);              // ✅ start overwrite
-//     };
-
-//     /* FILE SELECT */
-//     const handleFileChange = (e) => {
-//         uploadStartedRef.current = false;  // 🔥 reset session
-//         console.log("FILE CHANGE FIRED", e.target.files);
-//         setFiles(Array.from(e.target.files));
-//         setUploadedData([]);
-//         resetProgress();
-//     };
-
-//     /* RESET */
-//     const resetAll = () => {
-//         resetProgress();
-//         setFiles([]);
-//         setUploadedData([]);
-//         fetch(`${API_BASE}/mcp/tools/resume/reset`, { method: "POST" });
-//     };
-
-//     /* UPLOAD */
-//     const handleUpload = async (forceOverwrite = false) => {
-//         uploadStartedRef.current = true;
-//         if (!files.length) return;
-
-//         resetProgress();
-//         setUploading(true);
-
-//         setProgressData({
-//             total: 0,
-//             processed: 0,
-//             completed: [],
-//             errors: [],
-//             status: "uploading"
-//         });
-
-//         try {
-//             const data = await uploadResumes(files, forceOverwrite);
-
-//             if (data.status === "duplicate" && !forceOverwrite) {
-//                 setDuplicateItems(data.duplicates || []);
-//                 setShowOverwriteDialog(true);
-//                 return;
-//             }
-//         } catch (err) {
-//             console.error("Upload failed:", err);
-//         } finally {
-//             setUploading(false);
-//         }
-//     };
-
-//     return (
-//         <div className="upload-box mt-3">
-
-//             <input
-//                 id="resume-upload"
-//                 type="file"
-//                 multiple
-//                 accept=".pdf,.docx"
-//                 onChange={handleFileChange}
-//                 className="hidden"
-//             />
-
-//             <label htmlFor="resume-upload" className="upload-label">
-//                 Choose Files
-//             </label>
-
-//             {files.length > 0 && (
-//                 <div className="selected-files">
-//                     <strong>{files.length} file(s) selected:</strong>
-//                     <ul>
-//                         {files.map((f, i) => (
-//                             <li key={i}>📄 {f.name}</li>
-//                         ))}
-//                     </ul>
-//                 </div>
-//             )}
-
-//             {isProcessing && (
-//                 <p className="progress-status">
-//                     Processing {progressData.processed}/{progressData.total}
-//                 </p>
-//             )}
-
-//             {uploadStartedRef.current && isCompleted && (
-//                 <p className="progress-status success">✅ Upload Complete</p>
-//             )}
-
-
-//             <button
-//                 className="upload-btn"
-//                 disabled={uploading}
-//                 onClick={() => {
-//                     if (isCompleted) {
-//                         resetAll();
-//                         document.getElementById("resume-upload")?.click();
-//                         return;
-//                     }
-
-//                     if (files.length) {
-//                         handleUpload();
-//                         return;
-//                     }
-
-//                     document.getElementById("resume-upload")?.click();
-//                 }}
-//             >
-//                 {uploading
-//                     ? "Uploading..."
-//                     : isProcessing
-//                         ? "Processing..."
-//                         : isCompleted
-//                             ? "Upload Again"
-//                             : "Start Upload"}
-//             </button>
-
-//             {showOverwriteDialog && (
-//                 <OverwriteDialog
-//                     items={duplicateItems}
-//                     onConfirm={confirmOverwrite}
-//                     onCancel={() => {
-//                         setShowOverwriteDialog(false);
-//                         setDuplicateItems([]);
-//                     }}
-//                 />
-//             )}
-
-//         </div>
-//     );
-// }
-import React from "react";
+import React, { useRef, useState } from "react";
 import { useUploadProgress } from "@/hooks/useUploadProgress";
 import { uploadResumes } from "@/utils/uploadResumes";
 import OverwriteDialog from "@/components/OverwriteDialog";
-import { API_BASE } from "@/utils/constants";
 import "./UploadUI.css";
 
 export default function UploadUI() {
-    const [files, setFiles] = React.useState([]);
-    const [uploading, setUploading] = React.useState(false);
-    const [duplicateItems, setDuplicateItems] = React.useState([]);
-    const [showOverwriteDialog, setShowOverwriteDialog] = React.useState(false);
+    const [files, setFiles] = useState([]);
+    const [uploading, setUploading] = useState(false);
+    const [duplicateItems, setDuplicateItems] = useState([]);
+    const [showOverwriteDialog, setShowOverwriteDialog] = useState(false);
+    const [jobId, setJobId] = useState(null);
+
+    const inputRef = useRef(null);
 
     const {
         progressData,
         isProcessing,
         resetProgress,
-        setProgressData
+        startTracking
     } = useUploadProgress();
 
     const confirmOverwrite = () => {
@@ -185,9 +30,9 @@ export default function UploadUI() {
         const selectedFiles = Array.from(e.target.files || []);
         if (!selectedFiles.length) return;
 
-        console.log("FILES SELECTED:", selectedFiles);
         setFiles(selectedFiles);
         resetProgress();
+        setJobId(null);
     };
 
     const handleUpload = async (forceOverwrite = false) => {
@@ -195,14 +40,6 @@ export default function UploadUI() {
 
         setUploading(true);
         resetProgress();
-
-        setProgressData({
-            total: 0,
-            processed: 0,
-            completed: [],
-            errors: [],
-            status: "uploading"
-        });
 
         try {
             const data = await uploadResumes(files, forceOverwrite);
@@ -213,6 +50,14 @@ export default function UploadUI() {
                 return;
             }
 
+            if (data?.job_id) {
+                setJobId(data.job_id);
+                startTracking(data.job_id); // 🔥 start real-time polling
+            }
+
+            setFiles([]);
+            if (inputRef.current) inputRef.current.value = "";
+
         } catch (err) {
             console.error("Upload failed:", err);
         } finally {
@@ -222,8 +67,8 @@ export default function UploadUI() {
 
     return (
         <div className="upload-box mt-3">
-
             <input
+                ref={inputRef}
                 id="resume-upload"
                 type="file"
                 multiple
@@ -248,8 +93,14 @@ export default function UploadUI() {
             )}
 
             {isProcessing && (
-                <p className="progress-status">
+                <p className="progress-status processing">
                     Processing {progressData.processed}/{progressData.total}
+                </p>
+            )}
+
+            {progressData.status && progressData.status !== "idle" && (
+                <p className={`progress-status ${progressData.status}`}>
+                    Status: {progressData.status}
                 </p>
             )}
 
@@ -271,7 +122,6 @@ export default function UploadUI() {
                     }}
                 />
             )}
-
         </div>
     );
 }
