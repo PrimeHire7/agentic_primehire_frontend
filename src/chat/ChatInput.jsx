@@ -246,9 +246,9 @@ const ChatInput = ({
 
       {/* RIGHT — MIC + SEND */}
       <div className="ci-right">
-        <button className="ci-icon-btn ci-mic-btn">
+        {/* <button className="ci-icon-btn ci-mic-btn">
           <Mic className="w-5 h-5" />
-        </button>
+        </button> */}
 
         <button className="ci-send-btn" onClick={send}>
           <Send className="w-5 h-5" />
