@@ -216,7 +216,7 @@ const PrimeHireBrain = () => {
                   <th>Email</th>
                   <th>Skills</th>
                   <th>Experience</th>
-                  <th>Company</th>
+                  {/* <th>Company</th> */}
                   <th>Updated</th>
                   <th>Action</th>
                 </tr>
@@ -239,7 +239,7 @@ const PrimeHireBrain = () => {
                       {r.top_skills}
                     </td>
                     <td>{r.years_of_experience}</td>
-                    <td>{r.current_company}</td>
+                    {/* <td>{r.current_company}</td> */}
                     <td>{r.last_updated}</td>
                     <td>
                       <button
