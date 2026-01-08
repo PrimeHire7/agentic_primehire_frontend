@@ -16,6 +16,28 @@ import "./InterviewMode.css";
 const INTERVIEW_FLAG = "INTERVIEW_STARTED";
 console.log("🧨 InterviewMode mounted");
 
+const ANOMALY_KEY_MAP = {
+    absence: "no_face",
+    multi_face: "multiple_faces",
+    face_mismatch: "face_mismatch",
+    gaze_away_long: "looking_away",
+    no_blink: "no_blink",
+    static_face: "static_face",
+    excessive_nodding_long: "excessive_nodding",
+    head_scanning_long: "head_scanning",
+    stress_movement: "stress",
+    tab_switch: "tab_switch",
+};
+
+const normalizeCounts = (counts = {}) => {
+    const out = {};
+    for (const [k, v] of Object.entries(counts)) {
+        const nk = ANOMALY_KEY_MAP[k] || k;
+        out[nk] = v;
+    }
+    return out;
+};
+
 export default function InterviewMode() {
     const location = useLocation();
     const navigate = useNavigate();
@@ -43,28 +65,38 @@ export default function InterviewMode() {
     const aiBusyRef = useRef(false);
     const [anomalyCounts, setAnomalyCounts] = useState({});
 
+    // useEffect(() => {
+    //     const handler = (e) => {
+    //         if (!e.detail?.counts) return;
+    //         setAnomalyCounts((prev) => ({
+    //             ...prev,
+    //             ...e.detail.counts,
+    //         }));
+    //     };
+
+    //     window.addEventListener("liveInsightsUpdate", handler);
+    //     return () => window.removeEventListener("liveInsightsUpdate", handler);
+    // }, []);
+
     useEffect(() => {
         const handler = (e) => {
-            console.log("📡 LiveInsights event:", e.detail);
             if (!e.detail?.counts) return;
+
+            const normalized = normalizeCounts(e.detail.counts);
+
             setAnomalyCounts((prev) => {
                 const next = { ...prev };
-                for (const [k, v] of Object.entries(e.detail.counts)) {
-                    next[k] = (next[k] || 0) + v;
+                for (const [k, v] of Object.entries(normalized)) {
+                    next[k] = Math.max(next[k] || 0, v); // snapshot-safe merge
                 }
-                console.log("📊 Updated anomalyCounts:", next);
                 return next;
             });
-
-            // setAnomalyCounts((prev) => ({
-            //     ...prev,
-            //     ...e.detail.counts,
-            // }));
         };
 
         window.addEventListener("liveInsightsUpdate", handler);
         return () => window.removeEventListener("liveInsightsUpdate", handler);
     }, []);
+
 
     /* ================= SAFETY ================= */
     useEffect(() => {

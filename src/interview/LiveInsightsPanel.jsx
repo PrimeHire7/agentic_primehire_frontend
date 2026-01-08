@@ -3,6 +3,28 @@
 import React, { useEffect, useState, useRef } from "react";
 import "./LiveInsightsPanel.css";
 
+const ANOMALY_KEY_MAP = {
+    absence: "no_face",
+    multi_face: "multiple_faces",
+    face_mismatch: "face_mismatch",
+    gaze_away_long: "looking_away",
+    no_blink: "no_blink",
+    static_face: "static_face",
+    excessive_nodding_long: "excessive_nodding",
+    head_scanning_long: "head_scanning",
+    stress_movement: "stress",
+    tab_switch: "tab_switch",
+};
+
+const normalizeCounts = (counts = {}) => {
+    const out = {};
+    for (const [k, v] of Object.entries(counts)) {
+        const nk = ANOMALY_KEY_MAP[k] || k;
+        out[nk] = v;
+    }
+    return out;
+};
+
 function LiveInsightsPanel() {
     const [live, setLive] = useState({
         anomalies: [],
@@ -20,7 +42,8 @@ function LiveInsightsPanel() {
                 ? payload.anomalies
                 : [];
 
-            const incomingCounts = payload.counts || {};
+            // const incomingCounts = payload.counts || {};
+            const incomingCounts = normalizeCounts(payload.counts || {});
 
             // ===============================
             // 1️⃣ UPDATE UI STATE (SAFE MERGE)
