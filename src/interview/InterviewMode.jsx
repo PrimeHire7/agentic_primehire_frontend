@@ -209,7 +209,14 @@ export default function InterviewMode() {
 
             const d = await r.json();
 
-            navigate("/certificatedata", { state: d });
+            // navigate("/certificatedata", { state: d });
+            navigate("/certificatedata", {
+                state: {
+                    ...d,
+                    anomaly_counts: anomalyCounts,
+                },
+            });
+
         };
 
         window.addEventListener("stopInterview", handler);
