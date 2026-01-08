@@ -40,6 +40,20 @@ export default function InterviewMode() {
     const [aiInitDone, setAiInitDone] = useState(false);
 
     const aiBusyRef = useRef(false);
+    const [anomalyCounts, setAnomalyCounts] = useState({});
+
+    useEffect(() => {
+        const handler = (e) => {
+            if (!e.detail?.counts) return;
+            setAnomalyCounts((prev) => ({
+                ...prev,
+                ...e.detail.counts,
+            }));
+        };
+
+        window.addEventListener("liveInsightsUpdate", handler);
+        return () => window.removeEventListener("liveInsightsUpdate", handler);
+    }, []);
 
     /* ================= SAFETY ================= */
     useEffect(() => {
@@ -184,6 +198,7 @@ export default function InterviewMode() {
             fd.append("job_description", jdText);
             fd.append("mcq_result", JSON.stringify(mcqResult));
             fd.append("coding_result", JSON.stringify(codingResult));
+            fd.append("anomaly_counts", JSON.stringify(anomalyCounts));
             if (jdId) fd.append("jd_id", jdId);
 
             const r = await fetch(
