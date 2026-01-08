@@ -120,6 +120,12 @@ export default function WebcamRecorder({
         };
     }, []);
 
+    useEffect(() => {
+        if (faceMonitorEnabled && attemptId) {
+            setRecording(true);
+        }
+    }, [faceMonitorEnabled, attemptId]);
+
     /* =====================================================
        FACE MONITOR LOOP CONTROL
     ===================================================== */

@@ -246,7 +246,11 @@ export default function InterviewMode() {
                     <WebcamRecorder
                         attemptId={attemptId}
                         candidateName={candidateName}
-                        faceMonitorEnabled={stage === 3}
+                        // faceMonitorEnabled={stage === 3}
+                        faceMonitorEnabled={true}
+
+
+
                     />
 
                     <LiveInsightsPanel />
