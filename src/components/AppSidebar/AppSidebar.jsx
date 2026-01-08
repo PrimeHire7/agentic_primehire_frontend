@@ -28,7 +28,7 @@ const features = [
     { id: "PrimeHireBrain", label: "PrimeHire Brain", icon: <Cpu size={18} /> },
     { id: "JDHistory", label: "JD History", icon: <FileText size={18} /> },
     { id: "CandidateStatus", label: "Candidates Status", icon: <FaUserCheck size={18} /> },
-    { id: "InterviewMode", label: "Interview Mode", icon: <ChevronRight size={18} /> },
+    // { id: "InterviewMode", label: "Interview Mode", icon: <ChevronRight size={18} /> },
 ];
 
 export default function AppSidebar({ open, setOpen, selectedFeature, onFeatureSelect }) {
