@@ -1,95 +1,168 @@
-/* FILE: src/interview/LiveInsightsPanel.jsx */
+import React, { useState, useRef } from "react";
+import "./InterviewToolbar.css";
+import { API_BASE } from "@/utils/constants";
+import { Mic, Square } from "lucide-react"; // icons
 
-import React, { useEffect, useState, useRef } from "react";
-import "./LiveInsightsPanel.css";
+export default function InterviewToolbar({
+    candidateId,
+    attemptId,
+    candidateName,
+    jdText,
+    interviewTime,  // ⬅ new prop
+    interviewToken,
+    jdId
+}) {
+    const [recording, setRecording] = useState(false);
+    const mediaRecorderRef = useRef(null);
+    const audioChunksRef = useRef([]);
 
-function LiveInsightsPanel({ attemptId }) {
-    const [live, setLive] = useState({ anomalies: [], counts: {} });
-    const writtenRef = useRef(new Set());
+    /* ---------------------------------------------------
+       FORMAT TIME DISPLAY
+    --------------------------------------------------- */
+    function formatTime(sec) {
+        const m = String(Math.floor(sec / 60)).padStart(2, "0");
+        const s = String(sec % 60).padStart(2, "0");
+        return `${m}:${s}`;
+    }
+    /* ---------------------------------------------------
+       START AUDIO RECORDING
+    --------------------------------------------------- */
+    async function startAudio() {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
-    // Reset when attempt changes
-    useEffect(() => {
-        setLive({ anomalies: [], counts: {} });
-        writtenRef.current = new Set();
-    }, [attemptId]);
+        mediaRecorderRef.current = new MediaRecorder(stream, {
+            mimeType: "audio/webm",
+        });
 
-    useEffect(() => {
-        const handler = (e) => {
-            const payload = e.detail || {};
-            if (payload.attempt_id !== attemptId) return;
+        audioChunksRef.current = [];
 
-            const incomingAnomalies = Array.isArray(payload.anomalies)
-                ? payload.anomalies
-                : [];
-
-            const incomingCounts = payload.counts || {};
-
-            setLive((prev) => ({
-                anomalies: incomingAnomalies.length
-                    ? [...prev.anomalies, ...incomingAnomalies].slice(-50)
-                    : prev.anomalies,
-                counts: { ...incomingCounts },
-            }));
-
-            incomingAnomalies.forEach((a) => {
-                const key =
-                    typeof a === "string"
-                        ? a
-                        : a?.type || a?.msg || JSON.stringify(a);
-
-                if (writtenRef.current.has(key)) return;
-
-                writtenRef.current.add(key);
-
-                window.dispatchEvent(
-                    new CustomEvent("transcriptAdd", {
-                        detail: {
-                            role: "system",
-                            text: `⚠ ${key}`,
-                        },
-                    })
-                );
-            });
+        mediaRecorderRef.current.ondataavailable = (e) => {
+            audioChunksRef.current.push(e.data);
         };
 
-        window.addEventListener("liveInsightsUpdate", handler);
-        return () => window.removeEventListener("liveInsightsUpdate", handler);
-    }, [attemptId]);
+        mediaRecorderRef.current.onstop = sendAudioToBackend;
 
-    const C = live.counts || {};
+        mediaRecorderRef.current.start();
+        setRecording(true);
+
+        // 🔵 Candidate started speaking
+        window.dispatchEvent(
+            new CustomEvent("candidateSpeaking", { detail: true })
+        );
+    }
+
+    /* ---------------------------------------------------
+       STOP RECORDING
+    --------------------------------------------------- */
+    function stopAudio() {
+        // 🔴 Candidate stopped speaking
+        window.dispatchEvent(
+            new CustomEvent("candidateSpeaking", { detail: false })
+        );
+        if (mediaRecorderRef.current) {
+            mediaRecorderRef.current.stop();
+        }
+        setRecording(false);
+    }
+
+    /* ---------------------------------------------------
+       SEND AUDIO → /process-answer
+    --------------------------------------------------- */
+    /* ---------------------------------------------------
+   SEND AUDIO → /process-answer
+--------------------------------------------------- */
+    async function sendAudioToBackend() {
+        const blob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+
+        const fd = new FormData();
+        fd.append("audio", blob);
+        fd.append("attempt_id", attemptId);          // ✅ REQUIRED
+        fd.append("candidate_id", candidateId);
+        fd.append("candidate_name", candidateName);
+        fd.append("job_description", jdText);
+        fd.append("token", interviewToken);
+        if (jdId) fd.append("jd_id", jdId);
+
+
+        const res = await fetch(`${API_BASE}/mcp/interview_bot_beta/process-answer`, {
+            method: "POST",
+            body: fd,
+        });
+
+        const data = await res.json();
+
+        // 1️⃣ User transcript update
+        if (data.transcribed_text) {
+            window.dispatchEvent(
+                new CustomEvent("transcriptAdd", {
+                    detail: {
+                        role: "user",
+                        text: data.transcribed_text,
+                        analysis: data.analysis
+                    },
+                })
+            );
+        }
+
+        // 2️⃣ UPDATE AI CHART PANEL — FIXED
+        if (data.analysis) {
+            window.dispatchEvent(
+                new CustomEvent("aiMetricsUpdate", {
+                    detail: data.analysis,   // ⬅ ALWAYS contains confidence + superficial
+                })
+            );
+        }
+
+        // 3️⃣ Append next AI question
+        if (data.next_question) {
+            window.dispatchEvent(
+                new CustomEvent("transcriptAdd", {
+                    detail: { role: "ai", text: data.next_question }
+                })
+            );
+        }
+
+        // 4️⃣ Completed
+        if (data.completed) {
+            window.dispatchEvent(
+                new CustomEvent("transcriptAdd", {
+                    detail: {
+                        role: "ai",
+                        text: data.final_message || "Interview complete.",
+                    },
+                })
+            );
+        }
+    }
+
 
     return (
-        <div className="live-insight-box">
-            <h4>Real-time Behaviour Insights</h4>
+        <div className="interview-toolbar">
 
-            <h5 className="anomaly-title">Detected Anomalies</h5>
-
-            <div className="anomaly-grid">
-                <div className="anomaly-item"><span>No Face</span><strong>{C.absence ?? 0}</strong></div>
-                <div className="anomaly-item"><span>Multi Face</span><strong>{C.multi_face ?? 0}</strong></div>
-                <div className="anomaly-item"><span>Face Mismatch</span><strong>{C.face_mismatch ?? 0}</strong></div>
-                <div className="anomaly-item"><span>Gaze Away</span><strong>{C.gaze_away_long ?? 0}</strong></div>
-                <div className="anomaly-item"><span>No Blink</span><strong>{C.no_blink ?? 0}</strong></div>
-                <div className="anomaly-item"><span>Static Face</span><strong>{C.static_face ?? 0}</strong></div>
-                <div className="anomaly-item"><span>Nodding</span><strong>{C.excessive_nodding_long ?? 0}</strong></div>
-                <div className="anomaly-item"><span>Scanning</span><strong>{C.head_scanning_long ?? 0}</strong></div>
-                <div className="anomaly-item"><span>Stress</span><strong>{C.stress_movement ?? 0}</strong></div>
-                <div className="anomaly-item"><span>Tab Switch</span><strong>{C.tab_switch ?? 0}</strong></div>
+            {/* TIMER */}
+            <div className="interview-timer">
+                ⏱ {formatTime(interviewTime)}
             </div>
 
-            <h5 className="anomaly-title">Latest Anomaly</h5>
+            {/* Recording visualization */}
+            {recording && (
+                <div className="recording-wave">
+                    <div /><div /><div /><div /><div /><div /><div /><div />
+                    <span className="recording-label">Listening…</span>
+                </div>
+            )}
 
-            {live.anomalies.length > 0 ? (
-                <div className="latest-anomaly">
-                    {live.anomalies.at(-1)?.msg || live.anomalies.at(-1)}
-                </div>
+            {!recording ? (
+                <button className="start-speaking-btn" onClick={startAudio}>
+                    <Mic size={18} />
+                    Start Speaking
+                </button>
             ) : (
-                <div className="latest-anomaly empty">
-                    No anomalies
-                </div>
+                <button className="stop-speaking-btn" onClick={stopAudio}>
+                    <Square size={18} />
+                    Stop
+                </button>
             )}
         </div>
     );
 }
-
-export default React.memo(LiveInsightsPanel);
