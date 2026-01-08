@@ -14,6 +14,7 @@ import CodingTestPanel from "./CodingTestPanel";
 import "./InterviewMode.css";
 
 const INTERVIEW_FLAG = "INTERVIEW_STARTED";
+console.log("🧨 InterviewMode mounted");
 
 export default function InterviewMode() {
     const location = useLocation();
