@@ -45,7 +45,7 @@
 
   display: flex;
   gap: 14px;
-  align-items: flex-start;
+  align-items: end;
 }
 
 /* ⚡ Slight motion when typing (optional) */
