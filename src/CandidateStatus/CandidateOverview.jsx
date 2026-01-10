@@ -628,10 +628,23 @@ export default function CandidateOverview() {
 
                     <div className="box half">
                         <h4>Score Breakdown</h4>
-                        <p>Technical <span>{technical}</span></p>
-                        <p>Communication <span>{communication}</span></p>
-                        <p>Behaviour <span>{behaviour}</span></p>
+
+                        <div className="score-row">
+                            <p>Technical: <strong>{technical}</strong></p>
+                            <p className="reason">{evaluation.technical_reason}</p>
+                        </div>
+
+                        <div className="score-row">
+                            <p>Communication: <strong>{communication}</strong></p>
+                            <p className="reason">{evaluation.communication_reason}</p>
+                        </div>
+
+                        <div className="score-row">
+                            <p>Behaviour: <strong>{behaviour}</strong></p>
+                            <p className="reason">{evaluation.behaviour_reason}</p>
+                        </div>
                     </div>
+
 
                     <div className="box">
                         <h4>MCQ Evaluation</h4>
