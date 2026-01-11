@@ -636,9 +636,9 @@ li.group\/menu-item.relative button {
         max-width: 100%;
     }
 
-    .ph-sidebar {
+    /* .ph-sidebar {
         display: none;
-    }
+    } */
 }
 
 @media only screen and (max-width: 767px) {
