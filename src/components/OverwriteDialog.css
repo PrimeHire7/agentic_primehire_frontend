@@ -1,0 +1,49 @@
+.overwrite-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.65);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.overwrite-box {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    width: 420px;
+    text-align: center;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.overwrite-list {
+    list-style: none;
+    padding: 0;
+    margin: 15px 0;
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+.overwrite-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.overwrite-btn-confirm {
+    padding: 8px 18px;
+    background: #d9534f;
+    color: white;
+    border-radius: 6px;
+}
+
+.overwrite-btn-cancel {
+    padding: 8px 18px;
+    background: #888;
+    color: white;
+    border-radius: 6px;
+}

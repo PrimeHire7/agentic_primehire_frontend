@@ -1,0 +1,381 @@
+.task-selector-container {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 3px;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 12px 0;
+}
+
+/* Premium base button with refined elegance */
+.task-button {
+  border: 2px solid #1a1a1a !important;
+  background: linear-gradient(to bottom, #ffffff, #fafafa) !important;
+  color: #1a1a1a !important;
+  font-weight: 700 !important;
+  padding: 10px 20px !important;
+  border-radius: 12px !important;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+  
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Subtle luxury shine */
+.task-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 150%;
+  height: 100%;
+  background: linear-gradient(
+    110deg,
+    transparent 0%,
+    transparent 40%,
+    rgba(255, 255, 255, 0.5) 50%,
+    transparent 60%,
+    transparent 100%
+  );
+  transform: skewX(-25deg);
+  transition: left 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.task-button:hover::before {
+  left: 150%;
+}
+
+/* Sophisticated hover - smooth elevation */
+.task-button:hover {
+  border-color: #87CEEB !important;
+  background: linear-gradient(135deg, #87CEEB 0%, #5DADE2 100%) !important;
+  color: white !important;
+  transform: translateY(-4px) !important;
+  box-shadow: 
+    0 12px 24px -10px rgba(135, 206, 235, 0.35),
+    0 8px 16px -8px rgba(93, 173, 226, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 1px 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Premium active state with refined glow */
+@keyframes premium-glow {
+  0%, 100% {
+    box-shadow: 
+      0 14px 28px -12px rgba(93, 173, 226, 0.4),
+      0 10px 20px -10px rgba(93, 173, 226, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.25),
+      0 0 40px rgba(93, 173, 226, 0.15);
+  }
+  50% {
+    box-shadow: 
+      0 16px 32px -12px rgba(93, 173, 226, 0.5),
+      0 12px 24px -10px rgba(93, 173, 226, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3),
+      0 0 50px rgba(93, 173, 226, 0.2);
+  }
+}
+
+/* Active/Selected button state */
+.task-button[data-state="active"],
+.task-button[aria-pressed="true"] {
+  background: linear-gradient(135deg, #5DADE2 0%, #3498DB 100%) !important;
+  border-color: #3498DB !important;
+  color: white !important;
+  transform: translateY(-3px) !important;
+  animation: premium-glow 3s ease-in-out infinite;
+}
+
+/* Refined press feedback */
+.task-button:active {
+  transform: translateY(-1px) scale(0.98) !important;
+  box-shadow: 
+    0 4px 8px rgba(93, 173, 226, 0.2),
+    inset 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Glass morphism effect overlay */
+.task-button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 50%,
+    rgba(0, 0, 0, 0.05) 100%
+  );
+  border-radius: 12px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 1;
+}
+
+.task-button:hover::after {
+  opacity: 1;
+}
+
+/* Subtle background gradient animation for active state */
+@keyframes gradient-flow {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.task-button[data-state="active"],
+.task-button[aria-pressed="true"] {
+  background: linear-gradient(
+    135deg,
+    #5DADE2 0%,
+    #3498DB 50%,
+    #5DADE2 100%
+  ) !important;
+  background-size: 200% 200%;
+  animation: 
+    premium-glow 3s ease-in-out infinite,
+    gradient-flow 4s ease infinite;
+}
+
+/* Hover state focus ring */
+.task-button:hover {
+  outline: 2px solid rgba(135, 206, 235, 0.1);
+  outline-offset: 2px;
+}
+
+/* Luxurious entrance animation */
+@keyframes luxury-entrance {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.task-button {
+  animation: luxury-entrance 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) backwards;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  backdrop-filter: blur(10px);
+}
+
+/* Sophisticated stagger timing */
+.task-button:nth-child(1) { animation-delay: 0s; }
+.task-button:nth-child(2) { animation-delay: 0.08s; }
+.task-button:nth-child(3) { animation-delay: 0.16s; }
+
+.task-button:hover {
+  backdrop-filter: blur(0px);
+}
+
+ 
+/* ================= JD CREATOR CONTAINER ================= */
+.jd-creator-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 24px;
+  animation: luxury-fade-slide 0.6s ease;
+}
+
+@keyframes luxury-fade-slide {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ================= INPUT WRAPPER ================= */
+.jd-creator-box {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  max-width: 650px;
+  background: linear-gradient(to bottom, #ffffff, #fafafa);
+  padding: 18px 22px;
+  border-radius: 14px;
+  border: 2px solid #1a1a1a;
+  box-shadow: 
+    0 10px 20px -8px rgba(0,0,0,0.08),
+    inset 0 1px 1px rgba(255,255,255,0.7);
+  backdrop-filter: blur(8px);
+}
+
+/* ================= TEXT INPUT ================= */
+.jd-creator-input {
+  flex: 1;
+  padding: 14px 16px;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  outline: none;
+  border-radius: 10px;
+  color: #1a1a1a;
+  background: rgba(255,255,255,0.7);
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.06);
+  transition: all 0.3s ease;
+}
+
+.jd-creator-input:focus {
+  background: #fff;
+  border: 2px solid #38bdf8;
+  box-shadow: 0 0 15px rgba(56,189,248,0.25);
+}
+
+/* ================= BUTTON ================= */
+.jd-creator-btn {
+  padding: 12px 22px;
+  font-weight: 700;
+  border-radius: 12px;
+  border: 2px solid #1a1a1a;
+  background: linear-gradient(to bottom, #ffffff, #fafafa);
+  cursor: pointer;
+  transition: all 0.35s ease;
+  color: #1a1a1a;
+  box-shadow:
+    0 2px 4px rgba(0,0,0,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Shine effect */
+.jd-creator-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 150%;
+  height: 100%;
+  background: linear-gradient(120deg,
+    transparent 0%,
+    rgba(255,255,255,0.6) 50%,
+    transparent 100%);
+  transform: skewX(-15deg);
+  transition: left 0.8s ease;
+}
+
+.jd-creator-btn:hover::before {
+  left: 120%;
+}
+
+.jd-creator-btn:hover {
+  background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);
+  color: white;
+  box-shadow: 
+    0 12px 24px rgba(56,189,248,0.35),
+    inset 0 1px 0 rgba(255,255,255,0.3);
+  transform: translateY(-3px);
+}
+
+.jd-creator-btn:active {
+  transform: translateY(-1px) scale(0.97);
+}
+/* Upload Resumes Container */
+/* Upload Section Container */
+.upload-resumes-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed #38bdf8;
+  border-radius: 16px;
+  padding: 50px 30px;
+  background: linear-gradient(to bottom right, #f0f9ff, #e0f2fe);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  max-width: 550px;
+  margin: 30px auto;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+}
+
+.upload-resumes-section:hover {
+  background: linear-gradient(to bottom right, #e0f2fe, #bfdbfe);
+  border-color: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+/* Label (Clickable Upload Zone) */
+.upload-resumes-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e3a8a;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.upload-resumes-label:hover {
+  color: #2563eb;
+}
+
+/* Optional icon (before text) */
+.upload-resumes-label::before {
+  content: "☁️";
+  font-size: 48px;
+  margin-bottom: 8px;
+}
+
+/* Hidden Input */
+.upload-resumes-input {
+  display: none;
+}
+
+/* Help Text */
+.upload-resumes-help {
+  margin-top: 14px;
+  font-size: 14px;
+  color: #475569;
+  line-height: 1.5;
+  max-width: 400px;
+}
+
+/* Focus/Active State */
+.upload-resumes-section:active {
+  transform: scale(0.98);
+}
+
+/* Mobile Responsive Design */
+@media (max-width: 768px) {
+  .upload-resumes-section {
+    max-width: 90%;
+    padding: 40px 20px;
+  }
+
+  .upload-resumes-label {
+    font-size: 16px;
+  }
+
+  .upload-resumes-label::before {
+    font-size: 40px;
+  }
+
+  .upload-resumes-help {
+    font-size: 13px;
+  }
+}

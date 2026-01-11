@@ -1,0 +1,160 @@
+/* -------------------- Container -------------------- */
+.zoho-container {
+  width: 100%;
+  /* max-width: 1200px; */
+  margin: 40px auto;
+  padding: 20px;
+  text-align: center;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+/* -------------------- Zoho Connect Button -------------------- */
+.zoho-btn {
+  margin-bottom: 20px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 2px solid #1e40af;
+  background-color: #fff;
+  color: #1e40af;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.zoho-btn:hover {
+  background-color: #f0f4ff;
+}
+
+.zoho-btn.connected {
+  background-color: #16a34a;
+  border-color: #16a34a;
+  color: #fff;
+}
+
+/* -------------------- Fetch Candidates Button -------------------- */
+.fetch-btn {
+  margin-bottom: 20px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 2px solid #1e40af;
+  background-color: #fff;
+  color: #1e40af;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.fetch-btn:hover:not(:disabled) {
+  background-color: #f0f4ff;
+}
+
+.fetch-btn.loading {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* -------------------- Loading & Error Text -------------------- */
+.loading-text {
+  margin-top: 10px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #1e40af;
+}
+
+.error-text {
+  margin-top: 10px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #dc2626; /* red-600 */
+}
+
+/* -------------------- Table Container -------------------- */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 25px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  background-color: #fff;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+/* -------------------- Table -------------------- */
+.zoho-table {
+  width: 100%;
+  min-width: 600px;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.zoho-table th,
+.zoho-table td {
+  padding: 12px 10px;
+  border: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+.zoho-table thead {
+  background-color: #f8fafc;
+  font-weight: 600;
+}
+
+.zoho-table tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+/* -------------------- Mobile Responsive Table -------------------- */
+@media (max-width: 768px) {
+  .zoho-table thead {
+    display: none;
+  }
+
+  .zoho-table,
+  .zoho-table tbody,
+  .zoho-table tr,
+  .zoho-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .zoho-table tr {
+    margin-bottom: 12px;
+    padding: 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background-color: #fff;
+  }
+
+  .zoho-table td {
+    padding: 8px 10px;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: none;
+    font-size: 0.9rem;
+  }
+
+  .zoho-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #111827;
+    padding-right: 8px;
+  }
+}
+
+/* -------------------- Extra Small Phones -------------------- */
+@media (max-width: 420px) {
+  .zoho-btn,
+  .fetch-btn {
+    width: 100%;
+  }
+
+  .zoho-table td {
+    font-size: 0.85rem;
+  }
+}

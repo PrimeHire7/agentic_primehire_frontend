@@ -1,0 +1,139 @@
+/* ========================================================
+   FIXED HEADER
+======================================================== */
+.ph-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 70px;
+
+    background: white;
+    border-bottom: 1px solid #e5e7eb;
+
+    z-index: 9999 !important;
+}
+
+/* ========================================================
+   MAIN LAYOUT UNDER HEADER
+======================================================== */
+.ph-layout {
+    display: flex;
+    width: 100%;
+    height: calc(100vh - 70px);
+
+    margin-top: 70px;
+    /* Push everything below header */
+    overflow: hidden;
+    /* ⛔ remove outer scrolling */
+}
+
+/* ========================================================
+   FIXED SIDEBAR
+======================================================== */
+.ph-sidebar {
+    position: fixed;
+    left: 0;
+    top: 70px;
+
+    width: var(--sidebar-width, 260px);
+    min-width: var(--sidebar-width, 260px);
+
+    height: calc(100vh - 70px);
+    background: white;
+
+    border-right: 1px solid #e5e7eb;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    transition: width .25s ease;
+    z-index: 99;
+}
+
+[data-state="collapsed"] .ph-sidebar {
+    width: var(--sidebar-width-icon, 72px);
+    min-width: var(--sidebar-width-icon, 72px);
+}
+
+/* ========================================================
+   RIGHT PANEL (NO SCROLL – SCROLLING IS INSIDE)
+======================================================== */
+.ph-main {
+    flex: 1;
+    margin-left: var(--sidebar-width, 260px);
+
+    height: calc(100vh - 70px);
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+    /* ⛔ block outer scroll */
+    background: #f8fafc;
+
+    transition: margin-left .25s ease;
+}
+
+[data-state="collapsed"] .ph-main {
+    margin-left: var(--sidebar-width-icon, 72px);
+}
+
+/* ========================================================
+   ONLY MAIN CONTENT SCROLLS (INNER SCROLL)
+======================================================== */
+.ph-main-scroll {
+    flex: 1;
+
+    overflow-y: auto;
+    /* ✔ only scroll area */
+    overflow-x: hidden;
+
+    padding: 24px;
+    padding-bottom: 160px;
+    /* space behind chat input */
+
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+}
+
+/* ========================================================
+   FIXED CHAT INPUT — CENTERED
+======================================================== */
+.ph-chatinput-fixed {
+    position: fixed;
+    bottom: 0px;
+    left: var(--sidebar-width, 260px);
+    width: calc(100% - var(--sidebar-width, 260px));
+    display: flex;
+    justify-content: center;
+    background: transparent;
+
+    padding: 18px 0;
+    z-index: 9;
+}
+
+[data-state="collapsed"] .ph-chatinput-fixed {
+    left: var(--sidebar-width-icon, 72px);
+    width: calc(100% - var(--sidebar-width-icon, 72px));
+}
+
+.ph-interview-fullscreen {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    /* important */
+    display: flex;
+    flex-direction: column;
+}
+
+/* 
+.mobile_menu {
+    border: 10px solid red;
+    margin-left: 100px;
+} */
+
+.chat-container-wrapper{    
+    display: inline-block !important;
+}

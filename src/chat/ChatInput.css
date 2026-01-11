@@ -1,0 +1,393 @@
+/* ===========================================================
+   MAIN WRAPPER — Floating Glass Bar V2
+=========================================================== */
+/* ============================================================
+   CHAT INPUT WRAPPER — ALWAYS CENTERED
+=========================================================== */
+.chat-input-wrapper {
+  position: sticky;
+  bottom: 0;
+  z-index: 99;
+
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  /* ⭐ center horizontally */
+
+  padding: 12px 0;
+  background: transparent;
+  backdrop-filter: none;
+}
+
+/* ===========================================================
+   CI-SHELL — Always Focused + Always Glowing
+=========================================================== */
+.ci-shell {
+  position: relative;
+
+  width: clamp(380px, 70vw, 1100px);
+  /* ⭐ CENTER WIDTH */
+  max-width: 1100px;
+
+  margin: 0 auto;
+  /* ⭐ CENTER */
+
+  padding: 14px 20px;
+  border-radius: 20px;
+
+  background: rgba(255, 255, 255, 0.90);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(20px);
+
+  box-shadow:
+    0 18px 38px rgba(0, 0, 0, 0.12),
+    0 0 120px rgba(124, 138, 255, 0.35);
+
+  display: flex;
+  gap: 14px;
+  align-items: end;
+}
+
+/* ⚡ Slight motion when typing (optional) */
+.ci-shell:has(textarea:focus) {
+  transform: translateY(-1px);
+}
+
+/* ===========================================================
+   NEON GLOW — Always ON (no focus needed)
+=========================================================== */
+.ci-shell::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+
+  background: linear-gradient(135deg,
+      rgba(99, 102, 241, 0.35),
+      rgba(124, 138, 255, 0.25),
+      rgba(255, 255, 255, 0.3));
+
+  filter: blur(12px);
+  opacity: 1 !important;
+  /* ALWAYS visible */
+  transition: opacity 0.4s ease;
+
+  z-index: -1;
+}
+
+/* Frost cavity (unchanged) */
+.ci-shell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+
+  background: radial-gradient(circle at 50% 100%,
+      rgba(255, 255, 255, 0.25),
+      transparent 70%);
+
+  mix-blend-mode: soft-light;
+  opacity: 0.6;
+}
+
+/* ===========================================================
+   CENTER PANEL (Dynamic Height)
+=========================================================== */
+.ci-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  height: auto !important;
+  min-height: fit-content !important;
+
+  transition: height 0.25s ease !important;
+}
+
+/* ===========================================================
+   TOP ROW
+=========================================================== */
+.ci-top-row {
+  display: flex;
+  gap: 14px;
+  transition: 0.2s ease;
+}
+
+.ci-top-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.ci-dropdown-wrapper {
+  position: relative;
+}
+
+.ci-dropdown-trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+
+  background: rgba(255, 255, 255, 0.75);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.ci-dropdown-trigger:hover {
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.ci-dropdown-menu {
+  margin-top: 6px;
+  padding: 8px;
+
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(14px);
+
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.12);
+  animation: fadeDown 0.18s ease-out;
+}
+
+.ci-dropdown-item {
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+
+  transition: 0.15s ease;
+  cursor: pointer;
+}
+
+.ci-dropdown-item:hover {
+  background: rgba(99, 102, 241, 0.12);
+}
+
+.task-active {
+  background: #00ffaa !important;
+  color: #0a0a0a !important;
+  border-left: 4px solid #34ffd3;
+  font-weight: 600;
+}
+
+/* ===========================================================
+   PROMPT CHIPS
+=========================================================== */
+.ci-chip-row {
+  display: flex;
+  gap: 10px;
+  padding: 6px 2px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.ci-chip-row::-webkit-scrollbar {
+  display: none;
+}
+
+.ci-chip {
+  padding: 4px 20px;
+  border-radius: 20px;
+  font-size: 14px;
+  background: rgba(240, 240, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(10px);
+
+  white-space: nowrap;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.ci-chip:hover {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: #6366f1;
+}
+
+/* ===========================================================
+   TEXTAREA
+=========================================================== */
+textarea.ci-textarea {
+  width: 100%;
+  height: auto !important;
+
+  min-height: 38px !important;
+  max-height: 180px !important;
+
+  padding: 14px 16px;
+  border-radius: 16px;
+
+  background: rgba(255, 255, 255, 0.65) !important;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(12px);
+
+  resize: none;
+  overflow-y: auto !important;
+
+  font-size: 15px;
+  transition:
+    height 0.22s cubic-bezier(0.25, 0.1, 0.25, 1),
+    background 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+textarea.ci-textarea:focus {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-color: #6366f1;
+
+  box-shadow:
+    0 0 12px rgba(124, 138, 255, 0.35),
+    inset 0 0 8px rgba(255, 255, 255, 0.4);
+}
+
+/* ===========================================================
+   AUTOCOMPLETE
+=========================================================== */
+.ci-suggestions {
+  margin-top: 8px;
+  padding: 8px;
+
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(10px);
+
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.ci-suggestion-item {
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.ci-suggestion-item:hover {
+  background: rgba(99, 102, 241, 0.12);
+}
+
+/* ===========================================================
+   ICON BUTTONS
+=========================================================== */
+.ci-icon-btn {
+    width: 32px;
+    height: 32px;
+    linne-height:32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
+
+  cursor: pointer;
+  transition: 0.2s ease;
+
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.7),
+    inset 0 -1px 4px rgba(0, 0, 0, 0.04);
+}
+.ci-icon-btn  svg{
+  font-size: 0px !important;
+  width: 18px;
+  height: 18px;
+}
+.ci-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 1),
+    inset 0 -1px 6px rgba(0, 0, 0, 0.07);
+}
+
+.ci-mic-btn {
+  background: rgba(231, 238, 255, 0.8);
+}
+
+.ci-send-btn {
+  width: 40px;
+  height: 40px;
+
+  border-radius: 12px;
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  transition: 0.25s ease, box-shadow 0.25s ease;
+
+  box-shadow:
+    0 8px 18px rgba(99, 102, 241, 0.3);
+}
+
+.ci-send-btn:hover {
+  transform: translateY(-3px) scale(1.08);
+  box-shadow:
+    0 6px 18px rgba(124, 138, 255, 0.35),
+    0 0 12px rgba(124, 138, 255, 0.7);
+}
+
+/* ===========================================================
+   ANIMATIONS
+=========================================================== */
+@keyframes fadeDown {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================================
+   TOP BUTTON BAR — TASK BUTTONS (Glass Style)
+============================================================ */
+.ci-task-buttons {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.ci-task-btn {
+  padding: 4px 20px;
+  border-radius: 20px;
+
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(10px);
+
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+
+  transition: 0.25s ease;
+}
+
+/* Hover effect */
+.ci-task-btn:hover {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+}
+
+/* ACTIVE BUTTON — glowing selected */
+.ci-task-btn.active {
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: white;
+  border: none;
+  box-shadow:
+    0 0 12px rgba(124, 138, 255, 0.55),
+    0 6px 18px rgba(124, 138, 255, 0.35);
+}

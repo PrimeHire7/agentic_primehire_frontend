@@ -1,0 +1,128 @@
+/* ------------------------------------------------------------
+   SHADCN SIDEBAR SYSTEM — REQUIRED BASE STYLES
+------------------------------------------------------------- */
+
+[data-sidebar="sidebar"] {
+    background-color: hsl(var(--sidebar-background));
+    color: hsl(var(--sidebar-foreground));
+}
+
+/* Wrapper and structural layout */
+.group\/sidebar-wrapper {
+    position: relative;
+}
+
+/* Sidebar width variables */
+:root {
+    --sidebar-width: 16rem;
+    --sidebar-width-icon: 3rem;
+}
+
+/* Desktop sidebar container */
+[data-sidebar] {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Collapsed state */
+[data-state="collapsed"] [data-sidebar="group-label"] {
+    opacity: 0;
+    margin-top: -1rem;
+    pointer-events: none;
+}
+
+/* Collapsed – hide text label */
+[data-state="collapsed"] [data-sidebar="menu-button"] span {
+    display: none;
+}
+
+/* Icon-only width */
+[data-state="collapsed"][data-collapsible="icon"] {
+    width: var(--sidebar-width-icon) !important;
+}
+
+/* ------------------------------------------------------------
+   MENU BUTTON STYLES (default shadcn behavior)
+------------------------------------------------------------- */
+
+[data-sidebar="menu-button"] {
+    background-color: transparent;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+/* Hover glow */
+[data-sidebar="menu-button"]:hover {
+    background-color: hsl(var(--sidebar-accent));
+    color: hsl(var(--sidebar-accent-foreground));
+}
+
+/* Active menu item */
+[data-sidebar="menu-button"][data-active="true"] {
+    background-color: hsl(var(--sidebar-accent));
+    color: hsl(var(--sidebar-accent-foreground));
+    font-weight: 600;
+}
+
+/* Icon size */
+[data-sidebar="menu-button"] svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* ------------------------------------------------------------
+   GROUPS, LABELS, HEADERS
+------------------------------------------------------------- */
+
+[data-sidebar="group"] {
+    padding: 6px 8px;
+}
+
+[data-sidebar="group-label"] {
+    opacity: 1;
+    transition: opacity .2s ease, margin .2s ease;
+}
+
+/* ------------------------------------------------------------
+   SIDEBAR FLOATING / INSET MODE SUPPORT
+------------------------------------------------------------- */
+
+[data-variant="floating"] [data-sidebar="sidebar"] {
+    border-radius: 12px;
+    border: 1px solid hsl(var(--sidebar-border));
+    background-color: hsl(var(--sidebar-background));
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+[data-variant="inset"] [data-sidebar="sidebar"] {
+    border-radius: 12px;
+    border: 1px solid hsl(var(--sidebar-border));
+}
+
+/* ------------------------------------------------------------
+   TOOLTIP VISIBILITY (Collapsed state)
+------------------------------------------------------------- */
+
+[data-state="collapsed"] [data-sidebar="menu-button"]+[role="tooltip"] {
+    display: block !important;
+}
+
+/* ------------------------------------------------------------
+   MOBILE SHEET SIDEBAR
+------------------------------------------------------------- */
+
+[data-mobile="true"][data-sidebar="sidebar"] {
+    height: 100vh;
+    background-color: hsl(var(--sidebar-background));
+    color: hsl(var(--sidebar-foreground));
+}
+
+/* ------------------------------------------------------------
+   RAIL HANDLE (drag / collapse)
+------------------------------------------------------------- */
+
+[data-sidebar="rail"] {
+    background: transparent;
+    cursor: ew-resize;
+}

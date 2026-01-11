@@ -1,0 +1,158 @@
+/* ===================== INFO SECTION ===================== */
+.info-section {
+    text-align: center;
+    padding: 10px 20px;
+    background: #f8f9fb;
+    font-family: "Poppins", sans-serif;
+    position: relative;
+}
+
+/* ===================== SECTION TITLE WITH ICON ===================== */
+.section-title {
+    display: flex;
+    align-items: center; /* vertically center icon and text */
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 40px;
+    gap: 12px; /* space between icon and text */
+}
+
+.section-title svg {
+    display: inline-flex;
+    vertical-align: middle;
+}
+
+/* ===================== CARDS CONTAINER ===================== */
+.cards-container.scrollable {
+    display: flex;
+    gap: 30px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding: 0 40px;
+    scrollbar-width: none; /* Firefox */
+}
+
+.cards-container.scrollable::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+}
+
+/* ===================== INFO CARD ===================== */
+.info-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    padding: 20px 20px; /* reduced from 30px */
+    width: 300px;
+    flex-shrink: 0;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.info-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* ===================== CARD HEADER (ICON BESIDE TITLE) ===================== */
+.card-header {
+    display: flex;
+    align-items: center; /* vertically center icon and title */
+    gap: 10px; /* space between icon and title */
+    margin-bottom: 10px;
+}
+
+.card-icon {
+    color: #007bff;
+    /* remove margin-bottom since it’s beside title */
+}
+
+.card-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0; /* remove default margin */
+}
+
+/* ===================== CARD DESCRIPTION & POINTS ===================== */
+.card-description {
+    font-size: 0.85rem;
+    color: #555;
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.card-points {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.card-points li {
+    margin-bottom: 6px;
+    font-size: 0.85rem;
+    color: #555;
+    position: relative;
+    padding-left: 18px;
+}
+
+.card-points li::before {
+    content: "•";
+    color: #007bff;
+    position: absolute;
+    left: 0;
+}
+
+/* ===================== BACK BUTTON ===================== */
+.back-btn-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    margin-bottom: 40px;
+}
+
+.back-btn {
+    background: #2563eb;
+    color: white;
+    padding: 10px 22px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: 0.2s ease;
+    width: 36vh;
+    margin-left: 43px;
+}
+
+.back-btn:hover {
+    background: #4878e0;
+}
+
+/* ===================== SCROLL BUTTONS ===================== */
+.scroll-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: white;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    padding: 8px;
+    transition: background 0.2s ease;
+    z-index: 2;
+}
+
+.scroll-btn:hover {
+    background: #e9ecef;
+}
+
+.scroll-btn.left {
+    left: 15px;
+}
+
+.scroll-btn.right {
+    right: 15px;
+}

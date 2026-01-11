@@ -1,0 +1,265 @@
+/* ===============================
+   DESIGNATION CONTAINER
+================================ */
+.designation-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 25px 24px;
+    font-family: "Inter", system-ui, sans-serif;
+    background: #fff;
+    /* background: #f9fafb; */
+    min-height: 100vh;
+}
+
+/* ===============================
+   HEADING
+================================ */
+.heading {
+    font-size: 28px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.heading span {
+    font-size: 32px;
+}
+
+/* ===============================
+   DESIGNATION CARD
+================================ */
+.designation-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 15px 24px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 1px solid #e5e7eb;
+    cursor: pointer;
+}
+
+.designation-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    border-color: #667eea;
+}
+
+.designation-card:active {
+    transform: translateY(0);
+}
+
+/* ===============================
+   CARD CONTENT
+================================ */
+.card-content {
+    flex: 1;
+}
+
+.jd-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 15px;
+    line-height: 1.4;
+}
+
+.sub-info {
+    font-size: 14px;
+    color: #242424;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ===============================
+   ARROW ICON
+================================ */
+.arrow-icon {
+    color: #9ca3af;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.designation-card:hover .arrow-icon {
+    color: #667eea;
+    transform: translateX(4px);
+}
+
+/* ===============================
+   LOADING & EMPTY STATES
+================================ */
+.designation-container>p {
+    text-align: center;
+    font-size: 16px;
+    color: #6b7280;
+    padding: 60px 20px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+@media (max-width: 768px) {
+    .designation-container {
+        padding: 24px 16px;
+    }
+
+    .heading {
+        font-size: 24px;
+        margin-bottom: 24px;
+    }
+
+    .heading span {
+        font-size: 28px;
+    }
+
+    .designation-card {
+        padding: 20px;
+    }
+
+    .jd-title {
+        font-size: 16px;
+    }
+
+    .sub-info {
+        font-size: 13px;
+    }
+
+    .arrow-icon {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .designation-container {
+        padding: 20px 12px;
+    }
+
+    .designation-card {
+        padding: 16px;
+        margin-bottom: 12px;
+    }
+
+    .jd-title {
+        font-size: 15px;
+    }
+}
+
+/* ===============================
+   STATUS BREAKDOWN (PREMIUM)
+================================ */
+
+.status-row {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    /* ✅ space between chips */
+}
+
+/* Base chip */
+.status-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    /* space between label & number */
+    padding: 6px 10px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 500;
+    background: #f8fafc;
+    color: #1f2937;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    white-space: nowrap;
+}
+
+/* Label text */
+.status-chip span.label {
+    text-transform: capitalize;
+    letter-spacing: 0.2px;
+}
+
+/* Number badge */
+.status-chip span.count {
+    min-width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.7);
+}
+
+/* ===============================
+   STATUS COLORS
+================================ */
+
+.status-chip.completed {
+    background: #ecfdf5;
+    border-color: #a7f3d0;
+    color: #065f46;
+}
+
+.status-chip.completed .count {
+    background: #10b981;
+    color: white;
+}
+
+.status-chip.locked {
+    background: #fff1f2;
+    border-color: #fecdd3;
+    color: #129f4f;
+}
+
+.status-chip.locked .count {
+    background: #1de141;
+    color: white;
+}
+
+.status-chip.scheduled {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+    color: #1e40af;
+}
+
+.status-chip.scheduled .count {
+    background: #3b82f6;
+    color: white;
+}
+
+.status-chip.in_progress {
+    background: #fefce8;
+    border-color: #fde68a;
+    color: #92400e;
+}
+
+.status-chip.in_progress .count {
+    background: #f59e0b;
+    color: white;
+}
+
+.status-chip.expired {
+    background: #f3f4f6;
+    border-color: #d1d5db;
+    color: #374151;
+}
+
+.status-chip.expired .count {
+    background: #6b7280;
+    color: white;
+}

@@ -1,0 +1,211 @@
+/* FILE: src/interview/TranscriptPanel.css */
+
+.tp-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    /* 👈 FIXED HEIGHT */
+    max-height: 100vh;
+    min-height: 30vh;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.tp-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #4c50d7;
+}
+
+/* SCROLL AREA */
+.tp-scroll {
+    flex: 1;
+    /* 👈 Fills remaining fixed space */
+    overflow-y: auto;
+    /* 👈 Enables scrolling */
+    padding-right: 8px;
+    scroll-behavior: smooth;
+}
+
+/* Custom Scrollbar */
+.tp-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.tp-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 6px;
+}
+
+.tp-empty {
+    color: #ccc;
+    opacity: 0.6;
+    font-size: 13px;
+    padding: 4px 0;
+}
+
+.tp-msg {
+    margin-bottom: 10px;
+    padding: 8px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.tp-role {
+    font-size: 12px;
+    opacity: 0.9;
+    margin-bottom: 3px;
+}
+
+.tp-text {
+    font-size: 14px;
+    line-height: 1.3;
+}
+
+/* Role color accents */
+.tp-msg.ai {
+    border-left: 3px solid #00bcd4;
+}
+
+.tp-msg.system {
+    border-left: 3px solid #ff5252;
+}
+
+.tp-msg.user,
+.tp-msg.candidate {
+    border-left: 3px solid #4caf50;
+}
+
+/* ================================
+   JD CONTEXT BANNER (NEW)
+   ================================ */
+
+.tp-jd-banner {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 8px 10px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    backdrop-filter: blur(6px);
+}
+
+.tp-jd-id {
+    font-size: 12px;
+    font-weight: 600;
+    color: #7ca9ff;
+    margin-bottom: 4px;
+}
+
+.tp-jd-text {
+    font-size: 12px;
+    color: #d8d8d8;
+    opacity: 0.85;
+    line-height: 1.3;
+}
+
+/* Hover reveal effect */
+.tp-jd-text:hover {
+    opacity: 1;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+/* Capsule style for JD ID */
+.tp-jd-id {
+    display: inline-block;
+    padding: 3px 8px;
+    background: rgba(76, 80, 215, 0.25);
+    border: 1px solid rgba(76, 80, 215, 0.45);
+    border-radius: 6px;
+}
+
+/* AI speaking animation */
+.tp-ai-speaking {
+    background: #eaf2ff;
+    padding: 6px 10px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    display: flex;
+    gap: 4px;
+    font-size: 14px;
+    align-items: center;
+}
+
+.dot {
+    animation: blink 1.5s infinite;
+    opacity: 0.5;
+}
+
+.dot2 {
+    animation-delay: 0.2s;
+}
+
+.dot3 {
+    animation-delay: 0.4s;
+}
+
+@keyframes blink {
+    0% {
+        opacity: 0.2;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.2;
+    }
+}
+
+/* User speaking waveform */
+.tp-user-speaking {
+    background: #ffecec;
+    padding: 6px 10px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    font-size: 14px;
+}
+
+.wave {
+    display: flex;
+    gap: 3px;
+}
+
+.wave div {
+    width: 4px;
+    height: 8px;
+    background: #ff4d4d;
+    animation: waveAnim 0.8s infinite ease-in-out;
+}
+
+.wave div:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.wave div:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+.wave div:nth-child(4) {
+    animation-delay: 0.3s;
+}
+
+@keyframes waveAnim {
+    0% {
+        height: 4px;
+    }
+
+    50% {
+        height: 16px;
+    }
+
+    100% {
+        height: 4px;
+    }
+}

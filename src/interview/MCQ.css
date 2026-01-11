@@ -1,0 +1,108 @@
+/* =========================
+   MCQ CONTAINER
+========================= */
+.mcq-box {
+    width: 92%;
+    max-width: 900px;
+    background: #ffffff;
+    padding: 24px;
+    margin: 20px auto;
+    border-radius: 10px;
+    border-left: 5px solid #0078ff;
+    font-family: Inter, Arial, sans-serif;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+    animation: fadeIn 0.25s ease-in-out;
+}
+
+.mcq-title {
+    margin-bottom: 18px;
+    color: #1a1a1a;
+    font-size: 22px;
+}
+
+/* =========================
+   QUESTIONS
+========================= */
+.mcq-question-block {
+    margin-bottom: 22px;
+}
+
+.mcq-question-block h3 {
+    font-size: 17px;
+    font-weight: 600;
+    color: #d32f2f;
+    margin-bottom: 10px;
+}
+
+/* =========================
+   OPTIONS
+========================= */
+.mcq-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.mcq-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.mcq-option:hover {
+    background: #f4f8ff;
+    border-color: #0078ff;
+}
+
+.mcq-option input {
+    cursor: pointer;
+}
+
+.option-text {
+    font-size: 15px;
+    color: #333;
+}
+
+/* =========================
+   SUBMIT BUTTON
+========================= */
+.mcq-submit {
+    background: #0078ff;
+    color: #ffffff;
+    padding: 12px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: all 0.2s ease-in-out;
+}
+
+.mcq-submit:hover {
+    background: #005fcc;
+}
+
+.mcq-submit:disabled {
+    background: #b0cfff;
+    cursor: not-allowed;
+}
+
+/* =========================
+   ANIMATION
+========================= */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

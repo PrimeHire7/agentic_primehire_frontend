@@ -1,0 +1,443 @@
+// // import React, { useState } from "react";
+// // import { Button } from "@/components/ui/button";
+// // import { Checkbox } from "@/components/ui/checkbox";
+// // import { useNavigate, useLocation } from "react-router-dom";
+// // import "./InstructionsPanel.css";
+
+// // export default function InstructionsPanel() {
+// //     const navigate = useNavigate();
+// //     const location = useLocation();
+
+// //     // Values passed from ValidationPanel
+// //     const candidateName = location.state?.candidateName || "Candidate";
+// //     const candidateId = location.state?.candidateId || null;
+// //     const jd_id = location.state?.jd_id || null;
+// //     const jd_text = location.state?.jd_text || "";
+// //     const interviewToken = location.state?.interviewToken || null;
+
+// //     const [checked, setChecked] = useState(false);
+
+// //     const handleStart = () => {
+// //         if (!checked) {
+// //             return alert("Please accept the interview instructions.");
+// //         }
+
+// //         if (!candidateName || !candidateId) {
+// //             return alert("Candidate details missing. Please restart validation.");
+// //         }
+
+// //         // 🚀 GO DIRECTLY TO INTERVIEW MODE
+// //         navigate("/interview", {
+// //             state: {
+// //                 candidateName,
+// //                 candidateId,
+// //                 jd_id,
+// //                 jd_text,
+// //                 interviewToken,
+// //             },
+// //         });
+// //     };
+
+// //     return (
+// //         <div className="ip-page">
+// //             <div className="ip-glass-wrapper">
+
+// //                 <h2 className="ip-title">Interview Instructions</h2>
+
+// //                 <p className="ip-subtitle">
+// //                     Hello <strong>{candidateName}</strong>,
+// //                     please read and confirm the instructions carefully.
+// //                 </p>
+
+// //                 {/* MAIN INSTRUCTIONS CARD */}
+// //                 <div className="ip-card">
+// //                     <ul className="ip-list">
+// //                         <li>Ensure your camera and microphone are working properly.</li>
+// //                         <li>Use a quiet, well-lit environment with minimal distractions.</li>
+// //                         <li>The interview will record your video, audio, and responses.</li>
+// //                         <li>AI Proctoring is enabled: multiple-face detection, gaze tracking, tab switching alerts, and face mismatch warnings.</li>
+// //                         <li>Do not minimize the browser or switch tabs during the interview.</li>
+// //                         <li>Maintain steady eye contact with the camera.</li>
+// //                         <li>Speak clearly and confidently while answering questions.</li>
+// //                         <li>Internet connection must remain stable during the interview.</li>
+// //                         <li>Your data is processed solely for candidate evaluation.</li>
+// //                     </ul>
+
+// //                     {/* ACCEPT INSTRUCTIONS */}
+// //                     <div className="ip-checkbox-row">
+// //                         <Checkbox
+// //                             id="instructions-accept"
+// //                             checked={checked}
+// //                             onCheckedChange={setChecked}
+// //                         />
+// //                         <label htmlFor="instructions-accept" className="ip-checkbox-label">
+// //                             I have read and agree to the above instructions.
+// //                         </label>
+// //                     </div>
+// //                 </div>
+
+// //                 {/* ACTION BUTTON */}
+// //                 <div className="ip-actions">
+// //                     <Button
+// //                         className={`ip-btn-start ${checked ? "ready" : ""}`}
+// //                         disabled={!checked}
+// //                         onClick={handleStart}
+// //                     >
+// //                         Start Interview →
+// //                     </Button>
+// //                 </div>
+
+// //                 {/* DEBUG (optional remove later) */}
+// //                 <div className="ip-debug">
+// //                     Debug: {candidateName} | {candidateId} | JD_ID: {jd_id}
+// //                 </div>
+
+// //             </div>
+// //         </div>
+// //     );
+// // }
+// import React, { useState } from "react";
+// import { Button } from "@/components/ui/button";
+// import { Checkbox } from "@/components/ui/checkbox";
+// import { useNavigate, useLocation } from "react-router-dom";
+// import "./InstructionsPanel.css";
+// import logo from "../assets/primehire_logo.png"
+
+// export default function InstructionsPanel() {
+//     const navigate = useNavigate();
+//     const location = useLocation();
+
+//     // Values passed from ValidationPanel
+//     const candidateName = location.state?.candidateName || "Candidate";
+//     const candidateId = location.state?.candidateId || null;
+//     const jd_id = location.state?.jd_id || null;
+//     const jd_text = location.state?.jd_text || "";
+//     const interviewToken = location.state?.interviewToken || null;
+
+//     const [checked, setChecked] = useState(false);
+
+//     const handleStart = () => {
+//         if (!checked) {
+//             return alert("Please accept the interview instructions.");
+//         }
+
+//         if (!candidateName || !candidateId) {
+//             return alert("Candidate details missing. Please restart validation.");
+//         }
+
+//         // 🚀 GO DIRECTLY TO INTERVIEW MODE
+//         navigate("/interview", {
+//             replace: true,
+//             state: {
+//                 candidateName,
+//                 candidateId,
+//                 jd_id,
+//                 jd_text,
+//                 interviewToken,
+//             },
+//         });
+//     };
+
+//     return (
+//         <div className="ip-page">
+//             <div className="ip-logo-header">
+//                 <img
+//                     src={logo}        // put logo inside public/
+//                     alt="App Logo"
+//                     className="ph-logo"
+//                 />
+
+//             </div>
+//             <div className="ip-glass-wrapper">
+
+//                 <h2 className="ip-title">Interview Instructions</h2>
+
+//                 <p className="ip-subtitle">
+//                     Hello <strong>{candidateName}</strong>,
+//                     please read and confirm the instructions carefully.
+//                 </p>
+
+//                 {/* MAIN INSTRUCTIONS CARD */}
+//                 <div className="ip-card">
+//                     <ul className="ip-list">
+//                         <li>Ensure your camera and microphone are working properly.</li>
+//                         <li>Use a quiet, well-lit environment with minimal distractions.</li>
+//                         <li>The interview will record your video, audio, and responses.</li>
+//                         <li>AI Proctoring is enabled: multiple-face detection, gaze tracking, tab switching alerts, and face mismatch warnings.</li>
+//                         <li>Do not minimize the browser or switch tabs during the interview.</li>
+//                         <li>Maintain steady eye contact with the camera.</li>
+//                         <li>Speak clearly and confidently while answering questions.</li>
+//                         <li>Internet connection must remain stable during the interview.</li>
+//                         <li>Your data is processed solely for candidate evaluation.</li>
+//                     </ul>
+
+//                     {/* ACCEPT INSTRUCTIONS */}
+//                     <div className="ip-checkbox-row">
+//                         <Checkbox
+//                             id="instructions-accept"
+//                             checked={checked}
+//                             onCheckedChange={setChecked}
+//                         />
+//                         <label htmlFor="instructions-accept" className="ip-checkbox-label">
+//                             I have read and agree to the above instructions.
+//                         </label>
+//                     </div>
+//                 </div>
+
+//                 {/* ACTION BUTTON */}
+//                 <div className="ip-actions">
+//                     <Button
+//                         className={`ip-btn-start ${checked ? "ready" : ""}`}
+//                         disabled={!checked}
+//                         onClick={handleStart}
+//                     >
+//                         Start Interview →
+//                     </Button>
+//                 </div>
+
+//                 {/* DEBUG (optional remove later) */}
+//                 <div className="ip-debug">
+//                     Debug: {candidateName} | {candidateId} | JD_ID: {jd_id}
+//                 </div>
+
+//             </div>
+//         </div>
+//     );
+// }
+// import React, { useState } from "react";
+// import { Button } from "@/components/ui/button";
+// import { Checkbox } from "@/components/ui/checkbox";
+// import { useNavigate, useLocation } from "react-router-dom";
+// import "./InstructionsPanel.css";
+// import logo from "../assets/primehire_logo.png"
+
+// export default function InstructionsPanel() {
+//     const navigate = useNavigate();
+//     const location = useLocation();
+
+//     // Values passed from ValidationPanel
+//     const candidateName = location.state?.candidateName || "Candidate";
+//     const candidateId = location.state?.candidateId || null;
+//     const jd_id = location.state?.jd_id || null;
+//     const jd_text = location.state?.jd_text || "";
+//     const interviewToken = location.state?.interviewToken || null;
+
+//     const [checked, setChecked] = useState(false);
+
+//     const handleStart = () => {
+//         if (!checked) {
+//             return alert("Please accept the interview instructions.");
+//         }
+
+//         if (!candidateName || !candidateId) {
+//             return alert("Candidate details missing. Please restart validation.");
+//         }
+
+//         // 🚀 GO DIRECTLY TO INTERVIEW MODE
+//         navigate("/interview", {
+//             replace: true,
+//             state: {
+//                 candidateName,
+//                 candidateId,
+//                 jd_id,
+//                 jd_text,
+//                 interviewToken,
+//             },
+//         });
+
+//     };
+
+//     return (
+//         <div className="ip-page">
+//             <div className="ip-logo-header">
+//                 <img
+//                     src={logo}        // put logo inside public/
+//                     alt="App Logo"
+//                     className="ph-logo"
+//                 />
+
+//             </div>
+//             <div className="ip-glass-wrapper">
+
+//                 <h2 className="ip-title">Interview Instructions</h2>
+
+//                 <p className="ip-subtitle">
+//                     Hello <strong>{candidateName}</strong>,
+//                     please read and confirm the instructions carefully.
+//                 </p>
+
+//                 {/* MAIN INSTRUCTIONS CARD */}
+//                 <div className="ip-card">
+//                     <ul className="ip-list">
+//                         <li>Ensure your camera and microphone are working properly.</li>
+//                         <li>Use a quiet, well-lit environment with minimal distractions.</li>
+//                         <li>The interview will record your video, audio, and responses.</li>
+//                         <li>AI Proctoring is enabled: multiple-face detection, gaze tracking, tab switching alerts, and face mismatch warnings.</li>
+//                         <li>Do not minimize the browser or switch tabs during the interview.</li>
+//                         <li>Maintain steady eye contact with the camera.</li>
+//                         <li>Speak clearly and confidently while answering questions.</li>
+//                         <li>Internet connection must remain stable during the interview.</li>
+//                         <li>Your data is processed solely for candidate evaluation.</li>
+//                     </ul>
+
+//                     {/* ACCEPT INSTRUCTIONS */}
+//                     <div className="ip-checkbox-row">
+//                         <Checkbox
+//                             id="instructions-accept"
+//                             checked={checked}
+//                             onCheckedChange={setChecked}
+//                         />
+//                         <label htmlFor="instructions-accept" className="ip-checkbox-label">
+//                             I have read and agree to the above instructions.
+//                         </label>
+//                     </div>
+//                 </div>
+
+//                 {/* ACTION BUTTON */}
+//                 <div className="ip-actions">
+//                     <Button
+//                         className={`ip-btn-start ${checked ? "ready" : ""}`}
+//                         disabled={!checked}
+//                         onClick={handleStart}
+//                     >
+//                         Start Interview →
+//                     </Button>
+//                 </div>
+
+//                 {/* DEBUG (optional remove later) */}
+//                 <div className="ip-debug">
+//                     Debug: {candidateName} | {candidateId} | JD_ID: {jd_id}
+//                 </div>
+
+//             </div>
+//         </div>
+//     );
+// }
+
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useNavigate, useLocation } from "react-router-dom";
+import "./InstructionsPanel.css";
+import logo from "../assets/primehire_logo.png";
+
+export default function InstructionsPanel() {
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    /* ================== STATE FROM VALIDATION ================== */
+    const attemptId = location.state?.attemptId || null;   // ✅ NEW
+    const candidateName = location.state?.candidateName || "Candidate";
+    const candidateId = location.state?.candidateId || null;
+    const jd_id = location.state?.jd_id || null;
+    const jd_text = location.state?.jd_text || "";
+    const interviewToken = location.state?.interviewToken || null;
+
+    const [checked, setChecked] = useState(false);
+
+    /* ================== START INTERVIEW ================== */
+    const handleStartInterview = () => {
+        if (!checked) {
+            alert("Please accept the interview instructions to proceed.");
+            return;
+        }
+
+        if (!candidateId || !interviewToken || !jd_id) {
+            alert("Interview data missing. Please restart the interview link.");
+            return;
+        }
+
+        // 🔑 CRITICAL: mark interview as started
+        sessionStorage.setItem("interview_started", "true");
+
+        // 🔑 persist context for safety (refresh / re-render)
+        sessionStorage.setItem(
+            "interview_ctx",
+            JSON.stringify({
+                attemptId,
+                candidateName,
+                candidateId,
+                jd_id,
+                jd_text,
+                interviewToken,
+            })
+        );
+
+        // 🚀 MOVE TO INTERVIEW MODE
+        navigate("/interview", {
+            replace: true, // 🔒 PREVENT BACK / REVALIDATION
+            state: {
+                attemptId,
+                candidateName,
+                candidateId,
+                jd_id,
+                jd_text,
+                interviewToken,
+            },
+        });
+    };
+
+    /* ================== UI ================== */
+    return (
+        <div className="ip-page">
+            {/* LOGO */}
+            <div className="ip-logo-header">
+                <img src={logo} alt="PrimeHire Logo" className="ph-logo" />
+            </div>
+
+            <div className="ip-glass-wrapper">
+                <h2 className="ip-title">Interview Instructions</h2>
+
+                <p className="ip-subtitle">
+                    Hello <strong>{candidateName}</strong>, please read and confirm the
+                    instructions carefully before starting the interview.
+                </p>
+
+                {/* INSTRUCTIONS */}
+                <div className="ip-card">
+                    <ul className="ip-list">
+                        <li>Ensure your camera and microphone are working properly.</li>
+                        <li>Use a quiet, well-lit environment.</li>
+                        <li>Do not switch tabs or minimize the browser.</li>
+                        <li>AI proctoring is enabled (face, gaze, tab monitoring).</li>
+                        <li>Multiple faces or absence will be flagged.</li>
+                        <li>Maintain eye contact and speak clearly.</li>
+                        <li>Stable internet connection is required.</li>
+                        <li>Your responses will be recorded and evaluated.</li>
+                    </ul>
+
+                    {/* ACCEPT CHECKBOX */}
+                    <div className="ip-checkbox-row">
+                        <Checkbox
+                            id="accept-instructions"
+                            checked={checked}
+                            onCheckedChange={setChecked}
+                        />
+                        <label
+                            htmlFor="accept-instructions"
+                            className="ip-checkbox-label"
+                        >
+                            I have read and agree to the above instructions.
+                        </label>
+                    </div>
+                </div>
+
+                {/* ACTION */}
+                <div className="ip-actions">
+                    <Button
+                        className={`ip-btn-start ${checked ? "ready" : ""}`}
+                        disabled={!checked}
+                        onClick={handleStartInterview}
+                    >
+                        Start Interview →
+                    </Button>
+                </div>
+
+                {/* DEBUG (remove later if needed) */}
+                <div className="ip-debug">
+                    Candidate: {candidateName} | ID: {candidateId} | JD: {jd_id}
+                </div>
+            </div>
+        </div>
+    );
+}

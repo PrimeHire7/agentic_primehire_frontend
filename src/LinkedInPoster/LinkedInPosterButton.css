@@ -1,0 +1,79 @@
+.linkedin-auto-container {
+  background: linear-gradient(135deg, #f3f7fb, #ffffff);
+  border: 1px solid #e1e9f0;
+  border-radius: 16px;
+  padding: 32px 24px;
+  width: 100%;
+  max-width: 480px;
+  margin: 30px auto;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.linkedin-auto-container:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.1);
+}
+
+.linkedin-auto-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #0077b5;
+  margin-bottom: 20px;
+  text-shadow: 0 1px 1px rgba(0, 119, 181, 0.1);
+}
+
+.linkedin-auto-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+}
+
+.linkedin-connect-btn {
+  width: 100%;
+  max-width: 300px;
+  border-radius: 10px;
+  border: 2px solid #0077b5;
+  background-color: white;
+  color: #0077b5;
+  font-weight: 600;
+  padding: 10px 20px;
+  transition: all 0.3s ease;
+}
+
+.linkedin-connect-btn:hover {
+  background-color: #0077b5;
+  color: white;
+  transform: scale(1.03);
+}
+
+.linkedin-connect-btn.connected {
+  background-color: #00b56a;
+  border-color: #00b56a;
+  color: white;
+  box-shadow: 0 0 10px rgba(0, 181, 106, 0.4);
+}
+
+.linkedin-post-job-btn {
+  width: 100%;
+  max-width: 300px;
+  border-radius: 10px;
+  background-color: #0077b5;
+  color: white;
+  font-weight: 600;
+  padding: 10px 20px;
+  transition: all 0.3s ease;
+}
+
+.linkedin-post-job-btn:hover {
+  background-color: #005f91;
+  transform: scale(1.03);
+}
+
+.linkedin-post-job-btn:disabled {
+  background-color: #c6d6e2;
+  cursor: not-allowed;
+  transform: none;
+}

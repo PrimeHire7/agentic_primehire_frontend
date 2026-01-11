@@ -1,0 +1,448 @@
+/* JDTaskUI.css */
+.jd-ui {
+    border-radius: 12px;
+    padding: 14px;
+    background: white;
+    box-shadow: 0 6px 18px rgba(20, 20, 20, 0.06);
+    margin-bottom: 14px;
+    max-width: 920px;
+}
+
+.jd-input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.jd-input {
+    flex: 1;
+}
+
+.jd-send {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    background: #1a73e8;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.add-question-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: #38bdf8;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: 0.2s ease;
+    box-shadow: 0 2px 4px rgba(56, 189, 248, 0.25);
+}
+
+.add-question-btn:hover {
+    background: #0ea5e9;
+    box-shadow: 0 4px 10px rgba(56, 189, 248, 0.35);
+}
+
+.add-question-btn .add-label {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+
+/* Popup */
+.add-question-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99;
+}
+
+.add-question-box {
+    background: white;
+    padding: 22px;
+    width: 360px;
+    border-radius: 12px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.15);
+}
+
+.add-question-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+.add-question-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 14px;
+    gap: 10px;
+}
+
+.jd-edit-box {
+    width: 100%;
+    min-height: 220px;
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    background: #fff;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.jd-edit-actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+.btn.primary {
+    background: #1a73e8;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 8px;
+}
+
+.btn.secondary {
+    background: #eee;
+    padding: 8px 16px;
+    border-radius: 8px;
+}
+
+.btn-cancel {
+    padding: 8px 14px;
+    background: #eee;
+    border-radius: 6px;
+}
+
+.btn-save {
+    padding: 8px 14px;
+    background: #1a73e8;
+    color: white;
+    border-radius: 6px;
+}
+
+.jd-skip {
+    padding: 8px 14px;
+    background: #f3f3f3;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.2s ease;
+}
+
+.jd-skip:hover {
+    background: #e2e2e2;
+}
+
+.jd-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.jd-badge {
+    background: linear-gradient(90deg, #eef2ff, #f0f9ff);
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.jd-sub {
+    color: #6b7280;
+    font-size: 0.85rem;
+}
+
+.jd-status {
+    font-size: 0.85rem;
+    color: #0ea5e9;
+    font-weight: 600;
+}
+
+.jd-main {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+}
+
+.jd-timeline {
+    max-height: 180px;
+    overflow: auto;
+    padding: 8px;
+    border-radius: 10px;
+    background: #fbfbfb;
+    border: 1px solid #f1f5f9;
+}
+
+.timeline-empty {
+    color: #9ca3af;
+    text-align: center;
+    padding: 14px 4px;
+}
+
+.timeline-item {
+    display: flex;
+    gap: 10px;
+    padding: 8px;
+    align-items: flex-start;
+}
+
+.timeline-item+.timeline-item {
+    margin-top: 6px;
+}
+
+.timeline-item.user .timeline-avatar {
+    background: #0ea5e9;
+    color: white;
+}
+
+.timeline-item.ai .timeline-avatar {
+    background: #e6eefa;
+    color: #064e3b;
+}
+
+.timeline-avatar {
+    min-width: 34px;
+    min-height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.timeline-body {
+    flex: 1;
+}
+
+.timeline-meta {
+    display: flex;
+    gap: 8px;
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-bottom: 4px;
+}
+
+.timeline-text {
+    font-size: 0.95rem;
+    color: #111827;
+}
+
+.jd-question {
+    border-top: 1px dashed #eef2ff;
+    padding-top: 12px;
+}
+
+.question-pill {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.question-text {
+    color: #0f172a;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.jd-input-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.jd-input {
+    flex: 1;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #e6eef6;
+    font-size: 0.95rem;
+}
+
+.jd-send {
+    background: #0ea5e9;
+    color: white;
+    border-radius: 10px;
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+}
+
+.jd-hint {
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-top: 6px;
+}
+
+.jd-summary {
+    margin-top: 12px;
+    padding: 10px;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #eef2ff;
+}
+
+.summary-title {
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 8px;
+}
+
+.summary-item {
+    background: white;
+    border-radius: 6px;
+    padding: 8px;
+    border: 1px solid #f1f5f9;
+}
+
+.summary-key {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.summary-val {
+    margin-top: 6px;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.summary-actions {
+    margin-top: 8px;
+    display: flex;
+    gap: 8px;
+}
+
+.btn.primary {
+    background: #0ea5e9;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+}
+
+/* ===== JD Drawer Styles ===== */
+.jd-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    width: 400px;
+    background: rgba(255, 255, 255, 0.97);
+    box-shadow: -2px 0 12px rgba(0, 0, 0, 0.15);
+    border-left: 1px solid #e0e0e0;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    animation: slideIn 0.3s ease-out;
+    overflow-y: auto;
+}
+
+.jd-drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.2rem;
+    background: #f6f6f6;
+    border-bottom: 1px solid #ddd;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.jd-drawer-header h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.jd-close-btn {
+    background: transparent;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #555;
+    transition: color 0.2s ease;
+}
+
+.jd-close-btn:hover {
+    color: #000;
+}
+
+.jd-drawer-body {
+    flex: 1;
+    padding: 1rem;
+    overflow-y: auto;
+}
+
+/* Animation */
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+.matcher-loading-box {
+    text-align: center;
+    padding: 20px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 15px;
+}
+
+.progress-fill {
+    width: 40%;
+    height: 100%;
+    background: #4f46e5;
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% {
+        margin-left: -40%;
+    }
+
+    50% {
+        margin-left: 60%;
+    }
+
+    100% {
+        margin-left: -40%;
+    }
+}

@@ -1,0 +1,256 @@
+/* ===============================
+   ROOT TOKENS (LINKEDIN / NOTION)
+================================ */
+:root {
+    --bg-page: #f3f6f8;
+    --bg-card: #ffffff;
+    --border: #e5e7eb;
+    --text-main: #111827;
+    --text-muted: #6b7280;
+    --blue: #0a66c2;
+    --green: #057642;
+    --red: #b42318;
+
+    --radius-lg: 14px;
+    --radius-md: 10px;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* ===============================
+   PAGE WRAPPER
+================================ */
+.vp-container {
+    max-width: 960px;
+    margin: 56px auto;
+    padding: 0 20px;
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont;
+    color: var(--text-main);
+}
+
+/* ===============================
+   LOGO
+================================ */
+.vp-logo-header {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 28px;
+}
+
+.vp-logo {
+    height: 42px;
+    opacity: 0.95;
+}
+
+/* ===============================
+   CARD BASE
+================================ */
+.vp-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+}
+
+/* ===============================
+   TITLE
+================================ */
+.vp-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+/* ===============================
+   SLOT BANNER
+================================ */
+.vp-slot {
+    background: #eef4ff;
+    border: 1px solid #dbe7ff;
+    border-radius: var(--radius-md);
+    padding: 14px 18px;
+    margin-bottom: 28px;
+    font-size: 14px;
+    color: var(--blue);
+    font-weight: 600;
+}
+
+/* ===============================
+   FORM INPUTS
+================================ */
+.vp-field {
+    margin-bottom: 20px;
+}
+
+.vp-field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+
+.vp-field input {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    font-size: 14px;
+    background: #fff;
+}
+
+.vp-field input:focus {
+    outline: none;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(10, 102, 194, 0.1);
+}
+
+/* ===============================
+   PAN STATUS
+================================ */
+.vp-pan-status {
+    margin-top: 10px;
+    padding: 10px 14px;
+    border-radius: var(--radius-md);
+    font-size: 13px;
+}
+
+.vp-pan-status.success {
+    background: #ecfdf3;
+    color: var(--green);
+}
+
+.vp-pan-status.error {
+    background: #fef3f2;
+    color: var(--red);
+}
+
+/* ===============================
+   CAMERA LAYOUT
+================================ */
+.vp-camera {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 24px;
+}
+
+.vp-camera-box {
+    position: relative;
+    background: #000;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    height: 320px;
+    cursor: pointer;
+}
+
+/* VIDEO / IMAGE */
+.vp-camera-box video,
+.vp-camera-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.25s ease;
+}
+
+/* HOVER ZOOM */
+.vp-camera-box:hover video,
+.vp-camera-box:hover img {
+    transform: scale(1.04);
+}
+
+/* OVERLAY */
+.vp-camera-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.25);
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    transition: opacity 0.25s ease;
+}
+
+.vp-camera-box:hover .vp-camera-overlay {
+    opacity: 1;
+}
+
+/* ===============================
+   CAMERA ACTIONS
+================================ */
+.vp-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.vp-actions button {
+    padding: 12px 16px;
+    font-size: 14px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: #fff;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.vp-actions button:hover {
+    background: #f9fafb;
+}
+
+/* PRIMARY */
+.vp-primary {
+    background: var(--blue) !important;
+    color: white !important;
+    border-color: var(--blue) !important;
+}
+
+/* CONTINUE */
+.vp-continue {
+    background: #057642 !important;
+    color: white !important;
+    border-color: #057642 !important;
+}
+
+/* DISABLED */
+.vp-actions button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ===============================
+   ACCESS STATES
+================================ */
+.vp-state {
+    max-width: 520px;
+    margin: 80px auto;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 36px;
+    text-align: center;
+    box-shadow: var(--shadow-md);
+}
+
+.vp-state h2 {
+    font-size: 22px;
+    margin-bottom: 12px;
+}
+
+/* ===============================
+   MOBILE
+================================ */
+@media (max-width: 900px) {
+    .vp-camera {
+        grid-template-columns: 1fr;
+    }
+
+    .vp-camera-box {
+        height: 260px;
+    }
+}

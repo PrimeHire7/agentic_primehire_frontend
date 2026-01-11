@@ -1,0 +1,75 @@
+
+Here’s a **ready-to-copy set of answers** you can paste one by one into your JD Creator flow to quickly test the bot end-to-end 👇
+
+---
+
+### 🧠 **JD Creator – Sample Answers**
+
+1. **Role:**
+
+```
+AI Engineer
+```
+
+2. **Location:**
+
+```
+Bangalore, India (Hybrid)
+```
+
+3. **Experience:**
+
+```
+3
+```
+
+4. **Job Type:**
+
+```
+Full-time
+```
+
+5. **Mandatory Skills:**
+
+```
+Python, TensorFlow, PyTorch, Deep Learning, Computer Vision, NLP
+```
+
+6. **Preferred Skills:**
+
+```
+MLOps, Docker, AWS, FastAPI, OpenAI APIs, Vector Databases
+```
+
+7. **Responsibilities:**
+
+```
+Design and develop AI solutions for real-world problems
+Train and fine-tune large language models and vision models
+Collaborate with cross-functional teams to deploy models to production
+Ensure model performance, scalability, and security
+```
+
+8. **Company:**
+
+```
+PrimeHire AI Labs
+```
+
+9. **About:**
+
+```
+PrimeHire is building the future of recruiting through agentic AI systems. We develop next-gen tools that automate JD creation, candidate matching, and intelligent hiring workflows.
+```
+
+10. **Perks:**
+
+```
+Remote flexibility
+Health insurance
+Stock options
+Latest MacBook and GPU credits
+Learning & development budget
+```
+
+---

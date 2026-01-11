@@ -1,0 +1,465 @@
+/* =============================
+   GLOBAL & WRAPPER
+============================= */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.instructions-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8edf3 100%);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+/* =============================
+   NAVBAR
+============================= */
+.instructions-navbar {
+     width: 100%;
+     
+    padding: 15px 6px;
+    margin-bottom: 40px;
+}
+
+.navbar-logo {
+  height: 41px;
+  width: auto;
+  display: block;
+  margin-top: -30px;
+  transition: transform 0.3s ease;
+}
+
+.navbar-logo:hover {
+  transform: scale(1.05);
+}
+
+/* =============================
+   CARD
+============================= */
+.instructions-card {
+  width: 100%;
+  max-width: 750px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  animation: fadeInUp 0.6s ease;
+  border: none !important;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =============================
+   HEADER
+============================= */
+.instructions-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 40px 30px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.instructions-header::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  animation: pulse 15s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+.instructions-title {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.5px;
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* =============================
+   CARD CONTENT
+============================= */
+.card-content {
+  padding: 45px 35px;
+}
+
+.instructions-card p {
+  font-size: 17px;
+  color: #4a5568;
+  margin-bottom: 25px;
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+/* =============================
+   INSTRUCTIONS LIST
+============================= */
+.instructions-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 35px 0;
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.instructions-list li {
+  font-size: 15px;
+  color: #2d3748;
+  padding: 15px 0;
+  padding-left: 35px;
+  position: relative;
+  line-height: 1.7;
+  border-bottom: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.instructions-list li:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.instructions-list li:hover {
+  padding-left: 40px;
+  color: #667eea;
+}
+
+.instructions-list li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  top: 15px;
+  color: #667eea;
+  font-weight: bold;
+  font-size: 20px;
+  width: 26px;
+  height: 26px;
+  background: #eef2ff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.instructions-list li:hover::before {
+  background: #667eea;
+  color: white;
+  transform: scale(1.1);
+}
+
+/* =============================
+   CHECKBOX SECTION
+============================= */
+.confirm-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 22px;
+  margin-top: 25px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #eef2ff 100%);
+  border-radius: 10px;
+  border: 2px solid #e2e8f0;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.confirm-checkbox:hover {
+  border-color: #667eea;
+  background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+/* Shadcn Checkbox Styling */
+.confirm-checkbox > button {
+  width: 22px !important;
+  height: 22px !important;
+  border-radius: 6px !important;
+  border: 2.5px solid #667eea !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: white !important;
+  flex-shrink: 0 !important;
+  transition: all 0.3s ease !important;
+}
+
+.confirm-checkbox > button:hover {
+  border-color: #764ba2 !important;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.confirm-checkbox > button[data-state="checked"] {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border-color: #667eea !important;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.confirm-checkbox svg {
+  width: 15px !important;
+  height: 15px !important;
+  color: white !important;
+  stroke-width: 3.5 !important;
+}
+
+.checkbox-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2d3748;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.3s ease;
+}
+
+.confirm-checkbox:hover .checkbox-label {
+  color: #667eea;
+}
+
+/* =============================
+   CARD FOOTER
+============================= */
+.card-footer {
+  padding: 35px;
+  background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
+  border-top: 2px solid #e9ecef;
+  display: flex;
+  justify-content: center;
+}
+
+/* =============================
+   START BUTTON
+============================= */
+.start-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white !important;
+  padding: 16px 50px;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.start-btn::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.start-btn:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.start-btn:hover:not(:disabled) {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.6);
+}
+
+.start-btn:active:not(:disabled) {
+  transform: translateY(-2px) scale(0.98);
+}
+
+.start-btn:disabled {
+  background: linear-gradient(135deg, #cbd5e0 0%, #a0aec0 100%) !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  opacity: 0.6;
+  transform: none !important;
+}
+
+/* =============================
+   DEBUG INFO
+============================= */
+.instructions-wrapper > div:last-child {
+  margin-top: 25px;
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  font-size: 13px;
+  color: #718096;
+  font-family: 'Courier New', monospace;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* =============================
+   RESPONSIVE DESIGN
+============================= */
+@media (max-width: 768px) {
+  .instructions-wrapper {
+    padding: 15px;
+  }
+
+  .instructions-navbar {
+    margin-bottom: 30px;
+    padding: 12px 15px;
+  }
+
+  .navbar-logo {
+    height: 38px;
+  }
+
+  .instructions-header {
+    padding: 30px 25px;
+  }
+
+  .instructions-title {
+    font-size: 26px;
+  }
+
+  .card-content {
+    padding: 35px 25px;
+  }
+
+  .instructions-card p {
+    font-size: 16px;
+  }
+
+  .instructions-list {
+    padding: 15px;
+  }
+
+  .instructions-list li {
+    font-size: 14px;
+    padding-left: 32px;
+  }
+
+  .card-footer {
+    padding: 28px;
+  }
+
+  .start-btn {
+    padding: 14px 40px;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .instructions-wrapper {
+    padding: 10px;
+  }
+
+  .instructions-navbar {
+    margin-bottom: 20px;
+    padding: 10px;
+  }
+
+  .navbar-logo {
+    height: 35px;
+  }
+
+  .instructions-header {
+    padding: 25px 20px;
+  }
+
+  .instructions-title {
+    font-size: 22px;
+  }
+
+  .card-content {
+    padding: 28px 20px;
+  }
+
+  .instructions-card p {
+    font-size: 15px;
+    margin-bottom: 20px;
+  }
+
+  .instructions-list {
+    padding: 12px;
+    margin-bottom: 25px;
+  }
+
+  .instructions-list li {
+    font-size: 13px;
+    padding: 12px 0 12px 30px;
+  }
+
+  .instructions-list li::before {
+    font-size: 16px;
+    width: 22px;
+    height: 22px;
+  }
+
+  .confirm-checkbox {
+    padding: 18px;
+    gap: 12px;
+  }
+
+  .checkbox-label {
+    font-size: 14px;
+  }
+
+  .card-footer {
+    padding: 22px 15px;
+  }
+
+  .start-btn {
+    padding: 13px 35px;
+    font-size: 15px;
+    width: 100%;
+  }
+
+  .instructions-wrapper > div:last-child {
+    font-size: 11px;
+    padding: 10px 15px;
+  }
+}
+
+/* =============================
+   ACCESSIBILITY
+============================= */
+.start-btn:focus-visible,
+.confirm-checkbox > button:focus-visible {
+  outline: 3px solid #667eea;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

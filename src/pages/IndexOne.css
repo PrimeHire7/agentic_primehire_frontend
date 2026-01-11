@@ -1,0 +1,624 @@
+/* === General Table Styling === */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 10px; /* balanced spacing between rows */
+  font-family: "Inter", sans-serif;
+}
+
+thead tr {
+  background-color: #f3f4f6;
+}
+
+thead th {
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  text-align: left;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+tbody tr {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  transition: background 0.2s ease;
+}
+
+tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+/* === Checkbox + Profile Section (First Column) === */
+tbody td:first-child {
+  display: flex;
+  align-items: center;
+  gap: 14px; /* proper gap between checkbox, image & name */
+  border: none;
+  padding: 12px 16px;
+}
+
+/* Checkbox */
+tbody td:first-child input[type="checkbox"] {
+  width: 13px;
+  height: 30px;
+  accent-color: #0073e6;
+  flex-shrink: 0;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+/* Profile Image */
+tbody td:first-child img {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid #e5e7eb;
+  margin-right: 10px; /* <-- adds clean space between image & text */
+}
+
+/* Profile Info Container */
+tbody td:first-child .profile-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+}
+
+/* Name */
+tbody td:first-child .profile-info .name {
+  font-weight: 600;
+  font-size: 15px;
+  color: #111827;
+  line-height: 1.2;
+}
+
+/* Designation / Role */
+tbody td:first-child .profile-info .role {
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.2;
+}
+
+/* Match Label */
+tbody td:first-child .profile-info .match {
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 3px;
+  text-transform: capitalize;
+}
+
+/* Match Colors */
+.match.best {
+  color: #00875a;
+}
+
+.match.good {
+  color: #007acc;
+}
+
+.match.partial {
+  color: #b58900;
+}
+
+/* Match Progress Bar */
+.match-bar {
+  width: 85px;
+  height: 6px;
+  border-radius: 4px;
+  background-color: #e5e7eb;
+  overflow: hidden;
+  margin-top: 3px;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+/* Green (Best Match) */
+.bar-fill.best {
+  width: 100%;
+  background-color: #00b871;
+}
+
+/* Blue (Good Match) */
+.bar-fill.good {
+  width: 70%;
+  background-color: #f1b600;
+}
+
+/* Yellow (Partial Match) */
+.bar-fill.partial {
+  width: 40%;
+  background-color: red;
+}
+
+/* Other Table Cells */
+tbody td {
+  border: none;
+  padding: 14px 18px;
+  font-size: 14px;
+  color: #374151;
+  vertical-align: middle;
+}
+
+/* === Final Score Colors === */
+.final-score {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.final-score.great {
+  color: #00875a;
+}
+
+.final-score.medium {
+  color: #f1b600;
+}
+
+.final-score.low {
+  color: #d32f2f;
+}
+
+/* Score bar */
+.score-bar {
+  width: 100%;
+  height: 6px;
+  border-radius: 4px;
+  background-color: #e5e7eb;
+  overflow: hidden;
+}
+
+.score-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.score-fill.great {
+  background-color: #00b871;
+}
+
+.score-fill.medium {
+  background-color: #f1b600;
+}
+
+.score-fill.low {
+  background-color: #d32f2f;
+}
+
+/* === Final Review Summary Box === */
+.final-review-box {
+  margin-top: 28px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 22px 26px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  font-family: "Inter", sans-serif;
+}
+
+.review-header h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #111827;
+}
+
+.review-header .subtext {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 18px;
+}
+
+.review-cards {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.review-card {
+  flex: 1;
+  min-width: 220px;
+  padding: 16px;
+  border-radius: 10px;
+  background: #f9fafb;
+  border: 1px solid #eee;
+  transition: 0.3s ease;
+}
+
+.review-card h4 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.review-card p {
+  font-size: 13px;
+  color: #555;
+  line-height: 1.4;
+}
+
+/* Individual card colors */
+.best-match {
+  background: #e6f9f0;
+  border-color: #9ae6b4;
+}
+
+.good-match {
+  background: #fef9e7;
+  border-color: #f6e05e;
+}
+
+.partial-match {
+  background: #fcebea;
+  border-color: #f6adad;
+}
+
+/* Hover effect */
+.review-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+}
+/* === MAIN CONTAINER === */
+/* === MAIN CONTAINER === */
+.interviewbot-container {
+  width: 100%;
+  height: 60vh;
+  background: #f9fafb;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* === TITLE === */
+.interviewbot-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #1f2937;
+  text-align: center;
+  width: 100%;
+  position: relative;
+}
+
+/* === STOP INTERVIEW BUTTON (top-right) === */
+.stop-btn {
+  position: absolute;
+  right: 24px;
+  top: 46%;
+  transform: translateY(-50%);
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+.stop-btn:hover {
+  background-color: #dc2626;
+}
+
+/* === INTERVIEW SECTION (Split View) === */
+.interview-container {
+  display: flex;
+  width: 100%;
+  flex: 1; /* take up remaining vertical space */
+  box-sizing: border-box;
+  gap: 20px;
+}
+
+/* === LEFT PANEL (Video + Q/A) === */
+.interview-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* === Q/A PANEL AT TOP === */
+.qa-panel {
+  order: -1; /* ensures JD section appears above video */
+  width: 100%;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  z-index: 2;
+}
+
+/* === LABEL === */
+.qa-label {
+  font-weight: 600;
+  color: #374151;
+  display: block;
+  margin-bottom: 8px;
+}
+
+/* === TEXTAREA === */
+.qa-textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  resize: vertical;
+  outline: none;
+  margin-bottom: 12px;
+}
+.qa-textarea:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}
+
+/* === BUTTONS UNDER TEXTAREA === */
+.qa-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* === BUTTON STYLES === */
+.btn {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.btn-blue {
+  background: #3b82f6;
+}
+.btn-blue:hover {
+  background: #2563eb;
+}
+.btn-indigo {
+  background: #6366f1;
+}
+.btn-indigo:hover {
+  background: #4f46e5;
+}
+.btn-green {
+  background: #10b981;
+}
+.btn-green:hover {
+  background: #059669;
+}
+.btn-red {
+  background: #ef4444;
+}
+.btn-red:hover {
+  background: #dc2626;
+}
+
+/* === VIDEO PANEL === */
+.interview-video {
+  width: 100%;
+  height: 320px;
+  border-radius: 12px;
+  object-fit: cover;
+  background: #000;
+  flex-shrink: 0;
+  position: relative;
+}
+
+/* === CANVAS (AI overlays) === */
+.interview-canvas {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: calc(100% - 40px);
+  height: 320px;
+  border-radius: 12px;
+  pointer-events: none;
+}
+
+/* === ANOMALY MESSAGE INSIDE VIDEO PANEL === */
+
+.anomaly-message {
+  position: absolute;
+  top: 91%;
+  left: 30%;
+  transform: translate(-50%, -50%);
+  background: rgba(239, 68, 68, 0.9);
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  z-index: 5;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+  display: none;  
+  transition: opacity 0.3s ease;
+}
+
+/* === RIGHT PANEL: TRANSCRIPT === */
+.transcript-panel {
+  flex: 1;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  overflow-y: auto;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.transcript-heading {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 12px;
+}
+
+.transcript-empty {
+  color: #6b7280;
+  text-align: center;
+  padding: 20px;
+  font-style: italic;
+}
+
+/* === MESSAGES === */
+.transcript-message-row {
+  margin-bottom: 10px;
+}
+
+.transcript-message {
+  padding: 10px 14px;
+  border-radius: 10px;
+  max-width: 90%;
+  word-wrap: break-word;
+  font-size: 0.95rem;
+}
+
+.ai-row {
+  text-align: left;
+}
+
+.user-row {
+  text-align: right;
+}
+
+.ai-message {
+  background: #e0f2fe;
+  color: #1e3a8a;
+}
+
+.user-message {
+  background: #dcfce7;
+  color: #065f46;
+  margin-left: auto;
+}
+
+/* === SCROLLBAR STYLING === */
+.transcript-panel::-webkit-scrollbar {
+  width: 6px;
+}
+.transcript-panel::-webkit-scrollbar-thumb {
+  background-color: #9ca3af;
+  border-radius: 6px;
+}
+.transcript-panel::-webkit-scrollbar-thumb:hover {
+  background-color: #6b7280;
+}
+/* Main container */
+
+
+/* 🔘 VALIDATE BUTTON */
+.validate-btn01 {
+  background-color: #2563eb;
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.validate-btn01:hover {
+  background-color: #1d4ed8;
+}
+
+.validate-btn01:disabled {
+  background-color: #93c5fd;
+  cursor: not-allowed;
+}
+
+/* 📊 VALIDATION RESULT BOX */
+.validation-box01 {
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 10px;
+  font-weight: 500;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.validation-box01.valid {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.validation-box01.invalid {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+/* 📱 RESPONSIVE */
+@media (max-width: 480px) {
+  .upload-container01 {
+    padding: 1rem;
+  }
+  .upload-box01 {
+    padding: 2rem 0.5rem;
+  }
+  .upload-box01::after {
+    font-size: 14px;
+  }
+}
+
+/* === RESPONSIVE DESIGN === */
+@media (max-width: 1024px) {
+  .interview-container {
+    flex-direction: column;
+  }
+
+  .interview-left,
+  .transcript-panel {
+    width: 100%;
+    height: auto;
+  }
+
+  .interview-video {
+    height: 260px;
+  }
+}
+
+/* === Responsive Layout === */
+@media (max-width: 768px) {
+  table {
+    font-size: 13px;
+  }
+
+  tbody td:first-child img {
+    width: 36px;
+    height: 36px;
+  }
+
+  tbody td:first-child {
+    padding: 10px 12px;
+  }
+
+  tbody td {
+    padding: 10px;
+  }
+
+  .review-cards {
+    flex-direction: column;
+  }
+}

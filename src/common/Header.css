@@ -1,0 +1,169 @@
+.ph-header {
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 120;
+
+  padding: 12px 0;
+
+  /* 🔄 Gradient reversed: light → blue instead of blue → light */
+  background: linear-gradient(315deg,
+      /* flipped */
+      rgba(99, 102, 241, 0.38),
+      rgba(255, 255, 255, 0.45),
+      rgba(255, 255, 255, 0.45),
+      rgba(124, 138, 255, 0.32),
+      rgba(99, 102, 241, 0.38));
+
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.55);
+
+  box-shadow:
+    0 8px 25px rgba(124, 138, 255, 0.25),
+    inset 0 -2px 8px rgba(255, 255, 255, 0.25);
+}
+
+/* Reverse glow to match */
+.ph-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background: linear-gradient(300deg,
+      /* reversed */
+
+      rgba(124, 138, 255, 0.28),
+      rgba(255, 255, 255, 0.4),
+      rgba(99, 102, 241, 0.35));
+
+  filter: blur(18px);
+  opacity: 0.85;
+  pointer-events: none;
+  z-index: -1;
+}
+
+
+
+/* INNER FLEX */
+.ph-header-inner {
+  width: 100%;
+  max-width: 1480px;
+  margin: 0 auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 30px;
+}
+
+/* LEFT SECTION (logo) */
+.ph-logo-wrap {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.ph-logo {
+  height: 44px;
+  width: auto;
+  display: block;
+}
+
+/* RIGHT SECTION (buttons) */
+.ph-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  /* ★ Pushes the buttons completely to the right ★ */
+  margin-left: auto;
+}
+
+/* Refresh Button */
+.ph-refresh-btn {
+  padding: 8px 14px;
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(12px);
+
+  font-size: 0.85rem;
+  color: #1e293b;
+  font-weight: 500;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  transition: 0.25s ease;
+}
+
+.ph-refresh-btn:hover {
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(99, 102, 241, 0.18);
+}
+
+/* Sign In Button */
+.ph-signin-btn {
+  padding: 8px 16px;
+  border-radius: 10px;
+
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  color: white;
+  border: none;
+
+  font-weight: 600;
+  font-size: 0.88rem;
+
+  box-shadow: 0 6px 18px rgba(99, 102, 241, 0.25);
+  transition: 0.25s ease;
+}
+
+.ph-signin-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(99, 102, 241, 0.35);
+}
+
+.ph-btn-icon {
+  width: 16px;
+  height: 16px;
+  opacity: 0.8;
+  transition: 0.25s ease;
+}
+
+.ph-refresh-btn:hover .ph-btn-icon {
+  transform: rotate(90deg);
+  opacity: 1;
+}
+
+/* Primary Button */
+.ph-btn-primary {
+  padding: 9px 20px;
+  font-size: 0.97rem;
+  font-weight: 700;
+
+  background: linear-gradient(120deg, #2563eb, #4f46e5);
+  color: white;
+
+  border-radius: 12px;
+  cursor: pointer;
+
+  box-shadow:
+    0 4px 14px rgba(37, 99, 235, 0.28),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+
+  transition: 0.25s ease;
+}
+
+.ph-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 10px 26px rgba(37, 99, 235, 0.35),
+    0 0 22px rgba(59, 130, 246, 0.3);
+}

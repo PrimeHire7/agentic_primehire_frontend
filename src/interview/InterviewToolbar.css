@@ -1,0 +1,220 @@
+/* ----------------------------------------------------
+   TOOLBAR — FIXED, CLEAN, UPDATED (WITH WAVE ICON)
+----------------------------------------------------- */
+
+.interview-toolbar {
+    width: 100%;
+    height: 68px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 28px;
+    background: #ffffff;
+    border-bottom: 1px solid #ececec;
+
+    box-sizing: border-box;
+    flex-shrink: 0;
+    gap: 20px;
+    z-index: 20;
+}
+
+/* LEFT SECTION */
+.toolbar-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+}
+
+.toolbar-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #222;
+}
+
+.toolbar-timer {
+    font-size: 13px;
+    color: #666;
+}
+
+/* RIGHT SIDE BUTTON GROUP */
+.toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+
+/* ----------------------------------------------------
+   BUTTONS
+----------------------------------------------------- */
+
+.primary-btn,
+.danger-btn,
+.icon-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* Start/Next buttons */
+.primary-btn {
+    background: #ff4d4f;
+    color: #fff;
+}
+
+/* End button (not used now but available) */
+.danger-btn {
+    background: #ff4d4f;
+    color: #fff;
+}
+
+/* Icon Buttons */
+.icon-btn {
+    background: #f2f2f5;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Divider line */
+.toolbar-divider {
+    width: 1px;
+    height: 26px;
+    background: #dcdcdc;
+}
+
+
+/* ----------------------------------------------------
+   WAVEFORM (VISIBLE ONLY DURING RECORDING)
+---------------------------------------------------- */
+
+.recording-wave {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 4px;
+}
+
+.recording-wave div {
+    width: 4px;
+    height: 8px;
+    border-radius: 4px;
+
+    /* Gradient color bars */
+    background: linear-gradient(180deg, #ff3b30, #ff7b72);
+
+    animation: waveBounce 0.9s ease-in-out infinite;
+}
+
+/* Make 8 bars with staggered delays */
+.recording-wave div:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.recording-wave div:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.recording-wave div:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+.recording-wave div:nth-child(4) {
+    animation-delay: 0.3s;
+}
+
+.recording-wave div:nth-child(5) {
+    animation-delay: 0.4s;
+}
+
+.recording-wave div:nth-child(6) {
+    animation-delay: 0.5s;
+}
+
+.recording-wave div:nth-child(7) {
+    animation-delay: 0.6s;
+}
+
+.recording-wave div:nth-child(8) {
+    animation-delay: 0.7s;
+}
+
+@keyframes waveBounce {
+    0% {
+        height: 8px;
+        opacity: 0.4;
+    }
+
+    50% {
+        height: 28px;
+        opacity: 1;
+    }
+
+    100% {
+        height: 8px;
+        opacity: 0.4;
+    }
+}
+
+/* Label beside waveform */
+.recording-label {
+    font-size: 14px;
+    color: #ff3b30;
+    margin-left: 8px;
+    font-weight: 600;
+}
+
+/* ----------------------------------------------------
+   START / STOP BUTTONS — Modern UI
+---------------------------------------------------- */
+
+/* Shared button base */
+.start-speaking-btn,
+.stop-speaking-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 18px;
+    border-radius: 10px;
+    border: none;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.25s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* START BUTTON — Red / Gradient */
+.start-speaking-btn {
+    background: linear-gradient(135deg, #ff3b30, #ff6a6a);
+    color: #fff;
+}
+
+.start-speaking-btn:hover {
+    background: linear-gradient(135deg, #ff5248, #ff7b7b);
+    transform: translateY(-1px);
+}
+
+/* STOP BUTTON — Dark, Bold */
+.stop-speaking-btn {
+    background: linear-gradient(135deg, #222, #3a3a3a);
+    color: #fff;
+}
+
+.stop-speaking-btn:hover {
+    background: linear-gradient(135deg, #333, #4a4a4a);
+    transform: translateY(-1px);
+}
+
+/* Focus state for accessibility */
+.start-speaking-btn:active,
+.stop-speaking-btn:active {
+    transform: scale(0.97);
+}

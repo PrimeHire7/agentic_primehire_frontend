@@ -1,0 +1,168 @@
+import React, { useState, useRef } from "react";
+import "./InterviewToolbar.css";
+import { API_BASE } from "@/utils/constants";
+import { Mic, Square } from "lucide-react"; // icons
+
+export default function InterviewToolbar({
+    candidateId,
+    attemptId,
+    candidateName,
+    jdText,
+    interviewTime,  // ⬅ new prop
+    interviewToken,
+    jdId
+}) {
+    const [recording, setRecording] = useState(false);
+    const mediaRecorderRef = useRef(null);
+    const audioChunksRef = useRef([]);
+
+    /* ---------------------------------------------------
+       FORMAT TIME DISPLAY
+    --------------------------------------------------- */
+    function formatTime(sec) {
+        const m = String(Math.floor(sec / 60)).padStart(2, "0");
+        const s = String(sec % 60).padStart(2, "0");
+        return `${m}:${s}`;
+    }
+    /* ---------------------------------------------------
+       START AUDIO RECORDING
+    --------------------------------------------------- */
+    async function startAudio() {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+        mediaRecorderRef.current = new MediaRecorder(stream, {
+            mimeType: "audio/webm",
+        });
+
+        audioChunksRef.current = [];
+
+        mediaRecorderRef.current.ondataavailable = (e) => {
+            audioChunksRef.current.push(e.data);
+        };
+
+        mediaRecorderRef.current.onstop = sendAudioToBackend;
+
+        mediaRecorderRef.current.start();
+        setRecording(true);
+
+        // 🔵 Candidate started speaking
+        window.dispatchEvent(
+            new CustomEvent("candidateSpeaking", { detail: true })
+        );
+    }
+
+    /* ---------------------------------------------------
+       STOP RECORDING
+    --------------------------------------------------- */
+    function stopAudio() {
+        // 🔴 Candidate stopped speaking
+        window.dispatchEvent(
+            new CustomEvent("candidateSpeaking", { detail: false })
+        );
+        if (mediaRecorderRef.current) {
+            mediaRecorderRef.current.stop();
+        }
+        setRecording(false);
+    }
+
+    /* ---------------------------------------------------
+       SEND AUDIO → /process-answer
+    --------------------------------------------------- */
+    /* ---------------------------------------------------
+   SEND AUDIO → /process-answer
+--------------------------------------------------- */
+    async function sendAudioToBackend() {
+        const blob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+
+        const fd = new FormData();
+        fd.append("audio", blob);
+        fd.append("attempt_id", attemptId);          // ✅ REQUIRED
+        fd.append("candidate_id", candidateId);
+        fd.append("candidate_name", candidateName);
+        fd.append("job_description", jdText);
+        fd.append("token", interviewToken);
+        if (jdId) fd.append("jd_id", jdId);
+
+
+        const res = await fetch(`${API_BASE}/mcp/interview_bot_beta/process-answer`, {
+            method: "POST",
+            body: fd,
+        });
+
+        const data = await res.json();
+
+        // 1️⃣ User transcript update
+        if (data.transcribed_text) {
+            window.dispatchEvent(
+                new CustomEvent("transcriptAdd", {
+                    detail: {
+                        role: "user",
+                        text: data.transcribed_text,
+                        analysis: data.analysis
+                    },
+                })
+            );
+        }
+
+        // 2️⃣ UPDATE AI CHART PANEL — FIXED
+        if (data.analysis) {
+            window.dispatchEvent(
+                new CustomEvent("aiMetricsUpdate", {
+                    detail: data.analysis,   // ⬅ ALWAYS contains confidence + superficial
+                })
+            );
+        }
+
+        // 3️⃣ Append next AI question
+        if (data.next_question) {
+            window.dispatchEvent(
+                new CustomEvent("transcriptAdd", {
+                    detail: { role: "ai", text: data.next_question }
+                })
+            );
+        }
+
+        // 4️⃣ Completed
+        if (data.completed) {
+            window.dispatchEvent(
+                new CustomEvent("transcriptAdd", {
+                    detail: {
+                        role: "ai",
+                        text: data.final_message || "Interview complete.",
+                    },
+                })
+            );
+        }
+    }
+
+
+    return (
+        <div className="interview-toolbar">
+
+            {/* TIMER */}
+            <div className="interview-timer">
+                ⏱ {formatTime(interviewTime)}
+            </div>
+
+            {/* Recording visualization */}
+            {recording && (
+                <div className="recording-wave">
+                    <div /><div /><div /><div /><div /><div /><div /><div />
+                    <span className="recording-label">Listening…</span>
+                </div>
+            )}
+
+            {!recording ? (
+                <button className="start-speaking-btn" onClick={startAudio}>
+                    <Mic size={18} />
+                    Start Speaking
+                </button>
+            ) : (
+                <button className="stop-speaking-btn" onClick={stopAudio}>
+                    <Square size={18} />
+                    Stop
+                </button>
+            )}
+        </div>
+    );
+}
