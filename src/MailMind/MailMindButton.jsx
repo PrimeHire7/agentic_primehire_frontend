@@ -1580,6 +1580,10 @@ import { API_BASE } from "@/utils/constants";
 import { useUploadProgress } from "@/hooks/useUploadProgress";
 import "./MailMindButton.css";
 
+import { HiOutlineMail } from "react-icons/hi";
+import { RiLockPasswordFill } from "react-icons/ri";
+import { PiMicrosoftOutlookLogoFill } from "react-icons/pi";
+
 export default function MailMindButton() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -1688,8 +1692,23 @@ export default function MailMindButton() {
 
       {!connected && (
         <>
+
+<div className="mailmind-form">
+             <div className="columns-3 mt-5">
+          <div className="col-md-4">
+            <div className="form-field">
           <Input placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} />
+        <HiOutlineMail className="icon-xt" />
+          </div>
+          </div>
+            <div className="col-md-4">
+            <div className="form-field">
           <Input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} />
+          <RiLockPasswordFill className="icon-xt" />
+          </div>
+          </div>
+            <div className="col-md-4">
+            <div className="form-field">
           <Select onValueChange={setPlatform} defaultValue={platform}>
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
@@ -1697,9 +1716,20 @@ export default function MailMindButton() {
               <SelectItem value="gmail">Gmail</SelectItem>
             </SelectContent>
           </Select>
-          <Button onClick={handleConnect}>
+                      <PiMicrosoftOutlookLogoFill  className="icon-xt"/>
+
+           </div>
+          </div>
+        
+          <div className="col-md-12 mt-3">
+             <div className="form-field">
+          <Button onClick={handleConnect} className="btn">
             {loadingLogin ? <Loader2 className="animate-spin" /> : "Login"}
           </Button>
+          </div>
+          </div>
+            </div>
+          </div>  
         </>
       )}
 
