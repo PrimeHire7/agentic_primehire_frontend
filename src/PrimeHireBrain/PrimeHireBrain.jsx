@@ -152,13 +152,13 @@ const PrimeHireBrain = () => {
           Refresh
         </Button>
 
-        <Button className="repair-btn"
+        {/* <Button className="repair-btn"
           variant="outline"
           disabled={repairing}
           onClick={startRepair}
         >
           🛠 Repair Pinecone
-        </Button>
+        </Button> */}
 
         {selected.size > 0 && (
           <Button

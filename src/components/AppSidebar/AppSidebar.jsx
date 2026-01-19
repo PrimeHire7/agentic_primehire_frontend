@@ -37,7 +37,9 @@ export default function AppSidebar({ open, setOpen, selectedFeature, onFeatureSe
     return (
         <>
             <div className={`ph-sidebar ${open ? "open" : "closed"}`}>
-
+<div className="ph-toggle" onClick={() => setOpen(!open)}>
+                {open ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
+            </div>
 
 
                 <SidebarContent>
@@ -66,7 +68,7 @@ export default function AppSidebar({ open, setOpen, selectedFeature, onFeatureSe
             </div>
 
             <div className="ph-toggle" onClick={() => setOpen(!open)}>
-                {open ? <FaBars size={18} /> : <IoClose size={18} />}
+                {open ? <IoClose size={18} /> : <FaBars size={18} />}
             </div>
         </>
     );
