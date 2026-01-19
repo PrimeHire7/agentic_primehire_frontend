@@ -36,9 +36,11 @@ export default function AppSidebar({ open, setOpen, selectedFeature, onFeatureSe
 
     return (
         <>
-            <div className={`ph-sidebar ${open ? "open" : "closed"}`}>
+            {/* <div className={`ph-sidebar ${open ? "open" : "closed"}`}>
 
-
+ <div className="ph-toggle" onClick={() => setOpen(!open)}>
+                {open ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
+            </div>
 
                 <SidebarContent>
                     <SidebarGroup className="mt-4">
@@ -63,11 +65,43 @@ export default function AppSidebar({ open, setOpen, selectedFeature, onFeatureSe
                         </SidebarMenu>
                     </SidebarGroup>
                 </SidebarContent>
+            </div> */}
+
+            {/* <div className="ph-toggle" onClick={() => setOpen(!open)}>
+                {open ? <FaBars size={18} /> : <IoClose size={18} />}
+            </div> */}
+
+
+             <div className={`ph-sidebar ${open ? "open" : "closed"}`}>
+            <div className="ph-toggle" onClick={() => setOpen(!open)}>
+                {open ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
             </div>
 
-            <div className="ph-toggle" onClick={() => setOpen(!open)}>
-                {open ? <FaBars size={18} /> : <IoClose size={18} />}
-            </div>
+
+            <SidebarContent>
+                <SidebarGroup className="mt-4">
+                    {open && (
+                        <SidebarGroupLabel className="ph-group-label ft_clas">
+                            FEATURES
+                        </SidebarGroupLabel>
+                    )}
+
+                    <SidebarMenu>
+                        {features.map((f) => (
+                            <SidebarMenuItem key={f.id}>
+                                <SidebarMenuButton
+                                    className={`ph-btn ${selectedFeature === f.id ? "ph-active" : ""}`}
+                                    onClick={() => onFeatureSelect(f.id)}
+                                >
+                                    <div className="ph-icon">{f.icon}</div>
+                                    {open && <span>{f.label}</span>}
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        ))}
+                    </SidebarMenu>
+                </SidebarGroup>
+            </SidebarContent>
+        </div>
         </>
     );
 }
