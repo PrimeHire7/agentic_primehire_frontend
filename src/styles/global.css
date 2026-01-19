@@ -626,7 +626,7 @@ li.group\/menu-item.relative button {
     right: 0px;
     margin: auto;
   }
-
+ 
  .ci-shell {
     position: relative;
     width: 100%;
@@ -641,8 +641,8 @@ li.group\/menu-item.relative button {
 
     /* .ph-sidebar {
         display: none;
-    } */
-
+    } */ 
+  
 }
 
 @media only screen and (max-width: 767px) {
@@ -927,5 +927,3 @@ tbody tr:nth-child(2n) {
   width: 70px;
   padding-top: 20px !important;
 }
-
- 
