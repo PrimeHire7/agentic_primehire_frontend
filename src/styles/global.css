@@ -923,3 +923,8 @@ tbody tr:nth-child(2n) {
 .col-md-12 {
         float: left;
     }
+
+
+    .chat-content-wrapper .chat-actions{
+        display: none !important;
+    }
