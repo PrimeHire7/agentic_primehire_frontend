@@ -632,10 +632,6 @@ li.group\/menu-item.relative button {
     width: 100%;
     max-width: 100%;
   }
-
-  /* .ph-sidebar {
-        display: none;
-    } */
 }
 
 @media only screen and (max-width: 767px) {
@@ -920,3 +916,4 @@ tbody tr:nth-child(2n) {
   width: 70px;
   padding-top: 20px !important;
 }
+
