@@ -41,7 +41,7 @@
     min-width: var(--sidebar-width, 260px);
 
     height: calc(100vh - 70px);
-    background: white;
+    background: white !important;
 
     border-right: 1px solid #e5e7eb;
 
