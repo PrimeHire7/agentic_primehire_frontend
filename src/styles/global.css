@@ -308,7 +308,7 @@ li.group\/menu-item.relative button:hover {
 
 li.group\/menu-item.relative button {
   background-color: #ded1ff6e !important;
-  padding: 5px 14px !important;
+  padding: 5px 8px !important;
   height: auto !important;
   margin-bottom: 7px !important;
   border-radius: 10px !important;
@@ -918,4 +918,5 @@ tbody tr:nth-child(2n) {
 [data-state="collapsed"] .ph-sidebar {
   /* margin-left: 0px; */
   width: 70px;
+  padding-top: 20px !important;
 }
