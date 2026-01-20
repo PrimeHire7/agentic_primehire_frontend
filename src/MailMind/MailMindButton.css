@@ -198,3 +198,24 @@
   border-top: 1px solid #ddd;
   background: #fafafa;
 }
+
+
+.jd-title_2 {
+    font-size: 22px;
+    font-weight: 600;
+    color: #1e3a8a;
+    margin: 0 0 8px;
+    line-height: 1.4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.jd-title_2 svg {
+    display: inline-block !important;
+    font-size: 27px;
+    width: 25px;
+    height: 25px;
+    margin-right: 10px;
+}

@@ -1583,6 +1583,8 @@ import "./MailMindButton.css";
 import { HiOutlineMail } from "react-icons/hi";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { PiMicrosoftOutlookLogoFill } from "react-icons/pi";
+import { Cpu } from "lucide-react";
+
 
 export default function MailMindButton() {
   const [email, setEmail] = useState("");
@@ -1688,7 +1690,7 @@ export default function MailMindButton() {
 
   return (
     <div className="mailmind-container">
-      <h3>MailMind</h3>
+      <h2 className="jd-title_2"> <Cpu size={18} /> MailMind</h2>
 
       {!connected && (
         <>

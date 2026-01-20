@@ -237,7 +237,7 @@ const PrimeHireBrain = () => {
                     <td>{r.current_title}</td>
                     <td>{r.email}</td>
                     <td className="skills-cell" title={r.top_skills}>
-                      {r.top_skills}
+                      <p className="txt_ht">{r.top_skills}</p>
                     </td>
                     <td>{r.years_of_experience}</td>
                     <td>{r.location}</td>
