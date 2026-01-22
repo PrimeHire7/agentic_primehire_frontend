@@ -2,14 +2,16 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+
+
+import Login from "./pages/Login";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import CertificateData from "./pages/CertificateData";
-
+import ProtectedRoute from "./auth/ProtectedRoute";
 import WebcamRecorder from "@/interview/WebcamRecorder";
-import InstructionsPanel from "@/interview/InstructionsPanel";   // ✅ FIXED IMPORT
+import InstructionsPanel from "@/interview/InstructionsPanel";
 import CandidateOverview from "./CandidateStatus/CandidateOverview";
 import CandidateStatus from "./CandidateStatus/CandidateStatus";
 import ValidationPanel from "@/interview/ValidationPanel";
@@ -19,102 +21,82 @@ import InterviewMode from "@/interview/InterviewMode";
 const queryClient = new QueryClient();
 
 export default function App() {
-    console.log("🔥🔥 APP.JSX IS RENDERING");
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
 
-    return (
-        <QueryClientProvider client={queryClient}>
-            <TooltipProvider>
-                <Toaster />
-                <Sonner />
+        <BrowserRouter>
+          <Routes>
 
-                <BrowserRouter>
-                    <Routes>
-                        <Route path="/" element={<Index />} />
+            {/* 🔓 PUBLIC */}
+            <Route path="/login" element={<Login />} />
 
-                        <Route path="/webcam-recorder" element={<WebcamRecorder />} />
-                        <Route path="/certificatedata" element={<CertificateData />} />
+            {/* 🔒 PROTECTED ROOT */}
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <Index />
+                </ProtectedRoute>
+              }
+            />
 
-                        {/* ✅ Correct Instructions Route */}
-                        <Route path="/instructions" element={<InstructionsPanel />} />
+            {/* 🔒 PROTECTED ROUTES */}
+            <Route
+              path="/webcam-recorder"
+              element={<ProtectedRoute><WebcamRecorder /></ProtectedRoute>}
+            />
 
-                        <Route path="/candidate-status/:jd_id" element={<CandidateStatus />} />
-                        <Route path="/candidate/:id" element={<CandidateOverview />} />
-                        <Route path="/interview" element={<InterviewMode />} />
-                        <Route
-                            path="/validation_panel"
-                            element={
-                                sessionStorage.getItem("interview_started") === "true"
-                                    ? <Navigate to="/interview" replace />
-                                    : <ValidationPanel />
-                            }
-                        />
-                        <Route path="/scheduler" element={<Scheduler />} />
+            <Route
+              path="/certificatedata"
+              element={<ProtectedRoute><CertificateData /></ProtectedRoute>}
+            />
 
-                        <Route path="*" element={<NotFound />} />
-                    </Routes>
-                </BrowserRouter>
+            <Route
+              path="/instructions"
+              element={<ProtectedRoute><InstructionsPanel /></ProtectedRoute>}
+            />
 
-            </TooltipProvider>
-        </QueryClientProvider>
-    );
+            <Route
+              path="/candidate-status/:jd_id"
+              element={<ProtectedRoute><CandidateStatus /></ProtectedRoute>}
+            />
+
+            <Route
+              path="/candidate/:id"
+              element={<ProtectedRoute><CandidateOverview /></ProtectedRoute>}
+            />
+
+            <Route
+              path="/interview"
+              element={<ProtectedRoute><InterviewMode /></ProtectedRoute>}
+            />
+
+            <Route
+              path="/validation_panel"
+              element={
+                <ProtectedRoute>
+                  {sessionStorage.getItem("interview_started") === "true"
+                    ? <Navigate to="/interview" replace />
+                    : <ValidationPanel />}
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/scheduler"
+              element={<ProtectedRoute><Scheduler /></ProtectedRoute>}
+            />
+
+            {/* ❌ NOT FOUND */}
+            <Route path="*" element={<NotFound />} />
+
+          </Routes>
+        </BrowserRouter>
+
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
 }
-// import { Toaster } from "@/components/ui/toaster";
-// import { Toaster as Sonner } from "@/components/ui/sonner";
-// import { TooltipProvider } from "@/components/ui/tooltip";
-// import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-// import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-
-// import Index from "./pages/Index";
-// import CertificateData from "./pages/CertificateData";
-
-// import WebcamRecorder from "@/interview/WebcamRecorder";
-// import InstructionsPanel from "@/interview/InstructionsPanel";
-// import CandidateOverview from "./CandidateStatus/CandidateOverview";
-// import CandidateStatus from "./CandidateStatus/CandidateStatus";
-// import ValidationPanel from "@/interview/ValidationPanel";
-// import Scheduler from "@/components/Scheduler";
-// import InterviewMode from "@/interview/InterviewMode";
-
-// const queryClient = new QueryClient();
-
-// export default function App() {
-//     console.log("🔥🔥 APP.JSX IS RENDERING");
-
-//     return (
-//         <QueryClientProvider client={queryClient}>
-//             <TooltipProvider>
-//                 <Toaster />
-//                 <Sonner />
-
-//                 <BrowserRouter>
-//                     <Routes>
-//                         {/* 🔒 deterministic root */}
-//                         <Route path="/" element={<Navigate to="/validation_panel" replace />} />
-
-//                         {/* <Route path="/validation_panel" element={<ValidationPanel />} /> */}
-//                         <Route
-//                             path="/validation_panel"
-//                             element={
-//                                 sessionStorage.getItem("INTERVIEW_STARTED") === "true"
-//                                     ? <InterviewMode />
-//                                     : <ValidationPanel />
-//                             }
-//                         />
-
-//                         <Route path="/instructions" element={<InstructionsPanel />} />
-//                         <Route path="/interview" element={<InterviewMode />} />
-
-//                         <Route path="/certificatedata" element={<CertificateData />} />
-//                         <Route path="/candidate-status/:jd_id" element={<CandidateStatus />} />
-//                         <Route path="/candidate/:id" element={<CandidateOverview />} />
-//                         <Route path="/webcam-recorder" element={<WebcamRecorder />} />
-//                         <Route path="/scheduler" element={<Scheduler />} />
-
-//                         {/* 🚫 NO NotFound COMPONENT */}
-//                         <Route path="*" element={<Navigate to="/" replace />} />
-//                     </Routes>
-//                 </BrowserRouter>
-//             </TooltipProvider>
-//         </QueryClientProvider>
-//     );
-// }

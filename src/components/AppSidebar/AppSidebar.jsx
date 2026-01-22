@@ -8,7 +8,7 @@ import {
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
 
-import { FileText, Brain, Cpu } from "lucide-react";
+import { FileText, Brain, Cpu, LogOut } from "lucide-react";
 import { FaUserCheck, FaBars } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 
@@ -27,16 +27,24 @@ export default function AppSidebar({
   selectedFeature,
   onFeatureSelect,
 }) {
+
+  const handleLogout = () => {
+    sessionStorage.clear();
+    window.location.href = "/login";
+  };
+
   return (
     <div className={`ph-sidebar-inner ${open ? "open" : "closed"}`}>
-      
+
       {/* TOGGLE BUTTON */}
       <div className="ph-toggle" onClick={() => setOpen(!open)}>
         {open ? <IoClose size={20} /> : <FaBars size={20} />}
       </div>
 
-      <SidebarContent>
-        <SidebarGroup className="mt-4">
+      <SidebarContent className="flex flex-col h-full">
+
+        {/* FEATURES */}
+        <SidebarGroup className="mt-4 flex-1">
           {open && (
             <SidebarGroupLabel className="ph-group-label ft_clas">
               FEATURES
@@ -50,7 +58,7 @@ export default function AppSidebar({
                   className={selectedFeature === f.id ? "ph-active" : ""}
                   onClick={() => {
                     onFeatureSelect(f.id);
-                    setOpen(false); // ✅ AUTO CLOSE SIDEBAR
+                    setOpen(false);
                   }}
                 >
                   <div className="ph-icon">{f.icon}</div>
@@ -60,6 +68,24 @@ export default function AppSidebar({
             ))}
           </SidebarMenu>
         </SidebarGroup>
+
+        {/* 🔴 LOGOUT SECTION (BOTTOM) */}
+        <div className="ph-logout">
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                className="ph-logout-btn"
+                onClick={handleLogout}
+              >
+                <div className="ph-icon">
+                  <LogOut size={18} />
+                </div>
+                {open && <span>Logout</span>}
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </div>
+
       </SidebarContent>
     </div>
   );
