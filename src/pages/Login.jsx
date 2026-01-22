@@ -1,8 +1,13 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import logo from "@/assets/primehire_logo.png";
+import { FaUserAlt } from "react-icons/fa";
+import { FaLock } from "react-icons/fa";
+
+
 
 const STATIC_USER = {
   username: "admin",
@@ -28,23 +33,32 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
-      <Card className="w-[360px] shadow-xl rounded-2xl">
-        <CardHeader className="text-center">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br bg-gradient-blue  from-slate-100 to-slate-200">
+      <Card className="w-[560px] shadow-xl rounded-2xl card_out">
+        <CardHeader className="text-center p-0">
           <CardTitle className="text-2xl font-semibold text-slate-800">
-            PrimeHire AI
+            {/* PrimeHire AI */}
+            <Link to="/" className="ph-logo-wrap">
+          <img src={logo} alt="PrimeHire" className="ph-logo" />
+        </Link>
           </CardTitle>
-          <p className="text-sm text-slate-500">
+          <h6 className="text-sm text-slate-500">
             Sign in to continue
-          </p>
+          </h6>
         </CardHeader>
 
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 p-0">
+          <div className="p-relative">
+          <FaUserAlt />
           <Input
             placeholder="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-          />
+            />
+            </div>
+
+          <div className="p-relative">
+          <FaLock />
 
           <Input
             type="password"
@@ -52,12 +66,12 @@ export default function Login() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-
+</div>
           {error && (
             <p className="text-sm text-red-500 text-center">{error}</p>
           )}
 
-          <Button className="w-full rounded-xl" onClick={handleLogin}>
+          <Button className="w-full rounded-xl btnn" onClick={handleLogin}>
             Login
           </Button>
 
