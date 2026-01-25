@@ -1,0 +1,105 @@
+[33m83259b1[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m udpdated ui
+[33mcd9da03[m Refactor ChatInput styles for improved layout
+[33m84c39d8[m Enhance ChatInput with dropdowns and layout changes
+[33m4e475dd[m Refactor upload UI message type check
+[33m9093cfb[m Refactor ProfileTable to exclude 'partial' category
+[33m0757a0a[m Enhance JD history fetch with attempt counts
+[33m4beafa6[m Enhance info text in MailMindButton
+[33mab8da42[m Comment out send to client button
+[33mb1c0981[m Refactor ProfileTable for improved functionality
+[33m198fec9[m Add styles for client mail input popup
+[33me2d1e24[m Refactor ProfileTable component
+[33m8ab34f7[m Refactor ProfileTable CSS for improved styling
+[33m0bfec14[m Revamp styling for resume table and animations
+[33m99ddeb5[m Add status tracking and fetching to ProfileTable
+[33m05af837[m Clean up CSS formatting and comments
+[33m27cdd83[m Refactor ProfileTable to use finalScore
+[33meb7d705[m Add styling for anomaly list items
+[33m9cd4b5c[m Add anomaly detection display to CandidateOverview
+[33md6a4420[m Enhance candidateId management and tab detection
+[33mbd527a4[m Include candidate_id in webcam recording events
+[33m90ffc90[m Add candidate_id to FormData if available
+[33mee9698c[m Refactor TranscriptPanel to include firstQuestion prop
+[33m7c036c0[m Enhance WebcamRecorder functionality and checks
+[33mef57aea[m Refine styles in InfoCards.css for improved layout
+[33mb71b749[m Add state management for selected feature in InfoCards
+[33m305f5d7[m Reduce top padding for main layout
+[33mc557c57[m Reduce padding in info-section class
+[33m036869f[m Update background color to gradient in ChatMessage.css
+[33m50b2103[m Refactor useUploadProgress hook for enhanced tracking
+[33mf48a3d8[m Enhance file upload handling and progress tracking
+[33mf8caa65[m Reorder candidate status route and validation panel
+[33m7d6230c[m Refactor CandidateOverview component for better clarity
+[33mc209e4b[m Refactor CandidateStatus component for better clarity
+[33m2a12c9f[m Fix export statement in Designation component
+[33mf960c54[m Comment out next question addition to transcript
+[33md2208e1[m Refactor styles in ValidationPanel.css for consistency
+[33m9e4321c[m Enhance TranscriptPanel button styles and animations
+[33mb437cbb[m Refactor TranscriptPanel component structure and styles
+[33mb357d40[m Enhance WebcamRecorder styles and layout
+[33ma650653[m Implement tab and face visibility alerts
+[33m1d79239[m Refactor InstructionsPrompt.css for improved styling
+[33mfbc4019[m Enhance InstructionsPrompt with JD details
+[33maf9ce5c[m Log payload before sending schedule request
+[33m05d5824[m Update jdId retrieval logic in Scheduler component
+[33m44fafdc[m Refactor CSS for improved readability and consistency
+[33mbe052df[m Updated Porfiel table css
+[33mb9a89b5[m Update Scheduler JSX
+[33mf6a9cd8[m Udpated Scheduler CSS
+[33m0e9fa8d[m Updated ChatContainer UI
+[33m59d3fdd[m updated scheduler
+[33mec93c88[m updated scheduler ui time zone
+[33md0ebca5[m updated scheduler ui design
+[33m125e200[m updated scheduler ui
+[33mfd77fb0[m updated candidate status bar
+[33m34eb830[m update candidate status
+[33mc4196a9[m updatejd history ui
+[33ma0c3d79[m  updated jd history
+[33mb2f89cf[m updated manual question
+[33m7b47ae0[m saved gen ai questions on db
+[33me53cc9f[m updated manual questions module in jd history
+[33m6b03e3a[m saved gen ai questions on db
+[33m947682f[m upated automated fetching jd in intevriew bot
+[33md8946ba[m upated auto mail the bot link
+[33mbd95882[m updated jd edit button
+[33m27f599a[m updated jd edit
+[33m71104fb[m updated jdtask ui.css
+[33m62c90fa[m improved ui/ux
+[33m0596c11[m added jd history with buttons of add manual questions
+[33m834fbd0[m added routing on vercel.json
+[33m7fa64af[m added routing on vercel
+[33mbf7013a[m updated ui/ux
+[33m9db2a2e[m update primehire brain ui
+[33m6169b85[m improved jd and backend
+[33m77a4abd[m updated upload_resumes ui
+[33mfb4090f[m Update title for Naresh Tinnaluri in README
+[33m7f3cba7[m updated zoho
+[33m0b1ec2d[m improved ui
+[33m6613151[m ✨ updated sidebar animations
+[33m58f10ec[m ✨ Added share icon
+[33m834a03b[m ✨ Added Upload Resume UI with progress bar + ResumeTable integration
+[33m8d73368[m � Added appside bar ui improvements
+[33m26b3f6a[m � Added sticky header
+[33m1f70ab0[m t add . git commit -m "í´§ Updated GPT router and quick prompts layout" git push Merge branch 'main' of https://github.com/chocky18/primehire_beta_ui
+[33m05c8c17[m Update README.md
+[33m0aee30e[m � Added GPT-powered feature router and UI enhancements
+[33m424b313[m Revise README for PrimeHire project details
+[33mabbaeb5[m updated ValidationPanel and other components
+[33m41b3809[m initial commit
+[33mf312a06[m initial commit
+[33m0a9c305[m initial commit
+[33m17a46cc[m initial commit
+[33m8b8f7db[m initial commit
+[33mec09f41[m initial commit
+[33md57cdcc[m initial commit
+[33m8107aa2[m initial commit
+[33mdf92bcb[m initial commit
+[33m5656eae[m initial commit
+[33m37f02b5[m initial commit
+[33m6d87a4e[m initial commit
+[33m5fe3ee9[m Add logo and sidebar
+[33m424aa20[m Update and build project
+[33m30d1ed8[m Recreate project with Vite
+[33m7387df4[m Refactor to JSX
+[33m895920a[m Refactor: Apply white background and black fonts
+[33m66e8ea5[m [skip lovable] Use tech stack vite_react_shadcn_ts_20250728_minor
