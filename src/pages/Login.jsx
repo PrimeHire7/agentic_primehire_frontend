@@ -68,7 +68,7 @@ export default function Login() {
           />
 </div>
           {error && (
-            <p className="text-sm text-red-500 text-center">{error}</p>
+            <p className="text-sm text-red-500 text-center error-txt">{error}</p>
           )}
 
           <Button className="w-full rounded-xl btnn" onClick={handleLogin}>
