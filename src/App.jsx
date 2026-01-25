@@ -87,7 +87,7 @@ export default function App() {
 
             <Route
               path="/scheduler"
-              element={<ProtectedRoute><Scheduler /></ProtectedRoute>}
+              element={<Scheduler />}
             />
 
             {/* ❌ NOT FOUND */}
