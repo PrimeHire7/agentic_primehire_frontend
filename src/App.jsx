@@ -76,12 +76,9 @@ export default function App() {
 
             <Route
               path="/validation_panel"
-              element={
-                <ProtectedRoute>
-                  {sessionStorage.getItem("interview_started") === "true"
+              element={sessionStorage.getItem("interview_started") === "true"
                     ? <Navigate to="/interview" replace />
-                    : <ValidationPanel />}
-                </ProtectedRoute>
+                    : <ValidationPanel />
               }
             />
 
