@@ -965,6 +965,7 @@ tbody tr:nth-child(2n) {
 
 .card_out {
     padding: 35px 30px;
+ 
     background-color: #fff;
     border-radius: 10px;
     -webkit-box-shadow: none;
@@ -977,7 +978,8 @@ tbody tr:nth-child(2n) {
 
 
 .bg-gradient-blue{
-  background-color: #fff;
+background-color: #fff;
+  
 }
 
 .card_out input{
@@ -1040,4 +1042,60 @@ tbody tr:nth-child(2n) {
 
 .error-txt{
   color: red !important;
+background-color: #7961E4;
+  
+}
+
+.card_out input{
+  border: 0 !important;
+    background-color: rgba(222, 245, 250, 0.8);
+    color: #000;
+    padding: 9px 20px !important;
+    border-radius: 6px !important;
+    padding-left: 35px !important;
+}
+.card_out input:hover{
+  border: 0;
+    background-color: #fff;
+    color: #000;
+}
+.bg-gradient-blue .ph-logo-wrap {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bg-gradient-blue h6 {
+    color: #fff;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 23px !important;
+    color: #62559e;
+    margin-top: 22px !important;
+}
+
+.bg-gradient-blue .btnn {
+    border-radius: 6px;
+    padding: 6px 28px;
+    font-size: 15px;
+    font-weight: 700;
+    margin-right: 10px;
+    /* border: 0; */
+    background-color: #7961e4 !important;
+    color: #fff !important;
+    font-weight: 400 !important;
+}
+
+.p-relative{
+  position: relative;
+}
+
+.bg-gradient-blue svg {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+ 
 }
